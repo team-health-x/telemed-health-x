@@ -1,0 +1,1165 @@
+/* scoped migration */
+@font-face {
+  font-family: "Noto Sans Thai Local";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/noto-sans-thai-thai.woff2") format("woff2");
+  unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC;
+}
+
+@font-face {
+  font-family: "Noto Sans Thai Local";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/noto-sans-thai-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Noto Sans Thai Local";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/noto-sans-thai-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.telemed-site {
+  --ink: #242032;
+  --muted: #746f81;
+  --line: #ece8f2;
+  --surface: #ffffff;
+  --purple: #6c4893;
+  --purple-dark: #533379;
+  --blue: #67add9;
+  --pink: #ca2d8b;
+  --icon-purple-gradient: linear-gradient(145deg, #9a6dc6, #7250a0);
+  --icon-blue-gradient: linear-gradient(145deg, #71c1e7, #4694c1);
+  --icon-mint-gradient: linear-gradient(145deg, #57b995, #2e8c6d);
+  --icon-rose-gradient: linear-gradient(145deg, #d85b9b, #b6387d);
+  --app-font: "Noto Sans Thai Local", "Noto Sans Thai", sans-serif;
+  --font-sans: var(--app-font);
+}
+
+.telemed-site * { box-sizing: border-box; }
+.telemed-site { background: #f1eef6; font-family: var(--app-font); }
+
+.telemed-site {
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(202,45,139,.08), transparent 28rem),
+    radial-gradient(circle at 90% 85%, rgba(103,173,217,.12), transparent 30rem),
+    #f1eef6;
+  color: var(--ink);
+  font-family: var(--app-font);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+.telemed-site button, .telemed-site input, .telemed-site select, .telemed-site option, .telemed-site optgroup, .telemed-site textarea { font-family: var(--app-font); font-feature-settings: inherit; }
+
+.telemed-site .app-shell {
+  position: relative;
+  width: min(100%, 460px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px 20px 108px;
+  overflow: hidden;
+  background: #fbfafe;
+  box-shadow: 0 0 60px rgba(56, 38, 81, .12);
+}
+
+.telemed-site .topbar, .telemed-site .section-heading, .telemed-site .progress-row, .telemed-site .appointment-card {
+  display: flex;
+  align-items: center;
+}
+
+.telemed-site .topbar { justify-content: space-between; min-height: 48px; }
+
+.telemed-site .brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.telemed-site .brand-logo {
+  display: block;
+  object-fit: contain;
+}
+
+.telemed-site .program-resize-logo {
+  width: 112px;
+  height: 48px;
+  object-position: center;
+  mix-blend-mode: multiply;
+}
+
+.telemed-site .brand-divider {
+  width: 1px;
+  height: 29px;
+  flex: 0 0 auto;
+  border-radius: 99px;
+  background: #ded8e5;
+}
+
+.telemed-site .ritz-logo {
+  width: 92px;
+  height: 34px;
+  object-position: left center;
+}
+
+.telemed-site .profile-button {
+  width: 42px;
+  height: 42px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #72b7dc, #7650a0);
+  box-shadow: 0 5px 16px rgba(91,63,127,.21);
+  cursor: pointer;
+}
+
+.telemed-site .greeting { padding: 23px 2px 18px; }
+
+.telemed-site .eyebrow {
+  margin: 0 0 3px;
+  color: var(--purple);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.telemed-site .greeting h1 {
+  margin: 0;
+  font-size: clamp(1.72rem, 7vw, 2rem);
+  line-height: 1.25;
+  letter-spacing: -.025em;
+}
+
+.telemed-site .greeting > p:last-child {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: .91rem;
+}
+
+.telemed-site .hero-card {
+  position: relative;
+  min-height: 292px;
+  overflow: hidden;
+  border-radius: 27px;
+  color: #fff;
+  background: linear-gradient(135deg, #ca2d8b 0%, #7a62af 46%, #5ba8d5 100%);
+  box-shadow: 0 20px 35px rgba(94, 64, 135, .25);
+}
+
+.telemed-site .hero-card::after {
+  position: absolute;
+  right: -38px;
+  bottom: -59px;
+  width: 192px;
+  height: 192px;
+  border: 34px solid rgba(255,255,255,.11);
+  border-radius: 50%;
+  content: "";
+}
+
+.telemed-site .hero-orb { position: absolute; border-radius: 50%; background: rgba(255,255,255,.13); }
+.telemed-site .hero-orb-one { width: 64px; height: 64px; right: 24px; top: 28px; }
+.telemed-site .hero-orb-two { width: 18px; height: 18px; right: 104px; top: 18px; }
+.telemed-site .hero-content { position: relative; z-index: 1; padding: 25px; }
+
+.telemed-site .status-pill {
+  display: inline-flex;
+  padding: 6px 11px;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+}
+
+.telemed-site .hero-content h2 {
+  max-width: 290px;
+  margin: 17px 0 7px;
+  font-size: 1.53rem;
+  line-height: 1.3;
+  letter-spacing: -.015em;
+}
+
+.telemed-site .hero-content > p { max-width: 325px; margin: 0; color: rgba(255,255,255,.84); font-size: .86rem; line-height: 1.65; }
+.telemed-site .progress-row { gap: 11px; margin: 17px 0 16px; }
+.telemed-site .progress-track { width: 100%; height: 7px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.22); }
+.telemed-site .progress-track span { display: block; height: 100%; border-radius: inherit; background: #fff; }
+.telemed-site .progress-row strong { font-size: .78rem; }
+
+.telemed-site .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 188px;
+  padding: 12px 15px;
+  border: 0;
+  border-radius: 13px;
+  color: var(--purple-dark);
+  font-size: .85rem;
+  font-weight: 800;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(63, 35, 88, .16);
+  cursor: pointer;
+}
+
+.telemed-site .section-block { padding: 28px 1px 0; }
+.telemed-site .section-heading { justify-content: space-between; margin-bottom: 14px; }
+.telemed-site .section-heading h2 { margin: 0; font-size: 1.12rem; }
+.telemed-site .text-button { border: 0; color: var(--purple); font-size: .77rem; font-weight: 700; background: transparent; cursor: pointer; }
+
+.telemed-site .appointment-card {
+  gap: 14px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 8px 26px rgba(52, 35, 76, .07);
+}
+
+.telemed-site .date-tile {
+  display: grid;
+  place-items: center;
+  width: 61px;
+  min-width: 61px;
+  height: 75px;
+  border-radius: 15px;
+  color: var(--purple-dark);
+  background: #f2eefa;
+}
+.telemed-site .date-tile span, .telemed-site .date-tile small { font-size: .68rem; }
+.telemed-site .date-tile strong { font-size: 1.35rem; line-height: 1; }
+.telemed-site .appointment-info { min-width: 0; flex: 1; }
+.telemed-site .appointment-type { margin: 0 0 2px; color: var(--pink); font-size: .69rem; font-weight: 700; }
+.telemed-site .appointment-info h3 { margin: 0 0 4px; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.telemed-site .appointment-info > p:last-child { margin: 0; color: var(--muted); font-size: .72rem; }
+.telemed-site .more-button { align-self: flex-start; padding: 4px; border: 0; color: #8e8799; background: transparent; cursor: pointer; }
+
+.telemed-site .bottom-nav {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: min(100%, 460px);
+  min-height: 82px;
+  padding: 10px 7px max(10px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  border-top: 1px solid rgba(105, 78, 136, .1);
+  background: rgba(255,255,255,.93);
+  box-shadow: 0 -8px 28px rgba(64, 43, 86, .08);
+  backdrop-filter: blur(16px);
+}
+
+.telemed-site .nav-item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 5px 2px;
+  border: 0;
+  color: #8a8493;
+  font-size: .58rem;
+  background: transparent;
+  cursor: pointer;
+}
+.telemed-site .nav-item > span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  color: #fff;
+  background: linear-gradient(145deg, #a9a0af, #7c7385);
+  box-shadow: 0 4px 10px rgba(65,53,75,.14);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.telemed-site .nav-item > span svg { width: 17px; height: 17px; stroke: currentColor; }
+.telemed-site .nav-item.active { color: var(--purple); font-weight: 800; }
+.telemed-site .nav-item.active > span { transform: translateY(-1px); color: #fff; background: linear-gradient(145deg, #d44a98, #7953a5 60%, #5da8d2); box-shadow: 0 6px 14px rgba(96,57,132,.24); }
+.telemed-site .nav-item.active::before { position: absolute; top: -10px; width: 25px; height: 3px; border-radius: 99px; background: linear-gradient(90deg, var(--pink), var(--blue)); content: ""; }
+
+@media (max-width: 360px) {
+  .telemed-site .app-shell { padding-inline: 15px; }
+  .telemed-site .hero-content { padding: 22px; }
+  .telemed-site .hero-content h2 { font-size: 1.35rem; }
+  .telemed-site .appointment-card { gap: 10px; }
+}
+
+.telemed-site .page-title {
+  margin: 0;
+  font-size: 1.32rem;
+  letter-spacing: -.02em;
+}
+
+.telemed-site .onboarding-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 20px 20px max(24px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 4% 3%, rgba(202,45,139,.08), transparent 18rem),
+    radial-gradient(circle at 100% 38%, rgba(103,173,217,.11), transparent 20rem),
+    #fbfafe;
+}
+.telemed-site .onboarding-brand { display: flex; align-items: center; min-height: 50px; }
+.telemed-site .onboarding-hero { position: relative; margin-top: 22px; padding: 25px 22px 21px; overflow: hidden; border-radius: 27px; color: #fff; background: linear-gradient(140deg, #ca2d8b 0%, #7655a4 54%, #5ca8d5 100%); box-shadow: 0 18px 36px rgba(77,49,105,.23); }
+.telemed-site .onboarding-orb { position: absolute; border-radius: 50%; background: rgba(255,255,255,.12); pointer-events: none; }
+.telemed-site .onboarding-orb-one { top: -31px; right: -25px; width: 126px; height: 126px; border: 20px solid rgba(255,255,255,.08); background: transparent; }
+.telemed-site .onboarding-orb-two { right: 34px; bottom: 60px; width: 25px; height: 25px; }
+.telemed-site .onboarding-kicker { position: relative; margin: 0 0 9px; font-size: .64rem; font-weight: 800; letter-spacing: .04em; opacity: .88; }
+.telemed-site .onboarding-hero h1 { position: relative; margin: 0; font-size: 1.65rem; line-height: 1.3; letter-spacing: -.025em; }
+.telemed-site .onboarding-hero > p:not(.onboarding-kicker) { position: relative; max-width: 350px; margin: 10px 0 19px; color: rgba(255,255,255,.82); font-size: .72rem; line-height: 1.65; }
+.telemed-site .onboarding-plan-card { position: relative; display: grid; grid-template-columns: 40px 1fr 25px; gap: 10px; align-items: center; padding: 11px; border: 1px solid rgba(255,255,255,.28); border-radius: 16px; background: rgba(255,255,255,.15); backdrop-filter: blur(10px); }
+.telemed-site .onboarding-plan-card > span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--purple-dark); background: #fff; }
+.telemed-site .onboarding-plan-card small, .telemed-site .onboarding-plan-card strong { display: block; }
+.telemed-site .onboarding-plan-card small { font-size: .56rem; opacity: .76; }
+.telemed-site .onboarding-plan-card strong { margin-top: 2px; font-size: .67rem; line-height: 1.4; }
+.telemed-site .onboarding-plan-card i { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 9px; color: #fff; font-style: normal; background: rgba(255,255,255,.22); }
+.telemed-site .onboarding-prep { padding: 27px 2px 0; }
+.telemed-site .onboarding-prep h2 { margin: 0; font-size: 1.18rem; }
+.telemed-site .onboarding-checklist { display: grid; gap: 9px; margin-top: 14px; }
+.telemed-site .onboarding-checklist > div { display: grid; grid-template-columns: 38px 1fr; gap: 11px; align-items: center; padding: 11px 12px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.9); box-shadow: 0 5px 16px rgba(54,36,75,.035); }
+.telemed-site .onboarding-checklist > div > span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .onboarding-checklist > div:nth-child(2) > span { background: var(--icon-mint-gradient); }
+.telemed-site .onboarding-checklist > div:nth-child(3) > span { background: var(--icon-blue-gradient); }
+.telemed-site .onboarding-checklist p, .telemed-site .onboarding-privacy p { margin: 0; }
+.telemed-site .onboarding-checklist strong, .telemed-site .onboarding-checklist small, .telemed-site .onboarding-privacy strong, .telemed-site .onboarding-privacy small { display: block; }
+.telemed-site .onboarding-checklist strong { font-size: .7rem; }
+.telemed-site .onboarding-checklist small { margin-top: 2px; color: var(--muted); font-size: .58rem; line-height: 1.4; }
+.telemed-site .onboarding-privacy { display: grid; grid-template-columns: 28px 1fr; gap: 9px; align-items: center; margin-top: 14px; padding: 11px 12px; border-radius: 14px; color: #256f58; background: #eaf7f2; }
+.telemed-site .onboarding-privacy > svg { justify-self: center; }
+.telemed-site .onboarding-privacy strong { font-size: .61rem; }
+.telemed-site .onboarding-privacy small { margin-top: 1px; color: #4f806f; font-size: .54rem; line-height: 1.4; }
+.telemed-site .onboarding-start { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; margin-top: 19px; border: 0; border-radius: 15px; color: #fff; font-size: .75rem; font-weight: 800; background: linear-gradient(110deg, var(--pink), var(--purple), var(--blue)); box-shadow: 0 12px 24px rgba(92,56,128,.22); cursor: pointer; }
+.telemed-site .onboarding-time { margin: 9px 0 0; color: var(--muted); font-size: .54rem; line-height: 1.4; text-align: center; }
+
+.telemed-site .quick-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #fff; font-size: 1rem; font-weight: 800; box-shadow: 0 5px 13px rgba(58,39,78,.13); }
+.telemed-site .quick-icon svg { width: 18px; height: 18px; stroke: currentColor; }
+.telemed-site .quick-icon.pink { color: #fff; background: var(--icon-rose-gradient); }
+.telemed-site .quick-icon.blue { color: #fff; background: var(--icon-blue-gradient); }
+.telemed-site .quick-icon.purple { color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .upcoming-video-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #e4deeb;
+  border-radius: 19px;
+  color: var(--ink);
+  text-align: left;
+  background: linear-gradient(115deg, #fff 0%, #fbf8fd 64%, #f2f8fc 100%);
+  box-shadow: 0 8px 24px rgba(51, 34, 73, .065);
+  cursor: pointer;
+}
+.telemed-site .upcoming-video-card .quick-icon { width: 42px; height: 42px; border-radius: 13px; }
+.telemed-site .upcoming-video-copy { min-width: 0; display: grid; }
+.telemed-site .upcoming-video-copy small { color: var(--muted); font-size: .6rem; }
+.telemed-site .upcoming-video-copy strong { margin-top: 1px; font-size: .86rem; }
+.telemed-site .upcoming-video-copy em { margin-top: 2px; overflow: hidden; color: var(--purple); font-size: .62rem; font-style: normal; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.telemed-site .video-join-pill { display: inline-flex; align-items: center; gap: 5px; padding: 8px 10px; border-radius: 10px; color: #fff; font-size: .6rem; font-weight: 800; white-space: nowrap; background: linear-gradient(110deg, var(--pink), var(--purple), var(--blue)); box-shadow: 0 6px 15px rgba(91, 55, 126, .19); }
+.telemed-site .doctor-avatar { display: grid; place-items: center; border-radius: 50%; color: #fff; font-weight: 800; background: linear-gradient(145deg, var(--blue), var(--purple)); }
+
+.telemed-site .concern-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; }
+.telemed-site .concern-card { position: relative; display: grid; padding: 10px 10px 12px; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; text-align: left; background: #fff; cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.telemed-site .concern-card.selected { transform: translateY(-2px); border-color: #9d79bd; box-shadow: 0 11px 25px rgba(99, 65, 132, .14); }
+.telemed-site .concern-card strong { margin: 10px 0 1px; font-size: .82rem; }
+.telemed-site .concern-card small { color: var(--muted); font-size: .62rem; }
+.telemed-site .concern-card i { position: absolute; right: 8px; top: 8px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: .65rem; font-style: normal; background: var(--purple); }
+.telemed-site .concern-card:not(.selected) i { display: none; }
+.telemed-site .skin-swatch { position: relative; display: block; height: 92px; overflow: hidden; border-radius: 13px; background-color: #edc6b5; }
+.telemed-site .skin-swatch::before, .telemed-site .skin-swatch::after { position: absolute; border-radius: 50%; content: ""; }
+.telemed-site .swatch-one { background: radial-gradient(circle at 30% 30%, #9b5f55 0 2px, transparent 3px), radial-gradient(circle at 66% 52%, #a5665a 0 3px, transparent 4px), radial-gradient(circle at 45% 72%, #8f5f55 0 2px, transparent 3px), #e8b8a8; background-size: 24px 24px, 31px 31px, 26px 26px, auto; }
+.telemed-site .swatch-two { background: radial-gradient(circle at 34% 36%, #be4852 0 6px, #d77879 7px 11px, transparent 12px), radial-gradient(circle at 68% 63%, #b8424f 0 5px, #d36b72 6px 10px, transparent 11px), #e8b4aa; }
+.telemed-site .swatch-three { background: radial-gradient(circle at 30% 35%, rgba(136,73,74,.55) 0 5px, transparent 6px), radial-gradient(circle at 72% 62%, rgba(158,87,84,.5) 0 7px, transparent 8px), radial-gradient(circle at 52% 52%, rgba(165,92,91,.35) 0 4px, transparent 5px), #deb09f; }
+.telemed-site .swatch-four { background: linear-gradient(135deg, rgba(217,88,101,.35), transparent 55%), radial-gradient(circle at 63% 35%, rgba(218,90,98,.3) 0 20px, transparent 21px), #edc4b6; }
+.telemed-site .wide-button { display: flex; align-items: center; justify-content: center; gap: 18px; width: 100%; min-height: 49px; padding: 12px 18px; border: 0; border-radius: 15px; color: #fff; font-size: .82rem; font-weight: 800; background: linear-gradient(110deg, var(--pink), var(--purple) 55%, var(--blue)); box-shadow: 0 11px 25px rgba(94, 57, 132, .21); cursor: pointer; }
+.telemed-site .wide-button svg, .telemed-site .primary-button svg { flex: 0 0 auto; stroke: currentColor; }
+.telemed-site .wide-button.soft { color: var(--purple-dark); background: #eee8f7; box-shadow: none; }
+
+.telemed-site .photo-guide { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; }
+.telemed-site .photo-slot { display: grid; place-items: center; min-height: 145px; padding: 16px 10px; border: 1.5px dashed #cabed8; border-radius: 19px; color: var(--purple); background: #f8f5fb; cursor: pointer; }
+.telemed-site .photo-slot > span { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 9px; border-radius: 50%; color: #fff; font-size: 1.2rem; background: linear-gradient(145deg, #69b4dc, #7250a0); }
+.telemed-site .photo-slot strong { font-size: .8rem; }
+.telemed-site .photo-slot small { margin-top: 3px; color: var(--muted); font-size: .63rem; }
+.telemed-site .photo-slot.uploaded { border-style: solid; border-color: #7bbfa5; color: #267d62; background: linear-gradient(145deg, #e9f7f1, #f9fdfb); }
+.telemed-site .photo-slot.uploaded > span { color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .privacy-note { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; margin-top: 17px; padding: 13px; border-radius: 15px; color: #5d5670; background: #efebf5; }
+.telemed-site .privacy-note > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: var(--purple); background: #fff; }
+.telemed-site .privacy-note p { margin: 0; font-size: .64rem; line-height: 1.5; }
+.telemed-site .privacy-note strong { font-size: .7rem; }
+
+.telemed-site .tab-page { padding: 24px 1px 12px; }
+.telemed-site .page-intro { padding: 4px 1px 22px; }
+.telemed-site .page-intro.inline { display: flex; align-items: center; justify-content: space-between; }
+.telemed-site .page-intro h2 { margin: 2px 0 7px; font-size: 1.52rem; line-height: 1.3; letter-spacing: -.025em; }
+.telemed-site .page-intro p:last-child { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.telemed-site .section-heading.compact { margin-top: 27px; }
+
+.telemed-site .empty-appointment, .telemed-site .confirmed-card { padding: 23px; border: 1px solid var(--line); border-radius: 23px; background: #fff; box-shadow: 0 9px 28px rgba(56, 37, 80, .07); }
+.telemed-site .empty-appointment { display: grid; place-items: center; text-align: center; }
+.telemed-site .calendar-art { display: grid; place-items: center; width: 78px; height: 78px; margin: 4px 0 12px; border: 7px solid #e9e1f1; border-radius: 24px; color: #7650a0; font-size: 1.65rem; font-weight: 800; background: linear-gradient(145deg, #f8eff8, #edf6fb); transform: rotate(-3deg); }
+.telemed-site .empty-appointment h3 { margin: 2px 0 5px; font-size: 1rem; }
+.telemed-site .empty-appointment p { max-width: 290px; margin: 0 0 17px; color: var(--muted); font-size: .7rem; line-height: 1.6; }
+.telemed-site .confirmed-top { display: flex; gap: 11px; align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.telemed-site .confirmed-top > span { display: grid; place-items: center; width: 43px; height: 43px; border-radius: 50%; color: #fff; background: var(--icon-mint-gradient); box-shadow: 0 5px 12px rgba(46,140,109,.18); }
+.telemed-site .confirmed-top small, .telemed-site .confirmed-top strong { display: block; }
+.telemed-site .confirmed-top small { color: #2d916e; font-size: .65rem; font-weight: 800; }
+.telemed-site .confirmed-top strong { margin-top: 2px; font-size: .85rem; }
+.telemed-site .doctor-photo { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; object-position: center 30%; }
+.telemed-site .doctor-row { display: grid; grid-template-columns: 59px 1fr; gap: 13px; align-items: center; padding: 19px 0; }
+.telemed-site .doctor-row .doctor-photo { width: 58px; height: 64px; border: 2px solid #fff; border-radius: 16px; box-shadow: 0 7px 16px rgba(69, 46, 91, .14); }
+.telemed-site .doctor-avatar { width: 50px; height: 50px; font-size: .72rem; }
+.telemed-site .doctor-row small, .telemed-site .doctor-row strong { display: block; }
+.telemed-site .doctor-row small { color: var(--muted); font-size: .6rem; }
+.telemed-site .doctor-row strong { margin: 2px 0; font-size: .82rem; }
+.telemed-site .doctor-row p { margin: 0; color: var(--purple); font-size: .62rem; }
+.telemed-site .card-footnote { margin: 12px 0 0; color: var(--muted); font-size: .6rem; line-height: 1.5; text-align: center; }
+.telemed-site .check-list { display: grid; gap: 10px; }
+.telemed-site .check-list > div { display: grid; grid-template-columns: 35px 1fr; gap: 10px; align-items: center; padding: 13px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+.telemed-site .check-list > div > span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: #fff; font-size: .68rem; font-weight: 800; background: var(--icon-mint-gradient); box-shadow: 0 4px 10px rgba(46,140,109,.16); }
+.telemed-site .check-list p { margin: 0; }
+.telemed-site .check-list strong, .telemed-site .check-list small { display: block; }
+.telemed-site .check-list strong { font-size: .72rem; }
+.telemed-site .check-list small { margin-top: 2px; color: var(--muted); font-size: .59rem; }
+
+.telemed-site .history-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.telemed-site .history-summary-grid article { display: grid; grid-template-columns: 37px 1fr; gap: 10px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 7px 22px rgba(54,35,75,.05); }
+.telemed-site .history-summary-grid article > span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 4px 10px rgba(84,55,112,.13); }
+.telemed-site .history-summary-grid small, .telemed-site .history-summary-grid strong { display: block; }
+.telemed-site .history-summary-grid small { color: var(--muted); font-size: .55rem; }
+.telemed-site .history-summary-grid strong { margin-top: 2px; font-size: .76rem; }
+.telemed-site .history-list { display: grid; gap: 11px; }
+.telemed-site .history-card { padding: 14px; border: 1px solid var(--line); border-radius: 19px; background: #fff; box-shadow: 0 7px 23px rgba(54,35,75,.05); }
+.telemed-site .history-card.current { border-color: #a486bc; background: linear-gradient(145deg, #fff, #faf6fc); box-shadow: 0 9px 25px rgba(96,59,132,.1); }
+.telemed-site .history-card-top { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 11px; align-items: center; padding-right: 88px; }
+.telemed-site .history-date { display: grid; place-items: center; width: 47px; height: 54px; border-radius: 13px; color: var(--purple); background: #f0ebf6; }
+.telemed-site .history-card.current .history-date { color: #fff; background: linear-gradient(145deg, #d44a98, #7953a5); }
+.telemed-site .history-date strong, .telemed-site .history-date small { display: block; }
+.telemed-site .history-date strong { font-size: 1.05rem; line-height: 1; }
+.telemed-site .history-date small { margin-top: 2px; font-size: .52rem; }
+.telemed-site .history-card-top > div > small, .telemed-site .history-card-top > div > strong { display: block; }
+.telemed-site .history-card-top > div > small { color: var(--pink); font-size: .53rem; font-weight: 800; }
+.telemed-site .history-card-top > div > strong { margin-top: 3px; font-size: .7rem; }
+.telemed-site .history-card-top > div > p { margin: 2px 0 0; color: var(--muted); font-size: .55rem; }
+.telemed-site .history-card-top > i { position: absolute; top: 0; right: 0; padding: 5px 8px; border-radius: 99px; font-size: .5rem; font-style: normal; font-weight: 800; }
+.telemed-site .history-card-top > i.upcoming { color: #7b4d96; background: #f0e7f6; }
+.telemed-site .history-card-top > i.completed { color: #247b5c; background: #e8f7f0; }
+.telemed-site .history-payment-row { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eeeaf2; }
+.telemed-site .history-payment-row span { display: flex; align-items: center; gap: 6px; color: #2f8869; font-size: .58rem; font-weight: 800; }
+.telemed-site .history-payment-row strong { color: var(--purple); font-size: .78rem; }
+.telemed-site .history-reference { margin: 5px 0 0; color: #9b95a1; font-size: .48rem; letter-spacing: .02em; }
+
+.telemed-site .prescription-card { padding: 16px; border: 1px solid #e8e0ed; border-radius: 23px; background: linear-gradient(145deg, #fff 0%, #fcf9fd 64%, #f2f8fb 100%); box-shadow: 0 10px 29px rgba(57,37,78,.08); }
+.telemed-site .prescription-card-top { position: relative; display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 11px; align-items: center; padding-right: 80px; }
+.telemed-site .prescription-icon { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 14px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 6px 14px rgba(88,55,119,.18); }
+.telemed-site .prescription-card-top small, .telemed-site .prescription-card-top strong, .telemed-site .prescription-card-top p { display: block; }
+.telemed-site .prescription-card-top small { color: var(--purple); font-size: .54rem; font-weight: 800; }
+.telemed-site .prescription-card-top strong { margin-top: 1px; font-size: .74rem; letter-spacing: .025em; }
+.telemed-site .prescription-card-top p { margin: 2px 0 0; color: var(--muted); font-size: .51rem; }
+.telemed-site .prescription-card-top > i { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: 4px; padding: 5px 7px; border-radius: 99px; color: #28785d; font-size: .48rem; font-style: normal; font-weight: 800; background: #e3f5ed; }
+.telemed-site .prescription-doctor { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 11px; align-items: center; margin: 15px 0; padding: 13px 0; border-top: 1px solid #eee9f2; border-bottom: 1px solid #eee9f2; }
+.telemed-site .prescription-doctor .doctor-photo { width: 50px; height: 55px; border: 2px solid #fff; border-radius: 14px; box-shadow: 0 6px 14px rgba(67,44,88,.13); }
+.telemed-site .prescription-doctor small, .telemed-site .prescription-doctor strong { display: block; }
+.telemed-site .prescription-doctor small { color: var(--muted); font-size: .52rem; }
+.telemed-site .prescription-doctor strong { margin-top: 2px; font-size: .71rem; }
+.telemed-site .prescription-doctor p { margin: 2px 0 0; color: var(--purple); font-size: .54rem; }
+.telemed-site .medicine-preview { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: start; padding: 13px; border: 1px solid #e8e1ed; border-radius: 16px; background: #fff; }
+.telemed-site .medicine-preview > span { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 12px; color: #fff; background: var(--icon-rose-gradient); box-shadow: 0 5px 12px rgba(184,56,125,.16); }
+.telemed-site .medicine-preview small, .telemed-site .medicine-preview strong { display: block; }
+.telemed-site .medicine-preview small { color: #9a6b85; font-size: .5rem; font-weight: 800; }
+.telemed-site .medicine-preview strong { margin-top: 2px; font-size: .66rem; line-height: 1.4; }
+.telemed-site .medicine-preview p { margin: 3px 0 0; color: var(--muted); font-size: .54rem; line-height: 1.48; }
+.telemed-site .prescription-schedule { display: grid; grid-template-columns: 31px minmax(0, 1fr); gap: 8px; align-items: center; margin: 10px 0 13px; padding: 9px 11px; border-radius: 13px; color: #6a587a; background: #f0ebf5; }
+.telemed-site .prescription-schedule > svg { padding: 7px; width: 31px; height: 31px; border-radius: 10px; color: var(--purple); background: #fff; }
+.telemed-site .prescription-schedule small, .telemed-site .prescription-schedule strong { display: block; }
+.telemed-site .prescription-schedule small { font-size: .48rem; opacity: .72; }
+.telemed-site .prescription-schedule strong { margin-top: 1px; font-size: .6rem; }
+.telemed-site .prescription-safety { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 10px; align-items: center; margin-top: 13px; padding: 12px 13px; border: 1px solid #dcece6; border-radius: 16px; color: #426e5e; background: #eff9f5; }
+.telemed-site .prescription-safety > svg { padding: 8px; width: 35px; height: 35px; border-radius: 11px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .prescription-safety p { margin: 0; }
+.telemed-site .prescription-safety strong, .telemed-site .prescription-safety small { display: block; }
+.telemed-site .prescription-safety strong { font-size: .61rem; }
+.telemed-site .prescription-safety small { margin-top: 2px; font-size: .52rem; line-height: 1.45; opacity: .8; }
+
+.telemed-site .prescription-sheet { width: min(100%, 460px); max-height: calc(100vh - 30px); padding: 10px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 27px 27px 0 0; background: #fbfafe; box-shadow: 0 -18px 55px rgba(29,20,41,.24); animation: sheet-in .24s ease-out; }
+.telemed-site .prescription-sheet-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 17px 0 11px; padding: 12px 13px; border: 1px solid #e7e0eb; border-radius: 15px; background: #fff; }
+.telemed-site .prescription-sheet-meta small, .telemed-site .prescription-sheet-meta strong { display: block; }
+.telemed-site .prescription-sheet-meta small { color: var(--muted); font-size: .5rem; }
+.telemed-site .prescription-sheet-meta strong { margin-top: 1px; font-size: .68rem; letter-spacing: .025em; }
+.telemed-site .prescription-sheet-meta > span { display: inline-flex; align-items: center; gap: 4px; padding: 5px 7px; border-radius: 99px; color: #28785d; font-size: .48rem; font-weight: 800; white-space: nowrap; background: #e3f5ed; }
+.telemed-site .prescription-sheet-doctor { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; align-items: center; margin-bottom: 11px; padding: 11px 12px; border-radius: 15px; color: #fff; background: linear-gradient(125deg, #69468d, #9d448e); }
+.telemed-site .prescription-sheet-doctor .doctor-photo { width: 46px; height: 51px; border: 2px solid rgba(255,255,255,.78); border-radius: 13px; }
+.telemed-site .prescription-sheet-doctor small, .telemed-site .prescription-sheet-doctor strong { display: block; }
+.telemed-site .prescription-sheet-doctor small { color: rgba(255,255,255,.65); font-size: .49rem; }
+.telemed-site .prescription-sheet-doctor strong { margin-top: 1px; font-size: .68rem; }
+.telemed-site .prescription-sheet-doctor p { margin: 2px 0 0; color: rgba(255,255,255,.74); font-size: .51rem; }
+.telemed-site .medicine-detail-card { padding: 14px; border: 1px solid #e7dfec; border-radius: 18px; background: #fff; box-shadow: 0 7px 20px rgba(53,35,72,.05); }
+.telemed-site .medicine-detail-heading { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: center; padding-bottom: 11px; border-bottom: 1px solid #eee9f1; }
+.telemed-site .medicine-detail-heading > span { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 12px; color: #fff; background: var(--icon-rose-gradient); }
+.telemed-site .medicine-detail-heading small { color: #a06f88; font-size: .48rem; font-weight: 800; }
+.telemed-site .medicine-detail-heading h3 { margin: 1px 0 0; font-size: .72rem; }
+.telemed-site .medicine-detail-card dl { display: grid; gap: 0; margin: 5px 0 0; }
+.telemed-site .medicine-detail-card dl > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 9px; padding: 9px 2px; border-bottom: 1px solid #f0ecf3; }
+.telemed-site .medicine-detail-card dl > div:last-child { border-bottom: 0; }
+.telemed-site .medicine-detail-card dt { color: var(--purple); font-size: .55rem; font-weight: 800; }
+.telemed-site .medicine-detail-card dd { margin: 0; color: #655e6d; font-size: .55rem; line-height: 1.5; }
+.telemed-site .prescription-warning { display: grid; grid-template-columns: 29px minmax(0, 1fr); gap: 8px; align-items: center; margin: 10px 0; padding: 10px; border-radius: 13px; color: #765d42; background: #fff5e7; }
+.telemed-site .prescription-warning > svg { padding: 6px; width: 29px; height: 29px; border-radius: 9px; color: #fff; background: #ca8b42; }
+.telemed-site .prescription-warning p { margin: 0; font-size: .52rem; line-height: 1.45; }
+
+.telemed-site .appointment-confirmation-backdrop { position: fixed; z-index: 70; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 18px 18px 0; background: rgba(24,18,31,.56); backdrop-filter: blur(9px); }
+.telemed-site .appointment-confirmation { position: relative; width: min(100%, 440px); max-height: calc(100vh - 18px); overflow-y: auto; border-radius: 30px 30px 0 0; background: #fff; box-shadow: 0 -18px 65px rgba(28,20,38,.28); animation: confirmation-in .28s cubic-bezier(.22,.8,.26,1); }
+@keyframes confirmation-in { from { transform: translateY(42px); opacity: .55; } }
+.telemed-site .appointment-confirmation-hero { position: relative; padding: 25px 24px 23px; overflow: hidden; color: #fff; background: linear-gradient(125deg, #704d9d 0%, #a9328b 52%, #559fd0 112%); }
+.telemed-site .appointment-confirmation-hero::before, .telemed-site .appointment-confirmation-hero::after { position: absolute; border-radius: 50%; content: ""; }
+.telemed-site .appointment-confirmation-hero::before { top: -56px; right: -38px; width: 150px; height: 150px; background: rgba(255,255,255,.1); }
+.telemed-site .appointment-confirmation-hero::after { left: 34%; bottom: -78px; width: 180px; height: 180px; background: rgba(255,255,255,.055); }
+.telemed-site .appointment-confirmation-close { position: absolute; z-index: 2; top: 15px; right: 16px; display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid rgba(255,255,255,.24); border-radius: 12px; color: #fff; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); cursor: pointer; }
+.telemed-site .appointment-confirmation-status { position: relative; z-index: 1; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 13px; align-items: center; padding-right: 35px; text-align: left; }
+.telemed-site .appointment-success-mark { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.55); border-radius: 16px; color: #fff; background: var(--icon-mint-gradient); box-shadow: 0 9px 22px rgba(44,24,67,.18); }
+.telemed-site .appointment-confirmation-status small { display: block; margin-bottom: 1px; color: rgba(255,255,255,.76); font-size: .55rem; font-weight: 800; }
+.telemed-site .appointment-confirmation-status h2 { margin: 0; color: #fff; font-size: 1.13rem; line-height: 1.35; }
+.telemed-site .appointment-confirmation-status p { margin: 2px 0 0; color: rgba(255,255,255,.74); font-size: .56rem; }
+.telemed-site .appointment-confirmation-body { padding: 17px 19px max(20px, env(safe-area-inset-bottom)); }
+.telemed-site .appointment-ticket { padding: 14px; border: 1px solid #ebe5ef; border-radius: 21px; text-align: left; background: #faf9fc; box-shadow: 0 8px 24px rgba(58,38,77,.055); }
+.telemed-site .appointment-ticket-doctor { display: grid; grid-template-columns: 57px minmax(0, 1fr) auto; gap: 11px; align-items: center; }
+.telemed-site .appointment-ticket-doctor .doctor-photo { width: 56px; height: 61px; border: 2px solid #fff; border-radius: 16px; box-shadow: 0 7px 16px rgba(68,44,87,.14); }
+.telemed-site .appointment-ticket-doctor small, .telemed-site .appointment-ticket-doctor strong { display: block; }
+.telemed-site .appointment-ticket-doctor small { color: var(--muted); font-size: .5rem; }
+.telemed-site .appointment-ticket-doctor strong { margin-top: 2px; font-size: .7rem; line-height: 1.35; }
+.telemed-site .appointment-ticket-doctor p { margin: 2px 0 0; overflow: hidden; color: var(--purple); font-size: .51rem; text-overflow: ellipsis; white-space: nowrap; }
+.telemed-site .appointment-ticket-doctor > span { display: inline-flex; align-items: center; gap: 4px; padding: 5px 7px; border-radius: 99px; color: var(--purple); font-size: .46rem; font-weight: 800; white-space: nowrap; background: #eee7f5; }
+.telemed-site .appointment-schedule-card { display: grid; grid-template-columns: 36px minmax(0, 1fr) 1px 74px; gap: 10px; align-items: center; margin: 14px 0 11px; padding: 11px; border-radius: 16px; color: #fff; background: linear-gradient(120deg, #624689, #8457a9); box-shadow: 0 8px 18px rgba(91,58,124,.16); }
+.telemed-site .appointment-schedule-card > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: rgba(255,255,255,.14); }
+.telemed-site .appointment-schedule-card > i { width: 1px; height: 30px; background: rgba(255,255,255,.2); }
+.telemed-site .appointment-schedule-card small, .telemed-site .appointment-schedule-card strong { display: block; }
+.telemed-site .appointment-schedule-card small { color: rgba(255,255,255,.63); font-size: .45rem; }
+.telemed-site .appointment-schedule-card strong { margin-top: 2px; font-size: .6rem; white-space: nowrap; }
+.telemed-site .appointment-ticket-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 11px; padding: 0 4px; }
+.telemed-site .appointment-ticket-meta > div + div { padding-left: 14px; border-left: 1px solid #e8e1ec; }
+.telemed-site .appointment-ticket-meta small, .telemed-site .appointment-ticket-meta strong { display: block; }
+.telemed-site .appointment-ticket-meta small { color: var(--muted); font-size: .48rem; }
+.telemed-site .appointment-ticket-meta strong { margin-top: 2px; font-size: .65rem; }
+.telemed-site .appointment-ticket-status { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 10px; border-radius: 14px; color: #236d53; background: #e9f8f1; }
+.telemed-site .appointment-ticket-status > svg { padding: 7px; width: 33px; height: 33px; border-radius: 10px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .appointment-ticket-status small, .telemed-site .appointment-ticket-status strong { display: block; }
+.telemed-site .appointment-ticket-status small { font-size: .45rem; opacity: .75; }
+.telemed-site .appointment-ticket-status strong { margin-top: 1px; font-size: .58rem; }
+.telemed-site .appointment-ticket-status > span { padding: 4px 7px; border-radius: 99px; color: #2b785e; font-size: .44rem; font-weight: 800; white-space: nowrap; background: #d7f0e5; }
+.telemed-site .appointment-ticket-reference { margin: 10px 2px 0; color: #99919f; font-size: .45rem; text-align: right; letter-spacing: .035em; }
+.telemed-site .appointment-confirmation-note { display: grid; grid-template-columns: 31px 1fr; gap: 9px; align-items: center; margin: 12px 2px; padding: 9px 10px; border-radius: 13px; color: #6c6474; background: #f2eef5; }
+.telemed-site .appointment-confirmation-note > svg { padding: 7px; width: 31px; height: 31px; border-radius: 10px; color: var(--purple); background: #fff; }
+.telemed-site .appointment-confirmation-note p { margin: 0; font-size: .52rem; line-height: 1.45; }
+
+.telemed-site .profile-hero { display: grid; place-items: center; padding: 15px 0 25px; text-align: center; }
+.telemed-site .profile-large { display: grid; place-items: center; width: 82px; height: 82px; margin-bottom: 10px; border: 4px solid #fff; border-radius: 50%; color: #fff; font-size: 1.55rem; font-weight: 800; background: linear-gradient(145deg, #69b4dc, #7953a5, #cf4897); box-shadow: 0 11px 25px rgba(97,65,132,.2); }
+.telemed-site .profile-hero h2 { margin: 0; font-size: 1.16rem; }
+.telemed-site .profile-hero p { margin: 4px 0 12px; color: var(--muted); font-size: .65rem; }
+.telemed-site .profile-hero button { padding: 8px 15px; border: 0; border-radius: 10px; color: var(--purple); font-size: .68rem; font-weight: 800; background: #eee9f6; cursor: pointer; }
+.telemed-site .profile-card { margin-bottom: 13px; padding: 9px 13px 2px; border: 1px solid var(--line); border-radius: 19px; background: #fff; }
+.telemed-site .settings-label { margin: 3px 4px 6px; color: #9a93a2; font-size: .62rem; font-weight: 800; }
+.telemed-site .profile-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; width: 100%; padding: 12px 3px; border: 0; border-top: 1px solid #f0edf3; text-align: left; background: transparent; cursor: pointer; }
+.telemed-site .profile-row > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #fff; font-size: .75rem; font-weight: 800; background: var(--icon-purple-gradient); box-shadow: 0 4px 10px rgba(84,55,112,.15); }
+.telemed-site .profile-row > span svg { stroke: currentColor; }
+.telemed-site .profile-row strong, .telemed-site .profile-row small { display: block; }
+.telemed-site .profile-row strong { font-size: .73rem; }
+.telemed-site .profile-row small { display: -webkit-box; margin-top: 2px; overflow: hidden; color: var(--muted); font-size: .59rem; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.telemed-site .profile-row i { display: grid; place-items: center; color: #aaa3b0; font-size: 1.15rem; font-style: normal; }
+.telemed-site .logout-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; border: 1px solid #f0d7e4; border-radius: 14px; color: #b83472; font-size: .73rem; font-weight: 800; background: #fff7fa; cursor: pointer; }
+
+.telemed-site .sheet-backdrop { position: fixed; z-index: 30; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(28, 20, 38, .48); backdrop-filter: blur(4px); }
+.telemed-site .booking-sheet { width: min(100%, 460px); max-height: calc(100vh - 28px); padding: 10px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 27px 27px 0 0; background: #fff; box-shadow: 0 -18px 55px rgba(29, 20, 41, .23); animation: sheet-in .24s ease-out; }
+@keyframes sheet-in { from { transform: translateY(30px); opacity: .6; } }
+.telemed-site .sheet-handle { width: 45px; height: 4px; margin: 0 auto 15px; border-radius: 99px; background: #d9d4df; }
+.telemed-site .booking-heading { display: grid; grid-template-columns: 38px 1fr 38px; gap: 8px; align-items: center; text-align: center; }
+.telemed-site .booking-heading > button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 11px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 5px 12px rgba(84,55,112,.16); cursor: pointer; }
+.telemed-site .booking-heading .eyebrow { margin: 0; font-size: .57rem; }
+.telemed-site .booking-heading h2 { margin: 1px 0 0; font-size: 1.08rem; }
+.telemed-site .booking-step-meta { display: flex; align-items: center; justify-content: space-between; margin: 15px 1px 6px; color: var(--muted); font-size: .58rem; }
+.telemed-site .booking-step-meta strong { color: var(--purple); }
+.telemed-site .booking-progress { height: 6px; margin-bottom: 17px; overflow: hidden; border-radius: 99px; background: #eae4ef; }
+.telemed-site .booking-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue)); transition: width .2s ease; }
+.telemed-site .booking-content { display: grid; gap: 14px; }
+.telemed-site .booking-lead { margin: 0; color: var(--muted); font-size: .65rem; line-height: 1.6; }
+.telemed-site .doctor-options { display: grid; gap: 11px; }
+.telemed-site .doctor-option { position: relative; display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 100px; padding: 12px 13px; overflow: hidden; border: 1px solid #e4dce9; border-radius: 21px; color: var(--ink); text-align: left; background: linear-gradient(135deg, #fff 0%, #fff 63%, #fbf8fd 100%); box-shadow: 0 7px 20px rgba(53,35,72,.055); cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+.telemed-site .doctor-option:hover { transform: translateY(-1px); border-color: #bda7cf; box-shadow: 0 11px 24px rgba(75,48,101,.1); }
+.telemed-site .doctor-option.selected { transform: translateY(-1px); border-color: #8861aa; background: linear-gradient(135deg, #fff 0%, #fbf6fd 62%, #f0f6fb 100%); box-shadow: 0 12px 27px rgba(96,59,132,.14), inset 3px 0 0 #a9368e; }
+.telemed-site .doctor-option-photo { position: relative; display: block; width: 68px; height: 76px; overflow: hidden; border: 2px solid #fff; border-radius: 17px; background: #eee8f4; box-shadow: 0 8px 17px rgba(66,43,86,.16); }
+.telemed-site .doctor-option-photo > i { position: absolute; right: 5px; bottom: 5px; width: 10px; height: 10px; border: 2px solid #fff; border-radius: 50%; background: #3aa97d; box-shadow: 0 2px 5px rgba(28,102,75,.22); }
+.telemed-site .doctor-option-info { min-width: 0; }
+.telemed-site .doctor-option-info > strong, .telemed-site .doctor-option-info > small { display: block; }
+.telemed-site .doctor-option-info > strong { padding-right: 2px; font-size: .73rem; line-height: 1.35; }
+.telemed-site .doctor-option-info > small { margin-top: 3px; overflow: hidden; color: var(--muted); font-size: .56rem; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.telemed-site .doctor-option-info > span { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.telemed-site .doctor-option-info > span > i { display: inline-flex; align-items: center; gap: 4px; min-height: 22px; padding: 3px 7px; border-radius: 99px; color: var(--purple); font-size: .49rem; font-style: normal; font-weight: 800; background: #f0e9f6; }
+.telemed-site .doctor-option-info > span > i:last-child { color: #28785d; background: #e7f6ef; }
+.telemed-site .doctor-option > b { display: grid; align-self: end; justify-items: end; min-width: 58px; padding: 24px 1px 4px 4px; color: var(--purple); font-size: .82rem; line-height: 1.1; }
+.telemed-site .doctor-option > b > small { margin-bottom: 4px; color: #92899a; font-size: .46rem; font-weight: 700; }
+.telemed-site .doctor-option-selected { position: absolute; top: 8px; right: 9px; display: inline-flex; align-items: center; gap: 3px; padding: 4px 7px; border-radius: 99px; color: #fff; font-size: .47rem; font-weight: 800; background: linear-gradient(110deg, #b6328a, #7652a0); box-shadow: 0 4px 10px rgba(104,62,140,.2); }
+.telemed-site .sheet-heading { display: flex; align-items: center; justify-content: space-between; }
+.telemed-site .sheet-heading h2 { margin: 0; font-size: 1.2rem; }
+.telemed-site .sheet-heading button { display: grid; place-items: center; width: 35px; height: 35px; border: 0; border-radius: 11px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 5px 12px rgba(84,55,112,.16); cursor: pointer; }
+.telemed-site .field-label { margin: 18px 0 8px; color: var(--muted); font-size: .68rem; font-weight: 800; }
+.telemed-site .date-options { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.telemed-site .date-options button { display: grid; place-items: center; gap: 3px; min-height: 64px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: #fff; cursor: pointer; }
+.telemed-site .date-options small { color: var(--muted); font-size: .58rem; }
+.telemed-site .date-options strong { font-size: .92rem; }
+.telemed-site .date-options button.selected, .telemed-site .time-options button.selected { border-color: var(--purple); color: #fff; background: linear-gradient(145deg, var(--pink), var(--purple)); box-shadow: 0 6px 15px rgba(99, 61, 134, .18); }
+.telemed-site .date-options button.selected small { color: rgba(255,255,255,.75); }
+.telemed-site .time-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.telemed-site .time-options button { padding: 10px 5px; border: 1px solid var(--line); border-radius: 11px; color: #5e5866; font-size: .7rem; background: #fff; cursor: pointer; }
+.telemed-site .doctor-mini { display: grid; grid-template-columns: 51px 1fr auto; gap: 10px; align-items: center; padding: 12px; border-radius: 15px; background: #f6f3f9; }
+.telemed-site .doctor-mini .doctor-photo { width: 50px; height: 56px; border: 2px solid #fff; border-radius: 14px; box-shadow: 0 5px 12px rgba(68,44,87,.13); }
+.telemed-site .doctor-mini .doctor-avatar { width: 42px; height: 42px; }
+.telemed-site .doctor-mini small, .telemed-site .doctor-mini strong { display: block; }
+.telemed-site .doctor-mini small { color: var(--muted); font-size: .55rem; }
+.telemed-site .doctor-mini strong { margin-top: 2px; font-size: .7rem; }
+.telemed-site .doctor-mini p { margin: 2px 0 0; color: var(--muted); font-size: .53rem; }
+.telemed-site .doctor-mini > span { color: var(--muted); font-size: .54rem; font-weight: 800; text-align: right; }
+.telemed-site .doctor-mini > span b { display: block; margin-top: 3px; color: var(--purple); font-size: .7rem; }
+.telemed-site .payment-summary { display: grid; gap: 9px; padding: 15px; border: 1px solid var(--line); border-radius: 17px; background: #faf8fc; }
+.telemed-site .payment-summary > div { display: flex; justify-content: space-between; gap: 16px; }
+.telemed-site .payment-summary span { color: var(--muted); font-size: .58rem; }
+.telemed-site .payment-summary strong { font-size: .65rem; text-align: right; }
+.telemed-site .payment-summary .payment-total { margin-top: 2px; padding-top: 10px; border-top: 1px solid #e5deea; align-items: baseline; }
+.telemed-site .payment-summary .payment-total strong { color: var(--purple); font-size: 1.12rem; }
+.telemed-site .payment-summary.compact { gap: 7px; }
+.telemed-site .payment-panel { display: grid; place-items: center; padding: 18px; border: 1px solid #ded4e7; border-radius: 20px; text-align: center; background: linear-gradient(145deg, #fbf8fd, #f2f8fb); }
+.telemed-site .payment-icon { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 14px; color: #fff; background: var(--icon-rose-gradient); box-shadow: 0 6px 14px rgba(174,71,120,.16); }
+.telemed-site .payment-panel h3 { margin: 10px 0 4px; font-size: .78rem; }
+.telemed-site .payment-panel > p { max-width: 290px; margin: 0; color: var(--muted); font-size: .58rem; line-height: 1.5; }
+.telemed-site .qr-placeholder { display: grid; place-items: center; align-content: center; width: 132px; height: 132px; margin: 15px 0; border: 10px solid #fff; border-radius: 14px; color: var(--purple); background: repeating-conic-gradient(#3f3150 0 25%, #fff 0 50%) 0 / 18px 18px; box-shadow: 0 7px 20px rgba(54, 39, 67, .13); }
+.telemed-site .qr-placeholder span, .telemed-site .qr-placeholder small { padding: 2px 7px; background: #fff; }
+.telemed-site .qr-placeholder span { font-size: .77rem; font-weight: 900; }
+.telemed-site .qr-placeholder small { font-size: .43rem; letter-spacing: .08em; }
+.telemed-site .payment-account { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; width: 100%; padding: 11px; border-radius: 13px; text-align: left; background: #fff; }
+.telemed-site .payment-account > svg { padding: 8px; width: 34px; height: 34px; border-radius: 10px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .payment-account small, .telemed-site .payment-account strong, .telemed-site .payment-account span { display: block; }
+.telemed-site .payment-account small { color: var(--muted); font-size: .51rem; }
+.telemed-site .payment-account strong { margin-top: 2px; font-size: .7rem; letter-spacing: .04em; }
+.telemed-site .payment-account span { margin-top: 1px; color: var(--muted); font-size: .52rem; }
+.telemed-site .payment-demo-note { margin: -4px 0 0; color: #9b7185; font-size: .54rem; text-align: center; }
+.telemed-site .slip-upload { position: relative; display: grid; place-items: center; min-height: 170px; padding: 22px 15px; border: 1.5px dashed #bcaecc; border-radius: 18px; color: var(--purple); text-align: center; background: #f9f6fb; cursor: pointer; }
+.telemed-site .slip-upload input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+.telemed-site .slip-upload > span { display: grid; place-items: center; width: 49px; height: 49px; border-radius: 15px; color: #fff; background: var(--icon-rose-gradient); }
+.telemed-site .slip-upload strong { max-width: 290px; margin-top: 10px; font-size: .7rem; overflow-wrap: anywhere; }
+.telemed-site .slip-upload small { margin-top: 4px; color: var(--muted); font-size: .55rem; }
+.telemed-site .slip-upload.uploaded { border-style: solid; border-color: #64ad8d; color: #25785c; background: #f2fbf7; }
+.telemed-site .slip-upload.uploaded > span { color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .slip-error { margin: -5px 0 0; color: #b83a58; font-size: .57rem; text-align: center; }
+.telemed-site .slip-privacy { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: center; padding: 10px; border-radius: 12px; color: #62596b; background: #efebf4; }
+.telemed-site .slip-privacy > svg { padding: 6px; width: 28px; height: 28px; border-radius: 9px; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .slip-privacy p { margin: 0; font-size: .54rem; line-height: 1.45; }
+.telemed-site .sheet-note { margin: 9px 0 0; color: var(--muted); font-size: .56rem; text-align: center; }
+
+/* Interactive profile sheets */
+.telemed-site .profile-sheet { width: min(100%, 460px); max-height: calc(100vh - 44px); padding: 10px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 27px 27px 0 0; background: #fff; box-shadow: 0 -18px 55px rgba(29,20,41,.23); animation: sheet-in .24s ease-out; }
+.telemed-site .profile-sheet-content { display: grid; gap: 13px; padding: 18px 0; }
+.telemed-site .profile-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.telemed-site .sheet-field { display: grid; gap: 6px; color: #514a59; font-size: .64rem; font-weight: 800; }
+.telemed-site .sheet-field.full { grid-column: 1 / -1; }
+.telemed-site .sheet-field input, .telemed-site .sheet-field textarea { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #ded8e6; border-radius: 12px; outline: none; color: var(--ink); font: inherit; font-size: .72rem; font-weight: 500; background: #fff; }
+.telemed-site .sheet-field input { min-height: 43px; }
+.telemed-site .sheet-field textarea { resize: vertical; line-height: 1.55; }
+.telemed-site .sheet-field input:focus, .telemed-site .sheet-field textarea:focus { border-color: #9270b1; box-shadow: 0 0 0 3px rgba(108,72,147,.1); }
+.telemed-site .sheet-description { margin: 0; color: var(--muted); font-size: .62rem; line-height: 1.6; }
+.telemed-site .information-panel { padding: 19px; border-radius: 18px; text-align: center; background: linear-gradient(145deg, #f1eaf8, #eef7fb); }
+.telemed-site .information-panel > svg { padding: 9px; width: 47px; height: 47px; border-radius: 15px; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .information-panel h3 { margin: 10px 0 6px; font-size: .84rem; }
+.telemed-site .information-panel p { margin: 7px 0 0; color: var(--muted); font-size: .62rem; line-height: 1.65; }
+.telemed-site .logout-sheet { overflow: hidden; background: linear-gradient(180deg, #fff 0%, #fdfbfe 100%); }
+.telemed-site .logout-sheet .profile-sheet-content { padding: 16px 0 14px; }
+.telemed-site .logout-confirm { position: relative; overflow: hidden; padding: 24px 20px 18px; border: 1px solid #eee7f2; border-radius: 23px; text-align: center; background: linear-gradient(145deg, #fff 12%, #fcf8fc 55%, #f3f7fc); box-shadow: 0 12px 28px rgba(55,35,72,.07); }
+.telemed-site .logout-confirm::before, .telemed-site .logout-confirm::after { position: absolute; border-radius: 50%; content: ""; pointer-events: none; }
+.telemed-site .logout-confirm::before { top: -57px; right: -40px; width: 130px; height: 130px; background: rgba(203,53,126,.06); }
+.telemed-site .logout-confirm::after { bottom: -62px; left: -47px; width: 140px; height: 140px; background: rgba(92,169,215,.08); }
+.telemed-site .logout-visual { position: relative; z-index: 1; display: grid; place-items: center; width: 70px; height: 70px; margin: 0 auto 12px; border-radius: 24px; background: linear-gradient(145deg, #fbe8f2, #f2eaf8); transform: rotate(-5deg); }
+.telemed-site .logout-visual > span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; color: #fff; background: linear-gradient(145deg, #d23e83, #8b51b6); box-shadow: 0 10px 20px rgba(173,55,127,.22); transform: rotate(5deg); }
+.telemed-site .logout-kicker { position: relative; z-index: 1; margin: 0 0 4px; color: #a34284; font-size: .51rem; font-weight: 900; letter-spacing: .12em; }
+.telemed-site .logout-confirm h3 { position: relative; z-index: 1; margin: 0; font-size: 1rem; letter-spacing: -.015em; }
+.telemed-site .logout-confirm .logout-lead { position: relative; z-index: 1; max-width: 330px; margin: 7px auto 0; color: var(--muted); font-size: .62rem; line-height: 1.6; }
+.telemed-site .logout-note { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 8px 11px; border: 1px solid #e8e3ec; border-radius: 99px; color: #736b7b; font-size: .54rem; font-weight: 700; background: rgba(255,255,255,.8); }
+.telemed-site .logout-note svg { flex: 0 0 auto; color: #79549a; }
+.telemed-site .help-panel { display: grid; gap: 8px; }
+.telemed-site .help-panel details { overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.telemed-site .help-panel summary { padding: 12px 13px; color: var(--purple-dark); font-size: .68rem; font-weight: 800; cursor: pointer; }
+.telemed-site .help-panel p { margin: 0; padding: 0 13px 13px; color: var(--muted); font-size: .6rem; line-height: 1.6; }
+.telemed-site .logout-actions { display: grid; grid-template-columns: .82fr 1.18fr; gap: 9px; }
+.telemed-site .logout-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 47px; border: 1px solid #ddd5e5; border-radius: 14px; color: var(--purple); font-size: .65rem; font-weight: 800; background: #fff; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease; }
+.telemed-site .logout-actions button:active { transform: scale(.98); }
+.telemed-site .logout-actions button:last-child { border: 0; color: #fff; background: linear-gradient(115deg, #d0367c, #8a4ca8); box-shadow: 0 9px 19px rgba(160,54,125,.2); }
+
+/* Video appointment flow */
+.telemed-site .video-call-overlay { position: fixed; z-index: 80; inset: 0; display: flex; justify-content: center; color: var(--ink); background: rgba(24,17,33,.62); backdrop-filter: blur(7px); }
+.telemed-site .precall-checkin, .telemed-site .video-prejoin, .telemed-site .video-room { width: min(100%, 460px); min-height: 100vh; padding: 18px 20px max(24px, env(safe-area-inset-bottom)); overflow-y: auto; background: #fbfafe; }
+.telemed-site .precall-checkin, .telemed-site .video-prejoin { align-self: stretch; }
+.telemed-site .video-heading { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; text-align: center; }
+.telemed-site .video-heading > button { display: grid; place-items: center; width: 38px; height: 38px; border: 0; border-radius: 12px; color: #fff; background: var(--icon-purple-gradient); cursor: pointer; }
+.telemed-site .video-heading > .video-chat-button { position: relative; color: var(--purple); background: #f0ebf6; box-shadow: none; }
+.telemed-site .video-chat-button > span, .telemed-site .room-chat-button > span { position: absolute; top: -4px; right: -4px; display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border: 2px solid #fbfafe; border-radius: 99px; color: #fff; font-size: .46rem; font-weight: 900; background: #d3387d; }
+.telemed-site .video-heading .eyebrow { margin: 0; font-size: .58rem; }
+.telemed-site .video-heading h2 { margin: 1px 0 0; font-size: 1rem; }
+.telemed-site .precall-progress { display: flex; align-items: center; justify-content: space-between; margin: 17px 1px 10px; color: var(--muted); font-size: .53rem; }
+.telemed-site .precall-progress strong { color: var(--purple); }
+.telemed-site .precall-appointment { margin-bottom: 12px; }
+.telemed-site .precall-baseline, .telemed-site .precall-symptoms { padding: 14px; border: 1px solid #e7dfec; border-radius: 19px; background: #fff; box-shadow: 0 7px 21px rgba(55,36,75,.05); }
+.telemed-site .precall-section-heading { display: grid; grid-template-columns: 37px minmax(0, 1fr); gap: 10px; align-items: center; }
+.telemed-site .precall-section-heading > span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 5px 11px rgba(85,55,112,.15); }
+.telemed-site .precall-section-heading h3 { margin: 0; font-size: .69rem; line-height: 1.4; }
+.telemed-site .precall-section-heading p { margin: 2px 0 0; color: var(--muted); font-size: .51rem; line-height: 1.45; }
+.telemed-site .precall-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 13px; }
+.telemed-site .precall-metrics > label, .telemed-site .locked-metric { min-width: 0; padding: 11px; border: 1px solid #e3dce8; border-radius: 14px; background: #fcfbfd; }
+.telemed-site .precall-metrics > label > span, .telemed-site .locked-metric > span { display: block; margin-bottom: 5px; color: #655d6d; font-size: .53rem; font-weight: 800; }
+.telemed-site .precall-metrics em { color: #c83276; font-style: normal; }
+.telemed-site .precall-metrics label > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 5px; }
+.telemed-site .precall-metrics input { width: 100%; min-width: 0; height: 37px; padding: 0 8px; border: 1px solid #dcd4e3; border-radius: 10px; outline: none; color: var(--ink); font: inherit; font-size: .73rem; font-weight: 800; background: #fff; }
+.telemed-site .precall-metrics input:focus { border-color: #8e69ad; box-shadow: 0 0 0 3px rgba(110,73,148,.1); }
+.telemed-site .precall-metrics label > div > small { color: var(--muted); font-size: .53rem; font-weight: 700; }
+.telemed-site .precall-metrics label > i { display: block; margin-top: 4px; color: #bd3e54; font-size: .47rem; font-style: normal; line-height: 1.35; }
+.telemed-site .precall-metrics label.invalid { border-color: #e3a8b4; background: #fffafa; }
+.telemed-site .locked-metric { background: linear-gradient(145deg, #f4f0f7, #f3f7fa); }
+.telemed-site .locked-metric strong { display: flex; align-items: baseline; gap: 4px; font-size: .86rem; }
+.telemed-site .locked-metric strong small { color: var(--muted); font-size: .5rem; }
+.telemed-site .locked-metric > i { display: flex; align-items: center; gap: 4px; margin-top: 5px; color: #8b8192; font-size: .46rem; font-style: normal; font-weight: 700; }
+.telemed-site .precall-allergy { display: grid; grid-template-columns: 37px minmax(0, 1fr) 18px; gap: 10px; align-items: center; margin: 10px 0; padding: 12px 13px; border: 1px solid #e8e1ed; border-radius: 17px; background: linear-gradient(130deg, #f4eef8, #f0f7fb); }
+.telemed-site .precall-allergy > div { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .precall-allergy span { min-width: 0; }
+.telemed-site .precall-allergy small, .telemed-site .precall-allergy strong { display: block; }
+.telemed-site .precall-allergy small { color: #766b7e; font-size: .49rem; font-weight: 800; }
+.telemed-site .precall-allergy strong { margin-top: 2px; font-size: .57rem; line-height: 1.45; }
+.telemed-site .precall-allergy > svg { color: #8b8292; }
+.telemed-site .precall-symptoms { margin-bottom: 12px; }
+.telemed-site .precall-symptoms .precall-section-heading > span { background: var(--icon-rose-gradient); }
+.telemed-site .complication-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 13px; }
+.telemed-site .complication-options button { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 7px; align-items: center; min-height: 43px; padding: 7px 8px; border: 1px solid #e1dae6; border-radius: 12px; color: #665e6e; font: inherit; font-size: .54rem; font-weight: 700; text-align: left; background: #fbfafc; cursor: pointer; }
+.telemed-site .complication-options button > i { display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #d9d0e0; border-radius: 7px; color: transparent; font-style: normal; background: #fff; }
+.telemed-site .complication-options button.selected { border-color: #9a78b6; color: var(--purple-dark); background: #f4eef8; }
+.telemed-site .complication-options button.selected > i { border-color: #8658a5; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .complication-options button.urgent.selected { border-color: #d98697; color: #9c3449; background: #fff1f4; }
+.telemed-site .complication-options button.urgent.selected > i { border-color: #cf506a; background: #cf506a; }
+.telemed-site .symptom-note { display: grid; gap: 5px; margin-top: 10px; color: #5c5464; font-size: .53rem; font-weight: 800; }
+.telemed-site .symptom-note textarea { width: 100%; padding: 9px 10px; border: 1px solid #ded7e4; border-radius: 12px; outline: none; color: var(--ink); font: inherit; font-size: .58rem; font-weight: 500; line-height: 1.5; resize: vertical; }
+.telemed-site .symptom-note textarea:focus { border-color: #8e69ad; box-shadow: 0 0 0 3px rgba(110,73,148,.1); }
+.telemed-site .precall-error { margin: 6px 0 0; color: #bd3e54; font-size: .5rem; font-weight: 700; }
+.telemed-site .precall-urgent { display: grid; grid-template-columns: 31px minmax(0, 1fr); gap: 8px; align-items: center; margin-top: 9px; padding: 10px; border-radius: 13px; color: #953e4e; background: #fff0f3; }
+.telemed-site .precall-urgent > svg { padding: 7px; width: 31px; height: 31px; border-radius: 10px; color: #fff; background: #ce4a63; }
+.telemed-site .precall-urgent p { margin: 0; font-size: .5rem; line-height: 1.45; }
+.telemed-site .precall-saved-summary { display: grid; grid-template-columns: 31px minmax(0, 1fr) auto; gap: 9px; align-items: center; margin: 10px 0 2px; padding: 10px 11px; border-radius: 14px; color: #2d785c; background: #eaf8f2; }
+.telemed-site .precall-saved-summary > span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .precall-saved-summary small, .telemed-site .precall-saved-summary strong { display: block; }
+.telemed-site .precall-saved-summary small { font-size: .47rem; opacity: .72; }
+.telemed-site .precall-saved-summary strong { margin-top: 1px; font-size: .55rem; }
+.telemed-site .precall-saved-summary button { padding: 5px 8px; border: 1px solid #b7ddce; border-radius: 8px; color: #2b765a; font: inherit; font-size: .49rem; font-weight: 800; background: rgba(255,255,255,.72); cursor: pointer; }
+.telemed-site .self-preview { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; margin: 23px 0 14px; overflow: hidden; border-radius: 24px; color: #fff; background: linear-gradient(145deg, #4e3a67, #30253d); box-shadow: 0 15px 32px rgba(39,28,50,.22); }
+.telemed-site .self-preview video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+.telemed-site .self-preview > div { position: relative; z-index: 1; display: grid; place-items: center; }
+.telemed-site .self-preview > div > svg { padding: 12px; width: 62px; height: 62px; border-radius: 50%; color: #fff; background: rgba(255,255,255,.12); }
+.telemed-site .self-preview strong, .telemed-site .self-preview small { display: block; }
+.telemed-site .self-preview strong { margin-top: 10px; font-size: .79rem; }
+.telemed-site .self-preview small { margin-top: 2px; color: rgba(255,255,255,.68); font-size: .59rem; }
+.telemed-site .appointment-person { display: grid; grid-template-columns: 53px 1fr; gap: 11px; align-items: center; padding: 13px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+.telemed-site .appointment-person .doctor-photo { width: 52px; height: 58px; border: 2px solid #fff; border-radius: 14px; box-shadow: 0 6px 14px rgba(68,44,87,.13); }
+.telemed-site .appointment-person .doctor-avatar { width: 46px; height: 46px; font-size: .68rem; }
+.telemed-site .appointment-person small, .telemed-site .appointment-person strong { display: block; }
+.telemed-site .appointment-person small { color: var(--muted); font-size: .55rem; }
+.telemed-site .appointment-person strong { margin: 1px 0; font-size: .72rem; }
+.telemed-site .appointment-person p { margin: 0; color: var(--purple); font-size: .58rem; }
+.telemed-site .device-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 8px; }
+.telemed-site .device-controls button { display: grid; place-items: center; gap: 5px; min-height: 61px; border: 1px solid #ded8e6; border-radius: 14px; color: #6d6675; font-size: .56rem; font-weight: 800; background: #fff; cursor: pointer; }
+.telemed-site .device-controls button.active { border-color: #8e71b7; color: var(--purple); background: #f4eff9; }
+.telemed-site .device-message { min-height: 36px; margin: 0 0 11px; padding: 8px 10px; border-radius: 10px; color: #665e6f; font-size: .57rem; line-height: 1.45; text-align: center; background: #f0ecf4; }
+.telemed-site .video-room { position: relative; display: grid; grid-template-rows: auto 1fr auto auto auto; gap: 13px; color: #fff; background: linear-gradient(160deg, #211a2a, #3b2c4c 55%, #213647); }
+.telemed-site .room-topbar { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 9px; }
+.telemed-site .call-status { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-radius: 13px; background: rgba(255,255,255,.09); }
+.telemed-site .call-status > span { width: 9px; height: 9px; border-radius: 50%; background: #86e2bd; box-shadow: 0 0 0 5px rgba(134,226,189,.12); }
+.telemed-site .call-status strong, .telemed-site .call-status small { display: block; }
+.telemed-site .call-status strong { font-size: .67rem; }
+.telemed-site .call-status small { color: rgba(255,255,255,.62); font-size: .54rem; }
+.telemed-site .room-chat-button { position: relative; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.15); border-radius: 13px; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; }
+.telemed-site .room-chat-button > span { border-color: #2a2135; }
+.telemed-site .remote-stage { position: relative; display: grid; place-content: center; justify-items: center; min-height: 390px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 26px; text-align: center; background: radial-gradient(circle at 50% 35%, rgba(115,86,150,.46), transparent 15rem), rgba(255,255,255,.03); }
+.telemed-site .doctor-avatar.large { width: 90px; height: 90px; font-size: 1.3rem; box-shadow: 0 14px 30px rgba(22,15,30,.35); }
+.telemed-site .remote-stage .doctor-photo.large { width: 108px; height: 108px; border: 3px solid rgba(255,255,255,.82); border-radius: 50%; box-shadow: 0 14px 30px rgba(22,15,30,.38); }
+.telemed-site .remote-stage h2 { margin: 14px 0 3px; font-size: 1.15rem; }
+.telemed-site .remote-stage > p { margin: 0; color: rgba(255,255,255,.65); font-size: .62rem; }
+.telemed-site .floating-preview { position: absolute; right: 13px; bottom: 13px; width: 100px; height: 133px; border: 2px solid rgba(255,255,255,.75); border-radius: 16px; object-fit: cover; transform: scaleX(-1); box-shadow: 0 10px 22px rgba(0,0,0,.3); }
+.telemed-site .room-device-message { min-height: 21px; color: rgba(255,255,255,.62); font-size: .55rem; text-align: center; }
+.telemed-site .call-controls { display: grid; grid-template-columns: repeat(4, 50px); justify-content: center; gap: 11px; }
+.telemed-site .call-controls button { display: grid; place-items: center; width: 50px; height: 50px; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; }
+.telemed-site .call-controls button.active { background: var(--purple); }
+.telemed-site .call-controls button.hangup { border-color: #d34b64; background: #c83755; }
+.telemed-site .room-caption { margin: 0; color: rgba(255,255,255,.48); font-size: .5rem; line-height: 1.45; text-align: center; }
+
+.telemed-site .video-chat-layer { position: fixed; z-index: 95; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(22,16,29,.48); backdrop-filter: blur(4px); }
+.telemed-site .video-chat-panel { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) auto; width: min(100%, 460px); height: min(72vh, 640px); min-height: 430px; padding: 9px 17px max(14px, env(safe-area-inset-bottom)); overflow: hidden; border-radius: 27px 27px 0 0; color: var(--ink); background: #fbfafe; box-shadow: 0 -20px 55px rgba(22,15,29,.28); animation: sheet-in .22s ease-out; }
+.telemed-site .video-chat-handle { width: 43px; height: 4px; margin: 0 auto 9px; border-radius: 99px; background: #d8d2de; }
+.telemed-site .video-chat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 11px; border-bottom: 1px solid #eae5ee; }
+.telemed-site .video-chat-person { display: grid; grid-template-columns: 43px minmax(0, 1fr); gap: 9px; align-items: center; }
+.telemed-site .video-chat-person .doctor-photo { width: 42px; height: 42px; border: 2px solid #fff; border-radius: 14px; box-shadow: 0 5px 13px rgba(55,35,73,.13); }
+.telemed-site .video-chat-person strong, .telemed-site .video-chat-person small { display: block; }
+.telemed-site .video-chat-person strong { font-size: .7rem; }
+.telemed-site .video-chat-person small { display: flex; align-items: center; gap: 5px; margin-top: 2px; color: #3d9271; font-size: .51rem; font-weight: 700; }
+.telemed-site .video-chat-person small i { width: 7px; height: 7px; border-radius: 50%; background: #42b88b; box-shadow: 0 0 0 3px rgba(66,184,139,.11); }
+.telemed-site .video-chat-header > button { display: grid; place-items: center; width: 35px; height: 35px; border: 0; border-radius: 11px; color: #756b7e; background: #eeeaf2; cursor: pointer; }
+.telemed-site .video-chat-date { display: flex; justify-content: center; padding: 10px 0 4px; }
+.telemed-site .video-chat-date span { padding: 4px 8px; border-radius: 99px; color: #8e8695; font-size: .47rem; font-weight: 700; background: #f0edf3; }
+.telemed-site .video-chat-messages { display: flex; flex-direction: column; gap: 8px; min-height: 0; padding: 8px 2px 13px; overflow-y: auto; overscroll-behavior: contain; }
+.telemed-site .chat-system-message { align-self: center; display: flex; align-items: center; gap: 5px; max-width: 90%; padding: 7px 9px; border-radius: 10px; color: #776e80; font-size: .49rem; line-height: 1.4; text-align: center; background: #f0edf3; }
+.telemed-site .chat-system-message svg { flex: 0 0 auto; color: #7b5a99; }
+.telemed-site .chat-message { display: grid; max-width: 82%; }
+.telemed-site .chat-message.staff { align-self: flex-start; justify-items: start; }
+.telemed-site .chat-message.own { align-self: flex-end; justify-items: end; }
+.telemed-site .chat-message > small { margin: 0 0 3px 7px; color: #8c8492; font-size: .48rem; font-weight: 700; }
+.telemed-site .chat-message p { margin: 0; padding: 9px 11px; border-radius: 15px 15px 15px 5px; font-size: .61rem; line-height: 1.55; background: #fff; box-shadow: 0 4px 12px rgba(48,31,63,.07); }
+.telemed-site .chat-message.own p { border-radius: 15px 15px 5px 15px; color: #fff; background: linear-gradient(125deg, #9f4eaa, #6a55a1); box-shadow: 0 6px 14px rgba(95,62,137,.15); }
+.telemed-site .chat-message time { margin: 3px 5px 0; color: #a098a5; font-size: .43rem; }
+.telemed-site .video-chat-composer { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 8px; align-items: center; padding-top: 11px; border-top: 1px solid #e9e4ed; }
+.telemed-site .video-chat-composer input { width: 100%; height: 42px; padding: 0 13px; border: 1px solid #ddd6e3; border-radius: 14px; outline: none; color: var(--ink); font: inherit; font-size: .63rem; background: #fff; }
+.telemed-site .video-chat-composer input:focus { border-color: #8f6cad; box-shadow: 0 0 0 3px rgba(112,75,150,.1); }
+.telemed-site .video-chat-composer button { display: grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 14px; color: #fff; background: linear-gradient(145deg, #c9367a, #7650a1); box-shadow: 0 7px 16px rgba(104,57,139,.19); cursor: pointer; }
+.telemed-site .video-chat-composer button:disabled { opacity: .4; box-shadow: none; cursor: not-allowed; }
+
+.telemed-site .toast { position: fixed; z-index: 50; left: 50%; bottom: 98px; display: flex; align-items: center; gap: 8px; padding: 11px 15px; transform: translateX(-50%); border-radius: 13px; color: #fff; font-size: .7rem; font-weight: 700; white-space: nowrap; background: #2d2935; box-shadow: 0 10px 27px rgba(24, 18, 31, .26); animation: toast-in .2s ease-out; }
+.telemed-site .toast span { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: #2d2935; font-size: .6rem; background: #9be2c4; }
+@keyframes toast-in { from { transform: translate(-50%, 10px); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .telemed-site *, .telemed-site *::before, .telemed-site *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+.telemed-site .pen-art {
+  position: absolute;
+  z-index: 0;
+  right: 29px;
+  top: 35px;
+  width: 22px;
+  height: 116px;
+  transform: rotate(38deg);
+  border: 2px solid rgba(255,255,255,.28);
+  border-radius: 11px 11px 5px 5px;
+  background: rgba(255,255,255,.09);
+}
+.telemed-site .pen-art::before { position: absolute; top: 14px; left: 4px; width: 10px; height: 45px; border: 1px solid rgba(255,255,255,.24); border-radius: 6px; content: ""; }
+.telemed-site .pen-art i { position: absolute; left: 5px; bottom: -17px; width: 8px; height: 16px; border-radius: 0 0 4px 4px; background: rgba(255,255,255,.32); }
+.telemed-site .pen-art span { position: absolute; left: 8px; bottom: -29px; width: 2px; height: 12px; background: rgba(255,255,255,.4); }
+
+.telemed-site .wide-button:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
+.telemed-site .change-appointment { width: 100%; margin-top: 10px; padding: 10px; border: 0; color: var(--purple); font-size: .67rem; font-weight: 800; background: transparent; cursor: pointer; }
+
+/* Customer registration */
+.telemed-site .registration-shell { padding: 0 20px 116px; overflow: clip; background: #fbfafe; }
+.telemed-site .registration-header { margin: 0 -20px; padding: 15px 20px 23px; border-bottom: 1px solid var(--line); background: linear-gradient(145deg, #fff 35%, #f6f0fa 72%, #eef7fb); }
+.telemed-site .registration-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 49px; }
+.telemed-site .registration-topline .program-resize-logo { width: 94px; height: 42px; }
+.telemed-site .registration-topline .ritz-logo { width: 78px; height: 30px; }
+.telemed-site .registration-topline .brand-divider { height: 25px; }
+.telemed-site .language-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 55px; padding: 8px 10px; border: 1px solid #ded5e7; border-radius: 11px; color: var(--purple); font-size: .68rem; font-weight: 800; background: rgba(255,255,255,.82); cursor: pointer; }
+.telemed-site .step-meta { display: flex; justify-content: space-between; margin: 20px 1px 7px; color: var(--muted); font-size: .64rem; font-weight: 700; }
+.telemed-site .step-meta strong { color: var(--purple); }
+.telemed-site .registration-progress { height: 7px; margin-bottom: 20px; overflow: hidden; border-radius: 99px; background: #e9e3ef; }
+.telemed-site .registration-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue)); transition: width .25s ease; }
+.telemed-site .registration-header h1 { margin: 4px 0 6px; font-size: 1.55rem; line-height: 1.3; letter-spacing: -.025em; }
+.telemed-site .registration-header > p:last-child { margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.telemed-site .registration-content { padding: 24px 0 32px; }
+.telemed-site .form-section-title { margin: 24px 0 11px; }
+.telemed-site .form-section-title:first-child { margin-top: 0; }
+.telemed-site .form-section-title h2 { margin: 0; font-size: .91rem; }
+.telemed-site .form-section-title p { margin: 3px 0 0; color: var(--muted); font-size: .61rem; line-height: 1.5; }
+.telemed-site .identity-capture-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.telemed-site .identity-capture-card { position: relative; display: grid; align-content: start; min-width: 0; min-height: 212px; padding: 10px; overflow: hidden; border: 1px solid #dfd7e6; border-radius: 19px; color: var(--ink); text-align: center; background: linear-gradient(145deg, #fff, #faf7fc); box-shadow: 0 7px 21px rgba(57,38,76,.055); cursor: pointer; transition: transform .17s ease, border-color .17s ease, box-shadow .17s ease; }
+.telemed-site .identity-capture-card:hover { transform: translateY(-1px); border-color: #bda8cd; box-shadow: 0 10px 24px rgba(73,47,96,.09); }
+.telemed-site .identity-capture-card > input { position: absolute; z-index: 5; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.telemed-site .identity-step { position: absolute; z-index: 3; top: 16px; left: 16px; display: grid; place-items: center; width: 23px; height: 23px; border: 2px solid #fff; border-radius: 8px; color: #fff; font-size: .54rem; font-weight: 900; background: var(--icon-purple-gradient); box-shadow: 0 4px 9px rgba(73,44,99,.18); }
+.telemed-site .identity-capture-card.selfie .identity-step { background: var(--icon-rose-gradient); }
+.telemed-site .identity-preview { position: relative; display: grid; place-items: center; height: 112px; margin-bottom: 10px; overflow: hidden; border-radius: 14px; color: #76529a; background: linear-gradient(145deg, #efe7f5, #edf6fb); }
+.telemed-site .identity-capture-card.selfie .identity-preview { color: #ad3e7e; background: linear-gradient(145deg, #f8e9f1, #f1ecf8); }
+.telemed-site .identity-preview::after { position: absolute; inset: 8px; border: 1px dashed rgba(111,77,143,.28); border-radius: 10px; content: ""; pointer-events: none; }
+.telemed-site .identity-preview img { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.telemed-site .identity-capture-card > strong { font-size: .66rem; line-height: 1.4; }
+.telemed-site .identity-capture-card > small { margin-top: 3px; color: var(--muted); font-size: .51rem; line-height: 1.4; }
+.telemed-site .identity-capture-card > i { display: inline-flex; align-items: center; justify-self: center; gap: 4px; margin-top: 7px; padding: 4px 7px; border-radius: 99px; color: #26785b; font-size: .46rem; font-style: normal; font-weight: 800; background: #e1f4eb; }
+.telemed-site .identity-capture-card.complete { border-color: #a9d5c3; background: linear-gradient(145deg, #fff, #f2fbf7); }
+.telemed-site .identity-capture-card.scanning .identity-preview { animation: identity-scan 1s ease-in-out infinite; }
+@keyframes identity-scan { 50% { box-shadow: inset 0 0 0 3px rgba(99,168,209,.2); } }
+.telemed-site .identity-capture-error { margin: 8px 2px 0; color: #be4057; font-size: .55rem; font-weight: 700; text-align: center; }
+.telemed-site .identity-privacy { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 9px; align-items: center; margin-top: 10px; padding: 10px 11px; border-radius: 14px; color: #536b62; background: #edf8f3; }
+.telemed-site .identity-privacy > svg { padding: 7px; width: 32px; height: 32px; border-radius: 10px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .identity-privacy p { margin: 0; }
+.telemed-site .identity-privacy strong, .telemed-site .identity-privacy small { display: block; }
+.telemed-site .identity-privacy strong { font-size: .56rem; }
+.telemed-site .identity-privacy small { margin-top: 1px; font-size: .49rem; opacity: .78; }
+.telemed-site .identity-data-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 24px 1px 11px; }
+.telemed-site .identity-data-heading .eyebrow { margin: 0 0 1px; font-size: .55rem; }
+.telemed-site .identity-data-heading h2 { margin: 0; font-size: .9rem; }
+.telemed-site .identity-data-heading > span { display: inline-flex; align-items: center; gap: 4px; padding: 5px 7px; border-radius: 99px; color: #26785b; font-size: .47rem; font-weight: 800; white-space: nowrap; background: #e1f4eb; }
+.telemed-site .identity-document-fields { padding: 12px; border: 1px solid #e4dce9; border-radius: 17px; background: #fff; box-shadow: 0 5px 17px rgba(56,37,75,.04); }
+.telemed-site .identity-camera-backdrop { position: fixed; z-index: 110; inset: 0; display: flex; justify-content: center; background: rgba(16,12,21,.82); backdrop-filter: blur(6px); }
+.telemed-site .identity-camera-shell { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; width: min(100%, 460px); min-height: 100vh; min-height: 100dvh; padding: 16px 16px max(18px, env(safe-area-inset-bottom)); overflow: hidden; color: #fff; background: linear-gradient(180deg, #211a2a, #16121d); }
+.telemed-site .identity-camera-header { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; align-items: center; padding-bottom: 13px; text-align: center; }
+.telemed-site .identity-camera-header > button { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; color: #fff; background: rgba(255,255,255,.09); cursor: pointer; }
+.telemed-site .identity-camera-header p { margin: 0; color: #c8b6d8; font-size: .49rem; font-weight: 800; }
+.telemed-site .identity-camera-header h2 { margin: 1px 0 0; font-size: .78rem; }
+.telemed-site .identity-camera-stage { position: relative; min-height: 380px; overflow: hidden; border: 1px solid rgba(255,255,255,.13); border-radius: 24px; background: radial-gradient(circle at 50% 42%, #443651, #231c2c 70%); box-shadow: 0 18px 38px rgba(0,0,0,.3); }
+.telemed-site .identity-camera-stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.telemed-site .identity-camera-stage.mirrored video { transform: scaleX(-1); }
+.telemed-site .identity-camera-stage::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.12), transparent 24%, transparent 74%, rgba(0,0,0,.24)); content: ""; pointer-events: none; }
+.telemed-site .identity-camera-error { position: absolute; z-index: 4; inset: 0; display: grid; place-content: center; justify-items: center; padding: 28px; text-align: center; background: #2a2133; }
+.telemed-site .identity-camera-error > svg { padding: 11px; width: 54px; height: 54px; border-radius: 18px; color: #fff; background: rgba(255,255,255,.1); }
+.telemed-site .identity-camera-error strong { margin-top: 10px; font-size: .7rem; }
+.telemed-site .identity-camera-error p { max-width: 290px; margin: 5px 0 0; color: rgba(255,255,255,.62); font-size: .56rem; line-height: 1.5; }
+.telemed-site .id-card-camera-guide { position: absolute; z-index: 3; top: 50%; left: 50%; width: 86%; aspect-ratio: 1.58 / 1; transform: translate(-50%, -50%); }
+.telemed-site .id-card-camera-guide::before { position: absolute; inset: 8px; border: 1px dashed rgba(255,255,255,.48); border-radius: 18px; content: ""; }
+.telemed-site .id-card-camera-guide > .corner { position: absolute; width: 40px; height: 40px; border-color: #fff; border-style: solid; filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+.telemed-site .id-card-camera-guide .top-left { top: 0; left: 0; border-width: 4px 0 0 4px; border-radius: 17px 0 0; }
+.telemed-site .id-card-camera-guide .top-right { top: 0; right: 0; border-width: 4px 4px 0 0; border-radius: 0 17px 0 0; }
+.telemed-site .id-card-camera-guide .bottom-left { bottom: 0; left: 0; border-width: 0 0 4px 4px; border-radius: 0 0 0 17px; }
+.telemed-site .id-card-camera-guide .bottom-right { right: 0; bottom: 0; border-width: 0 4px 4px 0; border-radius: 0 0 17px; }
+.telemed-site .id-card-camera-guide > i { position: absolute; bottom: -35px; left: 50%; width: max-content; max-width: 90%; padding: 6px 10px; transform: translateX(-50%); border-radius: 99px; color: #fff; font-size: .5rem; font-style: normal; font-weight: 800; background: rgba(18,13,24,.62); backdrop-filter: blur(6px); }
+.telemed-site .selfie-card-camera-guide { position: absolute; z-index: 3; inset: 0; }
+.telemed-site .face-guide { position: absolute; top: 11%; left: 9%; width: 51%; height: 67%; border: 2px dashed rgba(255,255,255,.78); border-radius: 48% 48% 44% 44%; box-shadow: 0 0 0 999px rgba(9,6,12,.22); }
+.telemed-site .face-guide::after { position: absolute; left: 50%; bottom: -32px; width: 130%; height: 52%; transform: translateX(-50%); border: 2px dashed rgba(255,255,255,.58); border-radius: 50% 50% 0 0; content: ""; }
+.telemed-site .held-card-guide { position: absolute; z-index: 2; right: 7%; bottom: 14%; display: grid; place-items: center; width: 38%; aspect-ratio: 1.58 / 1; border: 3px solid #fff; border-radius: 12px; color: #fff; background: rgba(255,255,255,.08); box-shadow: 0 8px 24px rgba(0,0,0,.22); }
+.telemed-site .held-card-guide::before { position: absolute; inset: 6px; border: 1px dashed rgba(255,255,255,.48); border-radius: 7px; content: ""; }
+.telemed-site .held-card-guide > i { position: relative; z-index: 1; font-size: .48rem; font-style: normal; font-weight: 900; }
+.telemed-site .identity-camera-tip { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 9px; align-items: center; padding: 12px 3px 9px; }
+.telemed-site .identity-camera-tip > svg { padding: 8px; width: 34px; height: 34px; border-radius: 11px; color: #fff; background: linear-gradient(145deg, #b93a84, #7650a0); }
+.telemed-site .identity-camera-tip p { margin: 0; }
+.telemed-site .identity-camera-tip strong, .telemed-site .identity-camera-tip small { display: block; }
+.telemed-site .identity-camera-tip strong { font-size: .58rem; }
+.telemed-site .identity-camera-tip small { margin-top: 2px; color: rgba(255,255,255,.55); font-size: .49rem; }
+.telemed-site .identity-camera-controls { display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; min-height: 76px; }
+.telemed-site .identity-camera-controls > label, .telemed-site .identity-camera-controls > button:not(.identity-shutter) { position: relative; display: grid; place-items: center; gap: 3px; min-height: 54px; border: 0; border-radius: 14px; color: rgba(255,255,255,.8); font: inherit; font-size: .47rem; font-weight: 700; background: transparent; cursor: pointer; }
+.telemed-site .identity-camera-controls > label input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.telemed-site .identity-shutter { display: grid; place-items: center; justify-self: center; width: 68px; height: 68px; padding: 5px; border: 3px solid rgba(255,255,255,.92); border-radius: 50%; background: transparent; cursor: pointer; }
+.telemed-site .identity-shutter > span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; color: #fff; background: linear-gradient(145deg, #d54189, #8052a7); box-shadow: 0 7px 18px rgba(181,55,132,.3); }
+.telemed-site .identity-shutter:disabled { opacity: .36; cursor: not-allowed; }
+.telemed-site .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.telemed-site .full-field { grid-column: 1 / -1; }
+.telemed-site .form-field { display: grid; align-content: start; gap: 6px; min-width: 0; color: #4f4858; font-size: .64rem; font-weight: 700; }
+.telemed-site .form-field > span { min-height: 17px; }
+.telemed-site .form-field em, .telemed-site .health-heading em, .telemed-site .consent-row em { margin-left: 2px; color: #c93277; font-style: normal; }
+.telemed-site .form-field input, .telemed-site .form-field select, .telemed-site .form-field textarea { width: 100%; min-width: 0; border: 1px solid #ded8e6; border-radius: 12px; outline: none; color: var(--ink); font: inherit; font-size: .72rem; font-weight: 500; background: #fff; transition: border-color .16s ease, box-shadow .16s ease; }
+.telemed-site .form-field input, .telemed-site .form-field select { height: 43px; padding: 0 11px; }
+.telemed-site .form-field textarea { padding: 10px 11px; resize: vertical; }
+.telemed-site .form-field input:focus, .telemed-site .form-field select:focus, .telemed-site .form-field textarea:focus { border-color: #9270b1; box-shadow: 0 0 0 3px rgba(108,72,147,.1); }
+.telemed-site .form-field.invalid input, .telemed-site .form-field.invalid select, .telemed-site .form-field.invalid textarea { border-color: #d85668; background: #fffafa; }
+.telemed-site .locked-form-value { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 43px; padding: 0 12px; border: 1px solid #e2dce8; border-radius: 13px; color: #5f5768; font-size: .72rem; font-weight: 700; background: #f5f2f8; }
+.telemed-site .locked-form-value svg { color: #8a779b; }
+.telemed-site .modern-select { position: relative; min-width: 0; }
+.telemed-site .modern-select.open { z-index: 40; }
+.telemed-site .modern-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 9px; width: 100%; height: 43px; padding: 0 11px 0 13px; border: 1px solid #ded8e6; border-radius: 13px; outline: none; color: var(--ink); font: inherit; font-size: .72rem; font-weight: 600; text-align: left; background: linear-gradient(145deg, #fff, #fcfafd); box-shadow: 0 3px 9px rgba(64,43,82,.035); cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, background .16s ease; }
+.telemed-site .modern-select-trigger.placeholder { color: #918a99; font-weight: 500; }
+.telemed-site .modern-select-trigger svg { flex: 0 0 auto; color: #72508f; transition: transform .18s ease; }
+.telemed-site .modern-select.open .modern-select-trigger { border-color: #8e68ad; background: #fff; box-shadow: 0 0 0 3px rgba(108,72,147,.1), 0 8px 20px rgba(77,51,99,.08); }
+.telemed-site .modern-select.open .modern-select-trigger svg { transform: rotate(180deg); }
+.telemed-site .select-field.invalid .modern-select-trigger { border-color: #d85668; background: #fffafa; }
+.telemed-site .modern-select-menu { position: absolute; top: calc(100% + 7px); left: 0; right: 0; display: grid; gap: 3px; max-height: 240px; padding: 6px; overflow-y: auto; border: 1px solid #ded4e7; border-radius: 16px; background: rgba(255,255,255,.98); box-shadow: 0 18px 40px rgba(51,33,68,.19), 0 3px 10px rgba(51,33,68,.08); backdrop-filter: blur(12px); animation: select-menu-in .16s ease-out; }
+@keyframes select-menu-in { from { transform: translateY(-4px) scale(.985); opacity: 0; } }
+.telemed-site .modern-select-option { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 39px; padding: 8px 9px 8px 11px; border: 0; border-radius: 11px; color: #48404f; font: inherit; font-size: .68rem; font-weight: 600; text-align: left; background: transparent; cursor: pointer; transition: color .14s ease, background .14s ease, transform .14s ease; }
+.telemed-site .modern-select-option:hover, .telemed-site .modern-select-option:focus-visible { outline: none; color: var(--purple-dark); background: #f4eff8; }
+.telemed-site .modern-select-option:active { transform: scale(.985); }
+.telemed-site .modern-select-option i { display: grid; flex: 0 0 auto; place-items: center; width: 21px; height: 21px; border-radius: 7px; color: transparent; font-style: normal; background: transparent; }
+.telemed-site .modern-select-option.selected { color: var(--purple-dark); font-weight: 800; background: linear-gradient(110deg, #f3eaf7, #edf6fb); }
+.telemed-site .modern-select-option.selected i { color: #fff; background: linear-gradient(145deg, var(--pink), var(--purple)); box-shadow: 0 4px 9px rgba(93,56,126,.18); }
+.telemed-site .field-error { margin: -1px 1px 0; color: #c43d52 !important; font-size: .57rem !important; font-weight: 700; line-height: 1.35; }
+.telemed-site .field-warning { padding: 9px 11px; border: 1px solid #efd1a4; border-radius: 11px; color: #8c5e24; font-size: .6rem; background: #fff8ed; }
+
+.telemed-site .same-address-check { display: grid; grid-template-columns: 25px 1fr; gap: 9px; align-items: center; margin-top: 18px; padding: 13px; border: 1px solid #dcd4e4; border-radius: 15px; background: #fff; cursor: pointer; }
+.telemed-site .same-address-check input, .telemed-site .consent-row input { position: absolute; opacity: 0; pointer-events: none; }
+.telemed-site .same-address-check > span, .telemed-site .consent-row label > span { display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid #d7cfe0; border-radius: 7px; color: transparent; background: #fff; }
+.telemed-site .same-address-check input:checked + span, .telemed-site .consent-row input:checked + span { border-color: #3b9d79; color: #fff; background: #3b9d79; }
+.telemed-site .same-address-check strong, .telemed-site .same-address-check small { display: block; }
+.telemed-site .same-address-check strong { font-size: .68rem; }
+.telemed-site .same-address-check small { margin-top: 2px; color: var(--muted); font-size: .56rem; line-height: 1.4; }
+.telemed-site .privacy-callout { display: grid; grid-template-columns: 35px 1fr; gap: 10px; align-items: center; margin-bottom: 17px; padding: 13px; border-radius: 15px; color: #5e5270; background: linear-gradient(120deg, #f0eaf7, #eef7fb); }
+.telemed-site .privacy-callout > svg { padding: 8px; width: 35px; height: 35px; border-radius: 11px; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .privacy-callout p { margin: 0; font-size: .61rem; line-height: 1.5; }
+.telemed-site .privacy-callout strong { font-size: .68rem; }
+
+.telemed-site .health-step > .form-section-title:first-child { margin-top: 0; }
+.telemed-site .health-baseline { padding: 14px; border: 1px solid var(--line); border-radius: 17px; background: linear-gradient(145deg, #fff, #faf7fc); box-shadow: 0 5px 18px rgba(60,42,78,.035); }
+.telemed-site .health-list { display: grid; gap: 11px; }
+.telemed-site .health-card { padding: 14px; border: 1px solid var(--line); border-radius: 17px; background: #fff; box-shadow: 0 5px 18px rgba(60,42,78,.035); }
+.telemed-site .health-card.answered { border-color: #ddd0e8; }
+.telemed-site .health-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.telemed-site .health-heading strong, .telemed-site .health-heading small { display: block; }
+.telemed-site .health-heading strong { font-size: .72rem; }
+.telemed-site .health-heading small { margin-top: 2px; color: var(--muted); font-size: .56rem; line-height: 1.4; }
+.telemed-site .health-heading > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; color: #fff; background: var(--icon-mint-gradient); }
+.telemed-site .health-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 12px; }
+.telemed-site .health-options button { padding: 9px 5px; border: 1px solid #ded8e6; border-radius: 10px; color: #716a79; font-size: .62rem; font-weight: 700; background: #faf9fc; cursor: pointer; }
+.telemed-site .health-options button.selected { border-color: var(--purple); color: #fff; background: linear-gradient(145deg, var(--pink), var(--purple)); box-shadow: 0 5px 13px rgba(95,58,130,.16); }
+.telemed-site .health-details { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--line); }
+.telemed-site .unknown-note { margin: 10px 0 0; padding: 8px 10px; border-radius: 9px; color: #6f6480; font-size: .57rem; line-height: 1.45; background: #f3eff7; }
+
+.telemed-site .review-stack { display: grid; gap: 9px; }
+.telemed-site .review-stack > .form-section-title { margin-bottom: 3px; }
+.telemed-site .summary-section { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.telemed-site .summary-section summary { display: flex; align-items: center; justify-content: space-between; min-height: 47px; padding: 10px 13px; list-style: none; cursor: pointer; }
+.telemed-site .summary-section summary::-webkit-details-marker { display: none; }
+.telemed-site .summary-section summary > span { font-size: .7rem; font-weight: 800; }
+.telemed-site .summary-section summary > div { display: flex; align-items: center; gap: 7px; }
+.telemed-site .summary-section summary button { padding: 5px 8px; border: 0; border-radius: 7px; color: var(--purple); font-size: .57rem; font-weight: 800; background: #f0eaf6; cursor: pointer; }
+.telemed-site .summary-section[open] summary svg { transform: rotate(180deg); }
+.telemed-site .summary-content { padding: 0 13px 11px; border-top: 1px solid #f0edf3; }
+.telemed-site .summary-line { display: grid; grid-template-columns: 37% 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f3f0f5; }
+.telemed-site .summary-line:last-child { border-bottom: 0; }
+.telemed-site .summary-line span { color: var(--muted); font-size: .58rem; }
+.telemed-site .summary-line strong { font-size: .63rem; font-weight: 700; line-height: 1.45; text-align: right; }
+.telemed-site .consent-list { display: grid; gap: 8px; }
+.telemed-site .consent-row { display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.telemed-site .consent-row label { display: grid; grid-template-columns: 23px 1fr; gap: 8px; align-items: center; cursor: pointer; }
+.telemed-site .consent-row strong { font-size: .62rem; line-height: 1.4; }
+.telemed-site .consent-row > button { flex: 0 0 auto; padding: 5px 7px; border: 0; color: var(--purple); font-size: .55rem; font-weight: 800; background: transparent; cursor: pointer; }
+.telemed-site .esign-panel { margin-top: 18px; padding: 16px; border: 1px solid #e1d9e8; border-radius: 20px; background: linear-gradient(150deg, #fff 15%, #fbf9fd 72%, #f3f9fb); box-shadow: 0 10px 26px rgba(61,40,80,.07); }
+.telemed-site .esign-heading { display: flex; align-items: center; gap: 11px; padding: 1px 2px 13px; }
+.telemed-site .esign-heading > span { display: grid; place-items: center; width: 42px; height: 42px; flex: 0 0 auto; border-radius: 14px; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 7px 16px rgba(83,51,116,.17); }
+.telemed-site .esign-heading .eyebrow { margin-bottom: 1px; color: #8c6ba7; font-size: .49rem; letter-spacing: .01em; text-transform: none; }
+.telemed-site .esign-heading h2 { margin: 0; font-size: .83rem; line-height: 1.3; }
+.telemed-site .esign-heading small { display: block; margin-top: 2px; color: var(--muted); font-size: .52rem; }
+.telemed-site .esign-flow { display: grid; gap: 9px; }
+.telemed-site .esign-step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 12px; border: 1px solid #e8e2ed; border-radius: 15px; background: rgba(255,255,255,.88); }
+.telemed-site .esign-step.active { border-color: #cdb8de; box-shadow: 0 0 0 3px rgba(111,72,147,.06); }
+.telemed-site .esign-step-number { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #d8cfe1; border-radius: 10px; color: #74677d; font-size: .6rem; font-weight: 900; background: #fff; }
+.telemed-site .esign-step.active .esign-step-number { border: 0; color: #fff; background: var(--icon-purple-gradient); box-shadow: 0 5px 12px rgba(83,51,116,.18); }
+.telemed-site .esign-step.complete .esign-step-number { border: 0; color: #fff; background: var(--icon-mint-gradient); box-shadow: 0 5px 12px rgba(46,142,105,.15); }
+.telemed-site .esign-step-content { min-width: 0; }
+.telemed-site .esign-step-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
+.telemed-site .esign-step-title small { display: block; margin-bottom: 1px; color: #92899b; font-size: .47rem; }
+.telemed-site .esign-step-title h3 { margin: 0; font-size: .68rem; line-height: 1.3; }
+.telemed-site .esign-step-title > span { flex: 0 0 auto; padding: 4px 7px; border-radius: 99px; color: #287b60; font-size: .48rem; font-weight: 800; background: #e7f5f0; }
+.telemed-site .esign-document-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 9px; padding: 9px 10px; border-radius: 11px; background: #f5f1f8; }
+.telemed-site .esign-document-meta div { display: grid; }
+.telemed-site .esign-document-meta small, .telemed-site .esign-document-meta p { color: var(--muted); font-size: .49rem; }
+.telemed-site .esign-document-meta strong { margin-top: 1px; color: var(--purple-dark); font-size: .62rem; }
+.telemed-site .esign-document-meta p { margin: 0; line-height: 1.4; text-align: right; }
+.telemed-site .signer-identity { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 9px; padding: 0 2px; }
+.telemed-site .signer-identity > div { min-width: 0; }
+.telemed-site .signer-identity small, .telemed-site .signer-identity strong { display: block; }
+.telemed-site .signer-identity small { color: var(--muted); font-size: .48rem; }
+.telemed-site .signer-identity strong { margin-top: 1px; overflow: hidden; font-size: .57rem; text-overflow: ellipsis; white-space: nowrap; }
+.telemed-site .otp-verification { margin-top: 9px; padding: 9px 10px; border: 1px solid #e5ddeb; border-radius: 11px; background: #faf8fc; }
+.telemed-site .otp-verification.verified { border-color: #c8e5da; background: #f0faf6; }
+.telemed-site .otp-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.telemed-site .otp-heading small, .telemed-site .otp-heading strong { display: block; }
+.telemed-site .otp-heading small { color: var(--muted); font-size: .49rem; }
+.telemed-site .otp-heading strong { margin-top: 1px; font-size: .61rem; }
+.telemed-site .otp-heading > span { display: inline-flex; align-items: center; gap: 3px; padding: 4px 7px; border-radius: 99px; color: #287b60; font-size: .48rem; font-weight: 800; background: #dff2eb; }
+.telemed-site .otp-send { width: 100%; min-height: 34px; margin-top: 8px; border: 1px solid #d8cce2; border-radius: 9px; color: var(--purple); font-size: .57rem; font-weight: 800; background: #fff; cursor: pointer; }
+.telemed-site .otp-entry { display: grid; grid-template-columns: 1fr auto; gap: 7px; margin-top: 8px; }
+.telemed-site .otp-entry input { min-width: 0; height: 36px; padding: 0 10px; border: 1px solid #dcd4e4; border-radius: 9px; outline: none; color: var(--ink); font-size: .62rem; font-weight: 700; letter-spacing: .08em; background: #fff; }
+.telemed-site .otp-entry input:focus { border-color: #9270b1; box-shadow: 0 0 0 3px rgba(108,72,147,.1); }
+.telemed-site .otp-entry button { padding: 0 12px; border: 0; border-radius: 9px; color: #fff; font-size: .56rem; font-weight: 800; background: linear-gradient(110deg, var(--pink), var(--purple)); cursor: pointer; }
+.telemed-site .otp-entry button:disabled { opacity: .4; cursor: not-allowed; }
+.telemed-site .otp-demo { margin: 6px 0 0; color: #8a6480; font-size: .48rem; }
+.telemed-site .signer-intent { display: grid; grid-template-columns: 23px 1fr; gap: 8px; align-items: center; margin-top: 9px; padding: 9px 10px; border: 1px solid #e3dce8; border-radius: 11px; background: #faf8fc; cursor: pointer; }
+.telemed-site .signer-intent.checked { border-color: #bfe1d4; background: #f0faf6; }
+.telemed-site .signer-intent input { position: absolute; opacity: 0; pointer-events: none; }
+.telemed-site .signer-intent > span { display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid #d7cfe0; border-radius: 7px; color: #fff; background: #fff; }
+.telemed-site .signer-intent.checked > span { border-color: #3b9d79; background: #3b9d79; }
+.telemed-site .signer-intent strong, .telemed-site .signer-intent small { display: block; }
+.telemed-site .signer-intent strong { font-size: .57rem; line-height: 1.35; }
+.telemed-site .signer-intent em { color: #c93277; font-style: normal; }
+.telemed-site .signer-intent small { margin-top: 2px; color: var(--muted); font-size: .47rem; line-height: 1.4; }
+.telemed-site .esign-evidence { margin-top: 10px; overflow: hidden; border: 1px solid #e7e1eb; border-radius: 12px; color: #51485b; background: #f7f4f9; }
+.telemed-site .esign-evidence summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 11px; font-size: .54rem; font-weight: 800; cursor: pointer; list-style: none; }
+.telemed-site .esign-evidence summary::-webkit-details-marker { display: none; }
+.telemed-site .esign-evidence summary svg { transition: transform .2s ease; }
+.telemed-site .esign-evidence[open] summary svg { transform: rotate(180deg); }
+.telemed-site .esign-evidence > div { padding: 0 11px 10px; border-top: 1px solid #ebe5ef; }
+.telemed-site .esign-evidence ul { display: grid; gap: 3px; margin: 8px 0 0; padding-left: 17px; }
+.telemed-site .esign-evidence li { color: #746b7d; font-size: .53rem; line-height: 1.45; }
+.telemed-site .esign-prototype-note { margin: 8px 2px 0; color: #8b6331; font-size: .47rem; line-height: 1.5; }
+.telemed-site .signature-pad { position: relative; margin-top: 9px; padding: 8px; border: 1px solid #ded8e6; border-radius: 12px; background: #fff; }
+.telemed-site .signature-pad canvas { display: block; width: 100%; height: 108px; border-radius: 8px; touch-action: none; background: repeating-linear-gradient(0deg, #fff, #fff 31px, #f3eff6 32px); }
+.telemed-site .signature-pad.disabled canvas { opacity: .42; background: #f2eff5; }
+.telemed-site .signature-lock { position: absolute; top: 51px; left: 50%; display: inline-flex; align-items: center; gap: 5px; width: max-content; max-width: calc(100% - 28px); padding: 6px 8px; border-radius: 8px; color: #766d7f; font-size: .49rem; font-weight: 700; text-align: center; background: rgba(255,255,255,.92); transform: translate(-50%, -50%); box-shadow: 0 5px 16px rgba(54,36,75,.08); }
+.telemed-site .signature-pad > div { display: flex; align-items: center; justify-content: space-between; padding: 7px 2px 0; }
+.telemed-site .signature-pad small { color: var(--muted); font-size: .54rem; }
+.telemed-site .signature-pad button { padding: 5px 8px; border: 0; border-radius: 7px; color: #a83963; font-size: .56rem; font-weight: 800; background: #fff1f6; cursor: pointer; }
+.telemed-site .registration-footer { position: fixed; z-index: 20; left: 50%; bottom: 0; display: grid; grid-template-columns: .82fr 1.18fr; gap: 7px; width: min(100%, 460px); padding: 11px 16px max(15px, env(safe-area-inset-bottom)); transform: translateX(-50%); border-top: 1px solid var(--line); background: rgba(255,255,255,.95); box-shadow: 0 -9px 28px rgba(55,38,75,.09); backdrop-filter: blur(16px); }
+.telemed-site .registration-footer button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 8px 7px; border-radius: 12px; font-size: .59rem; font-weight: 800; cursor: pointer; }
+.telemed-site .registration-back { border: 1px solid #ded8e6; color: #696271; background: #fff; }
+.telemed-site .registration-back:disabled { opacity: .42; cursor: not-allowed; }
+.telemed-site .registration-next { border: 0; color: #fff; background: linear-gradient(110deg, var(--pink), var(--purple), var(--blue)); box-shadow: 0 7px 17px rgba(92,56,128,.2); }
+.telemed-site .registration-next:disabled { opacity: .42; box-shadow: none; cursor: not-allowed; }
+
+.telemed-site .confirmation-backdrop { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(29,21,38,.5); backdrop-filter: blur(4px); }
+.telemed-site .confirmation-dialog { position: relative; width: min(100%, 390px); padding: 25px; border-radius: 22px; text-align: center; background: #fff; box-shadow: 0 24px 65px rgba(26,19,35,.3); }
+.telemed-site .confirmation-close { position: absolute; right: 13px; top: 13px; display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 10px; color: #fff; background: var(--purple); cursor: pointer; }
+.telemed-site .confirmation-dialog > span { display: grid; place-items: center; width: 52px; height: 52px; margin: 3px auto 13px; border-radius: 16px; color: #fff; background: var(--icon-purple-gradient); }
+.telemed-site .confirmation-dialog h2 { margin: 0; font-size: 1.03rem; }
+.telemed-site .confirmation-dialog p { margin: 7px 0 18px; color: var(--muted); font-size: .67rem; line-height: 1.55; }
+.telemed-site .confirmation-dialog > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.telemed-site .confirmation-dialog > div button { min-height: 42px; border: 1px solid #ddd5e5; border-radius: 11px; color: var(--purple); font-size: .63rem; font-weight: 800; background: #fff; cursor: pointer; }
+.telemed-site .confirmation-dialog > div button:last-child { border: 0; color: #fff; background: linear-gradient(110deg, var(--pink), var(--purple)); }
+
+.telemed-site .success-shell { display: grid; align-content: start; justify-items: center; padding: 75px 22px 40px; text-align: center; }
+.telemed-site .success-mark { display: grid; place-items: center; width: 78px; height: 78px; margin-bottom: 18px; border: 5px solid #d8f0e7; border-radius: 24px; color: #fff; background: var(--icon-mint-gradient); box-shadow: 0 13px 25px rgba(46,142,105,.18); transform: rotate(-3deg); }
+.telemed-site .success-shell h1 { margin: 2px 0 5px; font-size: 1.6rem; }
+.telemed-site .success-lead { max-width: 330px; margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.6; }
+.telemed-site .request-card { width: 100%; margin-top: 25px; padding: 19px; border-radius: 19px; color: #fff; text-align: left; background: linear-gradient(130deg, var(--pink), var(--purple) 58%, var(--blue)); box-shadow: 0 14px 27px rgba(91,55,126,.22); }
+.telemed-site .request-card > span, .telemed-site .request-card > strong { display: block; }
+.telemed-site .request-card > span { font-size: .58rem; opacity: .75; }
+.telemed-site .request-card > strong { margin: 3px 0 17px; font-size: 1.25rem; letter-spacing: .04em; }
+.telemed-site .request-card > div { display: flex; align-items: center; justify-content: space-between; }
+.telemed-site .request-card small { font-size: .58rem; opacity: .75; }
+.telemed-site .request-card b { padding: 5px 9px; border-radius: 99px; font-size: .6rem; background: rgba(255,255,255,.18); }
+.telemed-site .success-details { width: 100%; margin-top: 14px; padding: 6px 14px; border: 1px solid var(--line); border-radius: 16px; text-align: left; background: #fff; }
+.telemed-site .success-details .summary-line strong { overflow-wrap: anywhere; }
+.telemed-site .success-saved { display: flex; align-items: center; gap: 5px; margin: 13px 0 0; color: #2f8b6a; font-size: .61rem; font-weight: 800; }
+.telemed-site .success-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 20px; }
+.telemed-site .success-actions button { min-height: 43px; border: 1px solid #dcd4e4; border-radius: 12px; color: var(--purple); font-size: .64rem; font-weight: 800; background: #fff; cursor: pointer; }
+.telemed-site .success-actions .primary { grid-column: 1 / -1; border: 0; color: #fff; background: linear-gradient(110deg, var(--pink), var(--purple), var(--blue)); }
+
+.telemed-site .legal-document-backdrop { position: fixed; z-index: 70; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-top: 42px; background: rgba(29,21,38,.52); backdrop-filter: blur(4px); }
+.telemed-site .legal-document { width: min(100%, 460px); max-height: calc(100vh - 42px); padding: 20px; overflow-y: auto; border-radius: 24px 24px 0 0; color: var(--ink); background: #fff; box-shadow: 0 -20px 55px rgba(25,18,34,.28); }
+.telemed-site .legal-document > div { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.telemed-site .legal-document h2 { margin: 2px 0 13px; font-size: 1.03rem; line-height: 1.4; }
+.telemed-site .legal-document > div button { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 10px; color: #fff; background: var(--purple); cursor: pointer; }
+.telemed-site .legal-document h3 { margin: 16px 0 5px; font-size: .72rem; }
+.telemed-site .legal-document p, .telemed-site .legal-document li { color: #67606f; font-size: .63rem; line-height: 1.65; }
+.telemed-site .legal-document p { margin: 0; }
+.telemed-site .legal-document ul { margin: 5px 0 0; padding-left: 20px; }
+.telemed-site .legal-document .legal-note { margin-top: 17px; padding: 10px; border-radius: 10px; color: #806036; background: #fff6e9; }
+.telemed-site .legal-close { width: 100%; min-height: 45px; margin-top: 17px; border: 0; border-radius: 12px; color: #fff; font-size: .68rem; font-weight: 800; background: linear-gradient(110deg, var(--pink), var(--purple)); cursor: pointer; }
+
+@media (max-width: 370px) {
+  .telemed-site .registration-shell { padding-inline: 15px; }
+  .telemed-site .registration-header { margin-inline: -15px; padding-inline: 15px; }
+  .telemed-site .registration-topline .brand-lockup { gap: 6px; }
+  .telemed-site .registration-topline .program-resize-logo { width: 81px; }
+  .telemed-site .registration-topline .ritz-logo { width: 67px; }
+  .telemed-site .form-grid { grid-template-columns: 1fr; }
+  .telemed-site .identity-capture-grid { grid-template-columns: 1fr; }
+  .telemed-site .identity-capture-card { min-height: 198px; }
+  .telemed-site .full-field { grid-column: auto; }
+  .telemed-site .registration-footer { grid-template-columns: .8fr 1.2fr; padding-inline: 10px; }
+  .telemed-site .registration-footer button { font-size: .55rem; }
+}
+
+.telemed-site { min-height: 100vh; display: flow-root; }
+.telemed-site .portal-navigation {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  font-size: 13px;
+  color: var(--purple-dark);
+}
+.telemed-site .portal-navigation a { color: inherit; text-decoration: none; }
+.telemed-site .portal-navigation a:hover { text-decoration: underline; }

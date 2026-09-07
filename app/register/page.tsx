@@ -1,0 +1,1007 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import RegistrationFlow, { type RegisteredProfile } from "./registration-flow";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  Camera,
+  CameraOff,
+  Check,
+  ChevronRight,
+  CircleHelp,
+  FileCheck2,
+  FileText,
+  HeartPulse,
+  History,
+  HomeIcon,
+  LockKeyhole,
+  LogOut,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Mic,
+  MicOff,
+  NotebookTabs,
+  PhoneOff,
+  Pill,
+  RefreshCw,
+  Save,
+  ShieldCheck,
+  Send,
+  Stethoscope,
+  UserRound,
+  Video,
+  Upload,
+  WalletCards,
+  Weight,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+
+type Tab = "home" | "appointments" | "prescriptions" | "history" | "profile";
+type ProfilePanel = null | "personal" | "basic" | "health" | "address" | "email" | "privacy" | "help" | "logout";
+type DoctorId = "nicha" | "arin" | "pavee";
+
+type Doctor = {
+  id: DoctorId;
+  initials: string;
+  image: string;
+  name: string;
+  specialty: string;
+  duration: string;
+  price: number;
+};
+
+type ProfileData = RegisteredProfile;
+
+const navItems: { id: Tab; Icon: LucideIcon; label: string }[] = [
+  { id: "home", Icon: HomeIcon, label: "หน้าหลัก" },
+  { id: "appointments", Icon: CalendarDays, label: "นัดหมาย" },
+  { id: "prescriptions", Icon: Pill, label: "ใบสั่งยา" },
+  { id: "history", Icon: History, label: "ประวัติ" },
+  { id: "profile", Icon: UserRound, label: "โปรไฟล์" },
+];
+
+const doctors: Doctor[] = [
+  { id: "nicha", initials: "ณว", image: "/doctors/doctor-nicha.jpg", name: "พญ. ณิชา วรเวช", specialty: "เวชศาสตร์ควบคุมน้ำหนัก", duration: "30 นาที", price: 500 },
+  { id: "arin", initials: "อพ", image: "/doctors/doctor-arin.jpg", name: "นพ. อรินทร์ พิพัฒน์", specialty: "อายุรศาสตร์และเมตาบอลิก", duration: "30 นาที", price: 650 },
+  { id: "pavee", initials: "ปช", image: "/doctors/doctor-pavee.jpg", name: "พญ. ปวีณ์ ชาญกิจ", specialty: "เวชศาสตร์ชะลอวัย", duration: "45 นาที", price: 800 },
+];
+
+export default function Home() {
+  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [registrationStarted, setRegistrationStarted] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("29");
+  const [selectedTime, setSelectedTime] = useState("14:30");
+  const [selectedDoctorId, setSelectedDoctorId] = useState<DoctorId>("nicha");
+  const [appointmentBooked, setAppointmentBooked] = useState(true);
+  const [appointmentConfirmationOpen, setAppointmentConfirmationOpen] = useState(false);
+  const [prescriptionOpen, setPrescriptionOpen] = useState(false);
+  const [profilePanel, setProfilePanel] = useState<ProfilePanel>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    name: "พิมพ์ชนก วัฒนากุล",
+    phone: "0812345678",
+    birthDate: "1991-05-18",
+    height: "165",
+    startWeight: "78.4",
+    healthHistory: "ไม่มีโรคประจำตัว • ไม่เคยแพ้ยา",
+    allergyHistory: "ไม่มีประวัติการแพ้ยา อาหาร หรือสารอื่น",
+    address: "99/9 ถนนสุขุมวิท เขตวัฒนา กรุงเทพมหานคร 10110",
+    email: "pimchanok@example.com",
+  });
+  const [toast, setToast] = useState("");
+  const selectedDoctor = doctors.find((doctor) => doctor.id === selectedDoctorId) ?? doctors[0];
+
+  function showToast(message: string) {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 2400);
+  }
+
+  function confirmBooking() {
+    setAppointmentBooked(true);
+    setBookingOpen(false);
+    setActiveTab("appointments");
+    setAppointmentConfirmationOpen(true);
+  }
+
+  if (!registrationComplete) {
+    if (!registrationStarted) {
+      return <RegistrationWelcome onStart={() => setRegistrationStarted(true)} />;
+    }
+    return (
+      <RegistrationFlow
+        key="mock-data-v1"
+        onComplete={(profile) => {
+          setProfileData(profile);
+          setRegistrationComplete(true);
+          setActiveTab("home");
+        }}
+      />
+    );
+  }
+
+  return (
+    <main className="app-shell">
+      <AppHeader
+        title={activeTab === "home" ? undefined : navItems.find((item) => item.id === activeTab)?.label}
+        profileName={profileData.name}
+        onProfile={() => setActiveTab("profile")}
+      />
+
+      {activeTab === "home" && (
+        <HomeView
+          userName={profileData.name}
+          doctor={selectedDoctor}
+          time={selectedTime}
+          onAppointment={() => {
+            setActiveTab("appointments");
+          }}
+          onJoin={() => setVideoOpen(true)}
+        />
+      )}
+      {activeTab === "appointments" && (
+        <AppointmentsView
+          appointmentBooked={appointmentBooked}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          doctor={selectedDoctor}
+          onBook={() => setBookingOpen(true)}
+          onJoin={() => setVideoOpen(true)}
+        />
+      )}
+      {activeTab === "history" && (
+        <HistoryView
+          appointmentBooked={appointmentBooked}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          doctor={selectedDoctor}
+        />
+      )}
+      {activeTab === "prescriptions" && <PrescriptionsView doctor={selectedDoctor} onOpen={() => setPrescriptionOpen(true)} />}
+      {activeTab === "profile" && <ProfileView data={profileData} onOpen={setProfilePanel} />}
+
+      <BottomNav active={activeTab} onChange={setActiveTab} />
+
+      {bookingOpen && (
+        <BookingSheet
+          date={selectedDate}
+          time={selectedTime}
+          doctorId={selectedDoctorId}
+          onDate={setSelectedDate}
+          onTime={setSelectedTime}
+          onDoctor={setSelectedDoctorId}
+          onClose={() => setBookingOpen(false)}
+          onConfirm={confirmBooking}
+        />
+      )}
+
+      {appointmentConfirmationOpen && (
+        <AppointmentConfirmationModal
+          doctor={selectedDoctor}
+          date={selectedDate}
+          time={selectedTime}
+          onClose={() => setAppointmentConfirmationOpen(false)}
+        />
+      )}
+
+      {prescriptionOpen && <PrescriptionSheet doctor={selectedDoctor} onClose={() => setPrescriptionOpen(false)} />}
+
+      {profilePanel && (
+        <ProfileSheet
+          panel={profilePanel}
+          data={profileData}
+          onClose={() => setProfilePanel(null)}
+          onSave={(nextData, message) => {
+            setProfileData(nextData);
+            setProfilePanel(null);
+            showToast(message);
+          }}
+          onLogout={() => {
+            setProfilePanel(null);
+            setActiveTab("home");
+            setRegistrationStarted(false);
+            setRegistrationComplete(false);
+          }}
+        />
+      )}
+
+      {videoOpen && <VideoCallOverlay profile={profileData} doctor={selectedDoctor} date={selectedDate} time={selectedTime} onClose={() => setVideoOpen(false)} onToast={showToast} />}
+
+      {toast && <div className="toast" role="status"><span><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{toast}</div>}
+    </main>
+  );
+}
+
+function RegistrationWelcome({ onStart }: { onStart: () => void }) {
+  return (
+    <main className="app-shell onboarding-shell">
+      <header className="onboarding-brand">
+        <div className="brand-lockup" aria-label="Program Resize by The Ritz Clinic">
+          <img className="brand-logo program-resize-logo" src="/program-resize-logo.png" alt="Program Resize" />
+          <span className="brand-divider" aria-hidden="true" />
+          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" />
+        </div>
+      </header>
+
+      <section className="onboarding-hero" aria-labelledby="onboarding-title">
+        <span className="onboarding-orb onboarding-orb-one" aria-hidden="true" />
+        <span className="onboarding-orb onboarding-orb-two" aria-hidden="true" />
+        <p className="onboarding-kicker">ยินดีต้อนรับสู่ PROGRAM RESIZE</p>
+        <h1 id="onboarding-title">เริ่มต้นดูแลน้ำหนัก<br />อย่างมั่นใจกับทีมแพทย์</h1>
+        <p>ลงทะเบียนครั้งเดียว เพื่อให้แพทย์รู้จักสุขภาพของคุณและวางแผนการดูแลได้เหมาะสมยิ่งขึ้น</p>
+        <div className="onboarding-plan-card">
+          <span><Stethoscope size={22} strokeWidth={2.2} aria-hidden="true" /></span>
+          <div><small>การดูแลเฉพาะบุคคล</small><strong>ประเมินโดยทีมแพทย์ The Ritz Clinic</strong></div>
+          <i><Check size={15} strokeWidth={3} aria-hidden="true" /></i>
+        </div>
+      </section>
+
+      <section className="onboarding-prep" aria-labelledby="onboarding-prep-title">
+        <p className="eyebrow">ก่อนเริ่มลงทะเบียน</p>
+        <h2 id="onboarding-prep-title">เตรียมข้อมูลเพียง 3 ส่วน</h2>
+        <div className="onboarding-checklist">
+          <div><span><UserRound size={19} strokeWidth={2.2} aria-hidden="true" /></span><p><strong>ข้อมูลส่วนตัว</strong><small>บัตรประชาชนและข้อมูลติดต่อ</small></p></div>
+          <div><span><HeartPulse size={19} strokeWidth={2.2} aria-hidden="true" /></span><p><strong>ข้อมูลสุขภาพ</strong><small>โรคประจำตัว ยาที่ใช้ และประวัติแพ้ยา</small></p></div>
+          <div><span><FileCheck2 size={19} strokeWidth={2.2} aria-hidden="true" /></span><p><strong>ตรวจสอบและยินยอม</strong><small>ยืนยันความถูกต้องก่อนส่งให้คลินิก</small></p></div>
+        </div>
+      </section>
+
+      <div className="onboarding-privacy"><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /><p><strong>ข้อมูลของคุณได้รับการดูแลอย่างปลอดภัย</strong><small>ใช้เพื่อการลงทะเบียนและบริการทางการแพทย์เท่านั้น</small></p></div>
+      <button className="onboarding-start" type="button" onClick={onStart}>เริ่มลงทะเบียน <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" /></button>
+      <p className="onboarding-time">ใช้เวลาประมาณ 5–7 นาที</p>
+    </main>
+  );
+}
+
+function firstName(name: string) {
+  return name.trim().split(/\s+/)[0] || "สมาชิก";
+}
+
+function profileInitial(name: string) {
+  return Array.from(firstName(name))[0] || "ส";
+}
+
+function formatThaiDate(value: string) {
+  if (!value) return "ยังไม่ได้ระบุวันเกิด";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("th-TH", { day: "numeric", month: "short", year: "numeric" }).format(date);
+}
+
+function AppHeader({ title, profileName, onProfile }: { title?: string; profileName: string; onProfile: () => void }) {
+  return (
+    <header className="topbar">
+      {title ? (
+        <h1 className="page-title">{title}</h1>
+      ) : (
+        <div className="brand-lockup" aria-label="Program Resize by The Ritz Clinic">
+          <img className="brand-logo program-resize-logo" src="/program-resize-logo.png" alt="Program Resize" />
+          <span className="brand-divider" aria-hidden="true" />
+          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" />
+        </div>
+      )}
+      <button className="profile-button" type="button" aria-label={`เปิดโปรไฟล์ของ ${profileName}`} onClick={onProfile}>{profileInitial(profileName)}</button>
+    </header>
+  );
+}
+
+function HomeView({ userName, doctor, time, onAppointment, onJoin }: { userName: string; doctor: Doctor; time: string; onAppointment: () => void; onJoin: () => void }) {
+  return (
+    <>
+      <section className="greeting" aria-labelledby="welcome-title">
+        <h1 id="welcome-title">สวัสดีค่ะ {firstName(userName)}</h1>
+        <p>ดูแลน้ำหนักอย่างเป็นระบบ ไปทีละก้าวกับทีมแพทย์</p>
+      </section>
+
+      <section className="hero-card" aria-label="กำหนดการฉีดยาครั้งถัดไป">
+        <div className="hero-orb hero-orb-one" />
+        <div className="hero-orb hero-orb-two" />
+        <div className="pen-art" aria-hidden="true"><i /><span /></div>
+        <div className="hero-content">
+          <span className="status-pill">เข็มถัดไป • อีก 2 วัน</span>
+          <h2>วันพฤหัสบดี เวลา 20:00 น.</h2>
+          <p>ปากกาควบคุมน้ำหนักตามแผนแพทย์ โปรดตรวจสอบฉลากและทำตามคำแนะนำที่ได้รับ</p>
+          <div className="progress-row">
+            <div className="progress-track" aria-label="ความคืบหน้า 3 สัปดาห์จาก 12 สัปดาห์"><span style={{ width: "25%" }} /></div>
+            <strong>3/12</strong>
+          </div>
+          <button className="primary-button" type="button" onClick={onAppointment}>ดูนัดหมายแพทย์ <ArrowRight size={17} strokeWidth={2.4} aria-hidden="true" /></button>
+        </div>
+      </section>
+
+      <section className="section-block">
+        <div className="section-heading"><div><p className="eyebrow">นัดหมายของคุณ</p><h2>นัดหมายที่กำลังมาถึง</h2></div></div>
+        <button className="upcoming-video-card" type="button" onClick={onJoin} aria-label={`เข้าวิดีโอคอลกับ ${doctor.name} เวลา ${time} นาฬิกา`}>
+          <span className="quick-icon blue"><Video size={19} strokeWidth={2.3} aria-hidden="true" /></span>
+          <span className="upcoming-video-copy"><small>29 สิงหาคม 2569</small><strong>เวลา {time} น.</strong><em>{doctor.name}</em></span>
+          <span className="video-join-pill"><Video size={15} strokeWidth={2.5} aria-hidden="true" />เข้าวิดีโอคอล</span>
+        </button>
+      </section>
+
+    </>
+  );
+}
+
+function HistoryView({ appointmentBooked, selectedDate, selectedTime, doctor }: { appointmentBooked: boolean; selectedDate: string; selectedTime: string; doctor: Doctor }) {
+  const historyItems = [
+    ...(appointmentBooked ? [{
+      id: "current",
+      day: selectedDate,
+      month: "ส.ค.",
+      date: `${selectedDate} สิงหาคม 2569 • ${selectedTime} น.`,
+      doctor: doctor.name,
+      specialty: doctor.specialty,
+      amount: doctor.price,
+      appointmentStatus: "นัดหมายถัดไป",
+      paymentStatus: "ชำระแล้ว",
+      reference: "PAY-2569-0829-001",
+      current: true,
+    }] : []),
+    {
+      id: "past-1",
+      day: "15",
+      month: "ส.ค.",
+      date: "15 สิงหาคม 2569 • 10:30 น.",
+      doctor: "พญ. ณิชา วรเวช",
+      specialty: "เวชศาสตร์ควบคุมน้ำหนัก",
+      amount: 500,
+      appointmentStatus: "ปรึกษาเสร็จสิ้น",
+      paymentStatus: "ชำระแล้ว",
+      reference: "PAY-2569-0815-004",
+      current: false,
+    },
+    {
+      id: "past-2",
+      day: "01",
+      month: "ส.ค.",
+      date: "1 สิงหาคม 2569 • 13:00 น.",
+      doctor: "นพ. อรินทร์ พิพัฒน์",
+      specialty: "อายุรศาสตร์และเมตาบอลิก",
+      amount: 650,
+      appointmentStatus: "ปรึกษาเสร็จสิ้น",
+      paymentStatus: "ชำระแล้ว",
+      reference: "PAY-2569-0801-002",
+      current: false,
+    },
+  ];
+  const totalPaid = historyItems.reduce((sum, item) => sum + item.amount, 0);
+
+  return (
+    <section className="tab-page history-page">
+      <div className="page-intro">
+        <p className="eyebrow">APPOINTMENT & PAYMENT</p>
+        <h2>ประวัติการนัดหมายและชำระเงิน</h2>
+        <p>ตรวจสอบวันนัด แพทย์ที่ปรึกษา สถานะ และยอดชำระย้อนหลังได้ในที่เดียว</p>
+      </div>
+      <div className="history-summary-grid">
+        <article><span><CalendarDays size={18} aria-hidden="true" /></span><div><small>นัดหมายทั้งหมด</small><strong>{historyItems.length} ครั้ง</strong></div></article>
+        <article><span><WalletCards size={18} aria-hidden="true" /></span><div><small>ชำระแล้ว</small><strong>฿{totalPaid.toLocaleString("th-TH")}</strong></div></article>
+      </div>
+      <div className="section-heading compact"><div><p className="eyebrow">รายการล่าสุด</p><h2>ประวัติของคุณ</h2></div></div>
+      <div className="history-list">
+        {historyItems.map((item) => (
+          <article key={item.id} className={`history-card ${item.current ? "current" : ""}`}>
+            <div className="history-card-top">
+              <span className="history-date"><strong>{item.day}</strong><small>{item.month}</small></span>
+              <div><small>{item.date}</small><strong>{item.doctor}</strong><p>{item.specialty}</p></div>
+              <i className={item.current ? "upcoming" : "completed"}>{item.appointmentStatus}</i>
+            </div>
+            <div className="history-payment-row"><span><WalletCards size={16} aria-hidden="true" />{item.paymentStatus}</span><strong>฿{item.amount.toLocaleString("th-TH")}</strong></div>
+            <p className="history-reference">เลขอ้างอิง {item.reference}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AppointmentsView({ appointmentBooked, selectedDate, selectedTime, doctor, onBook, onJoin }: { appointmentBooked: boolean; selectedDate: string; selectedTime: string; doctor: Doctor; onBook: () => void; onJoin: () => void }) {
+  return (
+    <section className="tab-page">
+      {appointmentBooked ? (
+        <article className="confirmed-card">
+          <div className="confirmed-top"><span><Check size={20} strokeWidth={3} aria-hidden="true" /></span><div><small>ชำระเงินและยืนยันแล้ว</small><strong>{selectedDate} สิงหาคม 2569 • {selectedTime} น.</strong></div></div>
+          <div className="doctor-row"><DoctorPhoto doctor={doctor} /><div><small>แพทย์ที่เลือก</small><strong>{doctor.name}</strong><p>{doctor.specialty} • ฿{doctor.price.toLocaleString("th-TH")}</p></div></div>
+          <button className="wide-button soft" type="button" onClick={onJoin}><Video size={17} strokeWidth={2.3} aria-hidden="true" /> เข้าห้องวิดีโอคอล</button>
+          <p className="card-footnote">ห้องวิดีโอจะเปิดก่อนเวลานัด 10 นาที และมีลิงก์สำรองในอีเมล</p>
+        </article>
+      ) : (
+        <article className="empty-appointment">
+          <div className="calendar-art"><span>29</span></div>
+          <h3>นัดติดตามผลกับแพทย์</h3>
+          <p>เลือกเวลาที่สะดวกเพื่อทบทวนผลและวางแผนสัปดาห์ถัดไป</p>
+          <button className="wide-button" type="button" onClick={onBook}>นัดหมายแพทย์</button>
+        </article>
+      )}
+      <button className="change-appointment" type="button" onClick={onBook}>เปลี่ยนวันหรือเวลานัด</button>
+      <div className="section-heading compact"><div><p className="eyebrow">ก่อนพบแพทย์</p><h2>เช็กลิสต์เตรียมตัว</h2></div></div>
+      <div className="check-list">
+        <div><span><Weight size={17} strokeWidth={2.3} aria-hidden="true" /></span><p><strong>บันทึกน้ำหนักล่าสุด</strong><small>ใช้เครื่องชั่งเดิมและช่วงเวลาใกล้เคียงเดิม</small></p></div>
+        <div><span><NotebookTabs size={17} strokeWidth={2.3} aria-hidden="true" /></span><p><strong>เตรียมรายการยาและอาหารเสริม</strong><small>รวมยาที่แพทย์ท่านอื่นสั่งและยาที่ซื้อเอง</small></p></div>
+        <div><span><HeartPulse size={17} strokeWidth={2.3} aria-hidden="true" /></span><p><strong>สรุปอาการหลังฉีด</strong><small>คลื่นไส้ อาเจียน ปวดท้อง หรืออาการที่กังวล</small></p></div>
+      </div>
+    </section>
+  );
+}
+
+function PrescriptionsView({ doctor, onOpen }: { doctor: Doctor; onOpen: () => void }) {
+  return (
+    <section className="tab-page prescription-page">
+      <div className="page-intro">
+        <p className="eyebrow">MY PRESCRIPTION</p>
+        <h2>ใบสั่งยาของฉัน</h2>
+        <p>ตรวจสอบรายการยา วิธีใช้ และคำแนะนำล่าสุดจากแพทย์</p>
+      </div>
+
+      <article className="prescription-card">
+        <div className="prescription-card-top">
+          <span className="prescription-icon"><FileText size={22} strokeWidth={2.2} aria-hidden="true" /></span>
+          <div><small>ใบสั่งยาปัจจุบัน</small><strong>RX-2569-0829-001</strong><p>ออกเมื่อ 29 สิงหาคม 2569</p></div>
+          <i><Check size={12} strokeWidth={3} aria-hidden="true" />ใช้งานอยู่</i>
+        </div>
+
+        <div className="prescription-doctor"><DoctorPhoto doctor={doctor} /><div><small>แพทย์ผู้สั่งยา</small><strong>{doctor.name}</strong><p>{doctor.specialty}</p></div></div>
+
+        <div className="medicine-preview">
+          <span><Pill size={19} strokeWidth={2.3} aria-hidden="true" /></span>
+          <div><small>รายการยา 1 รายการ</small><strong>ปากกาควบคุมน้ำหนักตามแผนแพทย์</strong><p>ใช้ตามขนาดบนฉลากและคำสั่งแพทย์ สัปดาห์ละ 1 ครั้ง</p></div>
+        </div>
+
+        <div className="prescription-schedule"><CalendarDays size={17} strokeWidth={2.3} aria-hidden="true" /><div><small>กำหนดใช้ครั้งถัดไป</small><strong>วันพฤหัสบดี เวลา 20:00 น.</strong></div></div>
+        <button className="wide-button" type="button" onClick={onOpen}>ดูรายละเอียดใบสั่งยา <ChevronRight size={17} strokeWidth={2.4} aria-hidden="true" /></button>
+      </article>
+
+      <div className="prescription-safety"><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /><p><strong>ใช้ยาตามคำสั่งแพทย์เท่านั้น</strong><small>อย่าปรับขนาดยาเอง หากมีอาการผิดปกติให้ติดต่อทีมดูแลก่อนใช้ครั้งถัดไป</small></p></div>
+    </section>
+  );
+}
+
+function PrescriptionSheet({ doctor, onClose }: { doctor: Doctor; onClose: () => void }) {
+  return (
+    <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="prescription-sheet" role="dialog" aria-modal="true" aria-labelledby="prescription-title">
+        <div className="sheet-handle" />
+        <div className="sheet-heading"><div><p className="eyebrow">PRESCRIPTION DETAIL</p><h2 id="prescription-title">รายละเอียดใบสั่งยา</h2></div><button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button></div>
+
+        <div className="prescription-sheet-meta">
+          <div><small>เลขที่ใบสั่งยา</small><strong>RX-2569-0829-001</strong></div>
+          <span><Check size={13} strokeWidth={3} aria-hidden="true" />แพทย์รับรองแล้ว</span>
+        </div>
+
+        <div className="prescription-sheet-doctor"><DoctorPhoto doctor={doctor} /><div><small>แพทย์ผู้สั่งยา</small><strong>{doctor.name}</strong><p>ออกเมื่อ 29 สิงหาคม 2569</p></div></div>
+
+        <article className="medicine-detail-card">
+          <div className="medicine-detail-heading"><span><Pill size={19} strokeWidth={2.3} aria-hidden="true" /></span><div><small>รายการที่ 1</small><h3>ปากกาควบคุมน้ำหนัก</h3></div></div>
+          <dl>
+            <div><dt>วิธีใช้</dt><dd>ฉีดใต้ผิวหนังตามตำแหน่งที่แพทย์หรือพยาบาลแนะนำ</dd></div>
+            <div><dt>ความถี่</dt><dd>สัปดาห์ละ 1 ครั้ง ในวันและเวลาใกล้เคียงเดิม</dd></div>
+            <div><dt>ขนาดยา</dt><dd>ตรวจสอบขนาดบนฉลากยาที่ได้รับทุกครั้งก่อนใช้</dd></div>
+            <div><dt>การจัดเก็บ</dt><dd>เก็บตามเงื่อนไขบนฉลาก หลีกเลี่ยงความร้อนและแสง</dd></div>
+          </dl>
+        </article>
+
+        <div className="prescription-warning"><ShieldCheck size={17} strokeWidth={2.3} aria-hidden="true" /><p>ข้อมูลในต้นแบบนี้ไม่ใช้แทนฉลากยา ใบสั่งยาฉบับจริง หรือคำแนะนำจากแพทย์</p></div>
+        <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>
+      </section>
+    </div>
+  );
+}
+
+function AppointmentConfirmationModal({ doctor, date, time, onClose }: { doctor: Doctor; date: string; time: string; onClose: () => void }) {
+  return (
+    <div className="appointment-confirmation-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="appointment-confirmation" role="dialog" aria-modal="true" aria-labelledby="appointment-confirmation-title">
+        <header className="appointment-confirmation-hero">
+          <button className="appointment-confirmation-close" type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button>
+          <div className="appointment-confirmation-status">
+            <span className="appointment-success-mark"><Check size={23} strokeWidth={3} aria-hidden="true" /></span>
+            <div>
+              <small>ส่งสลิปสำเร็จ</small>
+              <h2 id="appointment-confirmation-title">นัดหมายเรียบร้อย</h2>
+              <p>ระบบบันทึกนัดหมายของคุณแล้ว</p>
+            </div>
+          </div>
+        </header>
+
+        <div className="appointment-confirmation-body">
+          <div className="appointment-ticket">
+            <div className="appointment-ticket-doctor"><DoctorPhoto doctor={doctor} /><div><small>นัดหมายกับ</small><strong>{doctor.name}</strong><p>{doctor.specialty}</p></div><span><Video size={13} aria-hidden="true" />วิดีโอคอล</span></div>
+            <div className="appointment-schedule-card">
+              <span><CalendarDays size={20} strokeWidth={2.3} aria-hidden="true" /></span>
+              <div><small>วันนัดหมาย</small><strong>{date} สิงหาคม 2569</strong></div>
+              <i />
+              <div><small>เวลา</small><strong>{time} น.</strong></div>
+            </div>
+            <div className="appointment-ticket-meta">
+              <div><small>ระยะเวลา</small><strong>{doctor.duration}</strong></div>
+              <div><small>ค่าปรึกษา</small><strong>฿{doctor.price.toLocaleString("th-TH")}</strong></div>
+            </div>
+            <div className="appointment-ticket-status"><FileCheck2 size={17} aria-hidden="true" /><div><small>สถานะการชำระเงิน</small><strong>รับสลิปแล้ว</strong></div><span>รอตรวจสอบ</span></div>
+            <p className="appointment-ticket-reference">APT-2569-{date.padStart(2, "0")}-001</p>
+          </div>
+
+          <div className="appointment-confirmation-note"><Mail size={16} aria-hidden="true" /><p>ทีมดูแลจะส่งผลยืนยันและลิงก์วิดีโอคอลทางอีเมล</p></div>
+          <button className="wide-button" type="button" onClick={onClose}>ไปที่นัดหมาย <ArrowRight size={17} aria-hidden="true" /></button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ProfileView({ data, onOpen }: { data: ProfileData; onOpen: (panel: ProfilePanel) => void }) {
+  return (
+    <section className="tab-page">
+      <div className="profile-hero">
+        <div className="profile-large">{profileInitial(data.name)}</div>
+        <h2>{data.name}</h2>
+        <p>สมาชิก Program Resize • สัปดาห์ที่ 3 จาก 12</p>
+        <button type="button" onClick={() => onOpen("personal")}>แก้ไขข้อมูล</button>
+      </div>
+      <div className="profile-card">
+        <p className="settings-label">ข้อมูลสุขภาพ</p>
+        <ProfileRow Icon={UserRound} title="ข้อมูลพื้นฐาน" detail={`${formatThaiDate(data.birthDate)} • ${data.height || "–"} ซม. • ${data.startWeight || "–"} กก.`} onClick={() => onOpen("basic")} />
+        <ProfileRow Icon={Stethoscope} title="ประวัติสุขภาพและยา" detail={data.healthHistory || "ยังไม่ได้ระบุ"} onClick={() => onOpen("health")} />
+        <ProfileRow Icon={MapPin} title="ที่อยู่จัดส่ง" detail={data.address || "ยังไม่ได้ระบุ"} onClick={() => onOpen("address")} />
+      </div>
+      <div className="profile-card">
+        <p className="settings-label">บัญชีและความเป็นส่วนตัว</p>
+        <ProfileRow Icon={Mail} title="อีเมล" detail={data.email} onClick={() => onOpen("email")} />
+        <ProfileRow Icon={LockKeyhole} title="นโยบายความเป็นส่วนตัว" detail="การใช้และคุ้มครองข้อมูลสุขภาพ" onClick={() => onOpen("privacy")} />
+        <ProfileRow Icon={CircleHelp} title="ศูนย์ช่วยเหลือ" detail="วิธีใช้ปากกา การจัดเก็บ และติดต่อทีมดูแล" onClick={() => onOpen("help")} />
+      </div>
+      <button className="logout-button" type="button" onClick={() => onOpen("logout")}><LogOut size={17} strokeWidth={2.3} aria-hidden="true" /> ออกจากระบบ</button>
+    </section>
+  );
+}
+
+function DoctorPhoto({ doctor, className = "" }: { doctor: Doctor; className?: string }) {
+  return <img className={`doctor-photo ${className}`} src={doctor.image} alt={`รูป${doctor.name}`} />;
+}
+
+function ProfileRow({ Icon, title, detail, onClick }: { Icon: LucideIcon; title: string; detail: string; onClick: () => void }) {
+  return <button type="button" className="profile-row" onClick={onClick}><span><Icon size={17} strokeWidth={2.3} aria-hidden="true" /></span><div><strong>{title}</strong><small>{detail}</small></div><i><ChevronRight size={18} aria-hidden="true" /></i></button>;
+}
+
+function BottomNav({ active, onChange }: { active: Tab; onChange: (tab: Tab) => void }) {
+  return (
+    <nav className="bottom-nav" aria-label="เมนูหลัก">
+      {navItems.map((item) => (
+        <button key={item.id} className={`nav-item ${active === item.id ? "active" : ""}`} type="button" onClick={() => onChange(item.id)} aria-current={active === item.id ? "page" : undefined}>
+          <span><item.Icon size={18} strokeWidth={2.25} aria-hidden="true" /></span>{item.label}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function ProfileSheet({ panel, data, onClose, onSave, onLogout }: {
+  panel: Exclude<ProfilePanel, null>;
+  data: ProfileData;
+  onClose: () => void;
+  onSave: (data: ProfileData, message: string) => void;
+  onLogout: () => void;
+}) {
+  const [draft, setDraft] = useState(data);
+  const titles: Record<Exclude<ProfilePanel, null>, string> = {
+    personal: "แก้ไขข้อมูลส่วนตัว",
+    basic: "ข้อมูลพื้นฐาน",
+    health: "ประวัติสุขภาพและยา",
+    address: "ที่อยู่จัดส่ง",
+    email: "แก้ไขอีเมล",
+    privacy: "นโยบายความเป็นส่วนตัว",
+    help: "ศูนย์ช่วยเหลือ",
+    logout: "ออกจากระบบ",
+  };
+  const update = (key: keyof ProfileData, value: string) => setDraft((current) => ({ ...current, [key]: value }));
+  const messages: Partial<Record<Exclude<ProfilePanel, null>, string>> = {
+    personal: "บันทึกข้อมูลส่วนตัวแล้ว",
+    basic: "บันทึกข้อมูลพื้นฐานแล้ว",
+    health: "บันทึกประวัติสุขภาพแล้ว",
+    address: "บันทึกที่อยู่จัดส่งแล้ว",
+    email: "บันทึกอีเมลแล้ว",
+  };
+
+  return (
+    <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className={`profile-sheet ${panel === "logout" ? "logout-sheet" : ""}`} role="dialog" aria-modal="true" aria-labelledby="profile-sheet-title">
+        <div className="sheet-handle" />
+        <div className="sheet-heading"><div><p className="eyebrow">PROFILE</p><h2 id="profile-sheet-title">{titles[panel]}</h2></div><button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button></div>
+
+        <div className="profile-sheet-content">
+          {panel === "personal" && <><SheetField label="ชื่อ–นามสกุล"><input value={draft.name} onChange={(event) => update("name", event.target.value)} /></SheetField><SheetField label="เบอร์โทรศัพท์"><input inputMode="tel" value={draft.phone} onChange={(event) => update("phone", event.target.value)} /></SheetField></>}
+          {panel === "basic" && <div className="profile-field-grid"><SheetField label="วันเดือนปีเกิด"><input type="date" value={draft.birthDate} onChange={(event) => update("birthDate", event.target.value)} /></SheetField><SheetField label="ส่วนสูง (ซม.)"><input type="number" value={draft.height} onChange={(event) => update("height", event.target.value)} /></SheetField><SheetField label="น้ำหนักตั้งต้น (กก.)" full><input type="number" step="0.1" value={draft.startWeight} onChange={(event) => update("startWeight", event.target.value)} /></SheetField></div>}
+          {panel === "health" && <><p className="sheet-description">ข้อมูลนี้ช่วยให้ทีมแพทย์ติดตามความปลอดภัย กรุณาระบุโรคประจำตัว ยาที่ใช้อยู่ และประวัติแพ้ยา</p><SheetField label="รายละเอียด"><textarea rows={6} value={draft.healthHistory} onChange={(event) => update("healthHistory", event.target.value)} /></SheetField></>}
+          {panel === "address" && <><p className="sheet-description">ใช้สำหรับการจัดส่งปากกาและอุปกรณ์ตามแผนแพทย์เท่านั้น</p><SheetField label="ที่อยู่จัดส่ง"><textarea rows={5} value={draft.address} onChange={(event) => update("address", event.target.value)} /></SheetField></>}
+          {panel === "email" && <><SheetField label="อีเมล"><input type="email" value={draft.email} onChange={(event) => update("email", event.target.value)} /></SheetField><p className="sheet-description">ระบบจะใช้สำหรับแจ้งนัดและส่งลิงก์สำรองของห้องวิดีโอคอล</p></>}
+          {panel === "privacy" && <div className="information-panel"><ShieldCheck size={28} aria-hidden="true" /><h3>การใช้และคุ้มครองข้อมูลสุขภาพ</h3><p>คลินิกใช้ข้อมูลเพื่อสร้างประวัติ นัดหมาย ติดตามการรักษา และติดต่อเกี่ยวกับบริการ โดยจำกัดการเข้าถึงเฉพาะผู้เกี่ยวข้อง</p><p>คุณสามารถขอเข้าถึง แก้ไข หรือลบข้อมูลตามช่องทางของคลินิกได้ เอกสารฉบับนี้เป็นข้อความสำหรับต้นแบบและต้องผ่านการตรวจทานก่อนใช้งานจริง</p></div>}
+          {panel === "help" && <div className="help-panel"><details open><summary>เตรียมตัวก่อนใช้ปากกา</summary><p>ตรวจชื่อบนฉลาก วันหมดอายุ ลักษณะยา และทำตามคำสั่งแพทย์ที่ได้รับทุกครั้ง</p></details><details><summary>ควรจัดเก็บอย่างไร</summary><p>เก็บตามเงื่อนไขบนฉลากยา หลีกเลี่ยงความร้อนและแสง และไม่ใช้หากสภาพยาเปลี่ยนไป</p></details><details><summary>มีอาการผิดปกติทำอย่างไร</summary><p>ติดต่อทีมดูแลเพื่อขอคำแนะนำ หากอาการรุนแรงให้งดฉีดและติดต่อแพทย์หรือบริการฉุกเฉินทันที</p></details></div>}
+          {panel === "logout" && (
+            <div className="logout-confirm">
+              <div className="logout-visual"><span><LogOut size={27} strokeWidth={2.3} aria-hidden="true" /></span></div>
+              <p className="logout-kicker">SECURE SIGN OUT</p>
+              <h3>ออกจากระบบตอนนี้?</h3>
+              <p className="logout-lead">คุณจะกลับไปยังหน้าเริ่มต้น และต้องลงทะเบียนอีกครั้งเมื่อต้องการเข้าใช้งาน</p>
+              <div className="logout-note"><LockKeyhole size={15} strokeWidth={2.3} aria-hidden="true" /><span>ข้อมูลที่ส่งให้คลินิกแล้วจะไม่ถูกลบ</span></div>
+            </div>
+          )}
+        </div>
+
+        {messages[panel] && <button className="wide-button" type="button" disabled={panel === "email" && !draft.email.includes("@")} onClick={() => onSave(draft, messages[panel] ?? "บันทึกแล้ว")}><Save size={17} aria-hidden="true" />บันทึกข้อมูล</button>}
+        {panel === "privacy" && <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>}
+        {panel === "help" && <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>}
+        {panel === "logout" && <div className="logout-actions"><button type="button" onClick={onClose}>ยกเลิก</button><button type="button" onClick={onLogout}><LogOut size={16} strokeWidth={2.4} aria-hidden="true" />ออกจากระบบ</button></div>}
+      </section>
+    </div>
+  );
+}
+
+function SheetField({ label, full = false, children }: { label: string; full?: boolean; children: React.ReactNode }) {
+  return <label className={`sheet-field ${full ? "full" : ""}`}><span>{label}</span>{children}</label>;
+}
+
+const complicationOptions = [
+  { id: "none", label: "ไม่มีอาการผิดปกติ" },
+  { id: "nausea", label: "คลื่นไส้หรืออาเจียน" },
+  { id: "abdominal", label: "ปวดท้องหรือแน่นท้อง" },
+  { id: "dizziness", label: "เวียนศีรษะหรืออ่อนเพลีย" },
+  { id: "bowel", label: "ท้องผูกหรือท้องเสีย" },
+  { id: "allergy", label: "ผื่น บวม หรือหายใจติดขัด" },
+  { id: "other", label: "อาการอื่น ๆ" },
+];
+
+function VideoCallOverlay({ profile, doctor, date, time, onClose, onToast }: { profile: ProfileData; doctor: Doctor; date: string; time: string; onClose: () => void; onToast: (message: string) => void }) {
+  const [stage, setStage] = useState<"checkin" | "prejoin" | "room">("checkin");
+  const [currentWeight, setCurrentWeight] = useState(profile.startWeight);
+  const [complications, setComplications] = useState<string[]>(["none"]);
+  const [symptomNote, setSymptomNote] = useState("");
+  const [weightError, setWeightError] = useState("");
+  const [complicationError, setComplicationError] = useState("");
+  const [cameraOn, setCameraOn] = useState(false);
+  const [micOn, setMicOn] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [deviceMessage, setDeviceMessage] = useState("คุณสามารถเข้าห้องรอได้แม้ยังไม่เปิดกล้องหรือไมโครโฟน");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatText, setChatText] = useState("");
+  const [unreadMessages, setUnreadMessages] = useState(1);
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: "ทีมดูแล", text: "สวัสดีค่ะ คุณเข้าห้องนัดหมายเรียบร้อยแล้ว หากมีปัญหาเรื่องเสียงหรือภาพ แจ้งเราในแชทนี้ได้เลยค่ะ", time: "14:24", own: false },
+  ]);
+  const streamRef = useRef<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const hasUrgentSymptom = complications.includes("allergy");
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.srcObject = streamRef.current;
+  }, [cameraOn, stage]);
+
+  useEffect(() => () => {
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+  }, []);
+
+  useEffect(() => {
+    if (chatOpen) chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatOpen, chatMessages]);
+
+  function openChat() {
+    setChatOpen(true);
+    setUnreadMessages(0);
+  }
+
+  function sendChatMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const message = chatText.trim();
+    if (!message) return;
+    const sentAt = new Intl.DateTimeFormat("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+    setChatMessages((current) => [...current, { id: Date.now(), sender: "คุณ", text: message, time: sentAt, own: true }]);
+    setChatText("");
+  }
+
+  function toggleComplication(id: string) {
+    setComplicationError("");
+    setComplications((current) => {
+      if (id === "none") return ["none"];
+      const withoutNone = current.filter((value) => value !== "none");
+      return withoutNone.includes(id) ? withoutNone.filter((value) => value !== id) : [...withoutNone, id];
+    });
+  }
+
+  function saveHealthUpdate() {
+    const weight = Number(currentWeight);
+    const nextWeightError = !currentWeight.trim() || !Number.isFinite(weight) || weight < 30 || weight > 350 ? "กรุณากรอกน้ำหนัก 30–350 กก." : "";
+    const nextComplicationError = complications.length === 0 ? "กรุณาเลือกอย่างน้อย 1 รายการ" : complications.includes("other") && !symptomNote.trim() ? "กรุณาระบุอาการอื่นเพิ่มเติม" : "";
+    setWeightError(nextWeightError);
+    setComplicationError(nextComplicationError);
+    if (nextWeightError || nextComplicationError) return;
+    setStage("prejoin");
+    onToast("บันทึกอัปเดตสุขภาพก่อนพบแพทย์แล้ว");
+  }
+
+  async function addDevice(kind: "camera" | "microphone", nextFacing = facingMode) {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setDeviceMessage("อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการเปิดกล้องและไมโครโฟน");
+      return;
+    }
+    try {
+      const media = await navigator.mediaDevices.getUserMedia({
+        video: kind === "camera" ? { facingMode: nextFacing } : false,
+        audio: kind === "microphone",
+      });
+      if (!streamRef.current) streamRef.current = new MediaStream();
+      const oldTracks = kind === "camera" ? streamRef.current.getVideoTracks() : streamRef.current.getAudioTracks();
+      oldTracks.forEach((track) => { track.stop(); streamRef.current?.removeTrack(track); });
+      media.getTracks().forEach((track) => streamRef.current?.addTrack(track));
+      if (kind === "camera") setCameraOn(true);
+      if (kind === "microphone") setMicOn(true);
+      if (videoRef.current) videoRef.current.srcObject = streamRef.current;
+      setDeviceMessage("อุปกรณ์พร้อมใช้งาน");
+    } catch {
+      setDeviceMessage("ยังเปิดอุปกรณ์ไม่ได้ กรุณาอนุญาตกล้องหรือไมโครโฟนในเบราว์เซอร์");
+    }
+  }
+
+  function disableDevice(kind: "camera" | "microphone") {
+    const tracks = kind === "camera" ? streamRef.current?.getVideoTracks() : streamRef.current?.getAudioTracks();
+    tracks?.forEach((track) => { track.stop(); streamRef.current?.removeTrack(track); });
+    if (kind === "camera") setCameraOn(false);
+    if (kind === "microphone") setMicOn(false);
+    setDeviceMessage(kind === "camera" ? "ปิดกล้องแล้ว" : "ปิดไมโครโฟนแล้ว");
+  }
+
+  async function switchCamera() {
+    const nextFacing = facingMode === "user" ? "environment" : "user";
+    setFacingMode(nextFacing);
+    if (cameraOn) await addDevice("camera", nextFacing);
+    else setDeviceMessage(nextFacing === "user" ? "เลือกกล้องหน้าแล้ว" : "เลือกกล้องหลังแล้ว");
+  }
+
+  function hangUp() {
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    onClose();
+    onToast("ออกจากห้องวิดีโอคอลแล้ว");
+  }
+
+  return (
+    <div className="video-call-overlay" role="dialog" aria-modal="true" aria-labelledby="video-call-title">
+      {stage === "checkin" ? (
+        <section className="precall-checkin">
+          <div className="video-heading"><button type="button" aria-label="ปิด" onClick={onClose}><X size={20} aria-hidden="true" /></button><div><p className="eyebrow">HEALTH UPDATE</p><h2 id="video-call-title">อัปเดตก่อนพบแพทย์</h2></div><span /></div>
+          <div className="precall-progress"><span>ขั้นตอนที่ 1 จาก 2</span><strong>อัปเดตข้อมูลสุขภาพ</strong></div>
+          <div className="appointment-person precall-appointment"><DoctorPhoto doctor={doctor} /><div><small>นัดหมายกับ</small><strong>{doctor.name}</strong><p>{date} สิงหาคม 2569 • {time} น.</p></div></div>
+
+          <section className="precall-baseline" aria-labelledby="baseline-title">
+            <div className="precall-section-heading"><span><Weight size={19} strokeWidth={2.3} aria-hidden="true" /></span><div><h3 id="baseline-title">ข้อมูลร่างกายล่าสุด</h3><p>ส่วนสูงเชื่อมจากข้อมูลลงทะเบียนและไม่สามารถแก้ไขที่นี่</p></div></div>
+            <div className="precall-metrics">
+              <label className={weightError ? "invalid" : ""}><span>น้ำหนักล่าสุด <em>*</em></span><div><input type="number" inputMode="decimal" min="30" max="350" step="0.1" value={currentWeight} onChange={(event) => { setCurrentWeight(event.target.value); setWeightError(""); }} /><small>กก.</small></div>{weightError && <i>{weightError}</i>}</label>
+              <div className="locked-metric"><span>ส่วนสูง</span><strong>{profile.height || "–"}<small>ซม.</small></strong><i><LockKeyhole size={12} strokeWidth={2.4} aria-hidden="true" />จากข้อมูลลงทะเบียน</i></div>
+            </div>
+          </section>
+
+          <section className="precall-allergy" aria-labelledby="allergy-title">
+            <div><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /></div><span><small id="allergy-title">ประวัติการแพ้จากข้อมูลลงทะเบียน</small><strong>{profile.allergyHistory}</strong></span><LockKeyhole size={15} strokeWidth={2.3} aria-label="ล็อกข้อมูลแล้ว" />
+          </section>
+
+          <section className="precall-symptoms" aria-labelledby="symptoms-title">
+            <div className="precall-section-heading"><span><HeartPulse size={19} strokeWidth={2.3} aria-hidden="true" /></span><div><h3 id="symptoms-title">มีอาการผิดปกติหรือภาวะแทรกซ้อนหรือไม่?</h3><p>เลือกได้มากกว่า 1 รายการ เพื่อให้แพทย์เห็นข้อมูลก่อนเริ่มคุย</p></div></div>
+            <div className="complication-options" role="group" aria-label="อาการผิดปกติหรือภาวะแทรกซ้อน">
+              {complicationOptions.map((option) => {
+                const selected = complications.includes(option.id);
+                return <button key={option.id} type="button" className={`${selected ? "selected" : ""} ${option.id === "allergy" ? "urgent" : ""}`} aria-pressed={selected} onClick={() => toggleComplication(option.id)}><i>{selected && <Check size={12} strokeWidth={3} aria-hidden="true" />}</i><span>{option.label}</span></button>;
+              })}
+            </div>
+            <label className="symptom-note"><span>{complications.includes("other") ? "ระบุอาการอื่น *" : "รายละเอียดเพิ่มเติม (ถ้ามี)"}</span><textarea rows={3} value={symptomNote} onChange={(event) => { setSymptomNote(event.target.value); setComplicationError(""); }} placeholder="เช่น เริ่มมีอาการเมื่อไร ความรุนแรง และเป็นต่อเนื่องหรือไม่" /></label>
+            {complicationError && <p className="precall-error">{complicationError}</p>}
+            {hasUrgentSymptom && <div className="precall-urgent"><ShieldCheck size={17} strokeWidth={2.3} aria-hidden="true" /><p><strong>หากกำลังหายใจลำบาก หน้าหรือคอบวม</strong><br />อย่ารอวิดีโอคอล ให้ติดต่อบริการฉุกเฉินทันที</p></div>}
+          </section>
+
+          <button className="wide-button" type="button" onClick={saveHealthUpdate}>บันทึกและเตรียมอุปกรณ์ <ArrowRight size={17} strokeWidth={2.4} aria-hidden="true" /></button>
+          <p className="sheet-note">ข้อมูลอัปเดตนี้จะแสดงให้แพทย์ก่อนเริ่มการปรึกษา</p>
+        </section>
+      ) : stage === "prejoin" ? (
+        <section className="video-prejoin">
+          <div className="video-heading"><button type="button" aria-label="ปิด" onClick={onClose}><X size={20} aria-hidden="true" /></button><div><p className="eyebrow">APPOINTMENT ROOM</p><h2 id="video-call-title">เตรียมเข้าห้องวิดีโอคอล</h2></div><button className="video-chat-button" type="button" aria-label={`เปิดแชท${unreadMessages ? ` มี ${unreadMessages} ข้อความใหม่` : ""}`} onClick={openChat}><MessageCircle size={19} aria-hidden="true" />{unreadMessages > 0 && <span>{unreadMessages}</span>}</button></div>
+          <div className={`self-preview ${cameraOn ? "camera-on" : ""}`}>
+            <video ref={videoRef} autoPlay muted playsInline />
+            {!cameraOn && <div><UserRound size={34} aria-hidden="true" /><strong>กล้องปิดอยู่</strong><small>เปิดเมื่อคุณพร้อม</small></div>}
+          </div>
+          <div className="appointment-person"><DoctorPhoto doctor={doctor} /><div><small>นัดกับ</small><strong>{doctor.name}</strong><p>{date} สิงหาคม 2569 • {time} น.</p></div></div>
+          <div className="precall-saved-summary"><span><Check size={14} strokeWidth={3} aria-hidden="true" /></span><div><small>อัปเดตสุขภาพแล้ว</small><strong>น้ำหนัก {currentWeight} กก. • {complications.includes("none") ? "ไม่มีอาการผิดปกติ" : `${complications.length} อาการ`}</strong></div><button type="button" onClick={() => setStage("checkin")}>แก้ไข</button></div>
+          <div className="device-controls">
+            <button type="button" className={micOn ? "active" : ""} aria-pressed={micOn} onClick={() => micOn ? disableDevice("microphone") : addDevice("microphone")}>{micOn ? <Mic size={19} aria-hidden="true" /> : <MicOff size={19} aria-hidden="true" />}<span>{micOn ? "เปิดไมค์" : "ปิดไมค์"}</span></button>
+            <button type="button" className={cameraOn ? "active" : ""} aria-pressed={cameraOn} onClick={() => cameraOn ? disableDevice("camera") : addDevice("camera")}>{cameraOn ? <Camera size={19} aria-hidden="true" /> : <CameraOff size={19} aria-hidden="true" />}<span>{cameraOn ? "เปิดกล้อง" : "ปิดกล้อง"}</span></button>
+            <button type="button" onClick={switchCamera}><RefreshCw size={19} aria-hidden="true" /><span>สลับกล้อง</span></button>
+          </div>
+          <p className="device-message" role="status">{deviceMessage}</p>
+          <button className="wide-button" type="button" onClick={() => setStage("room")}><Video size={18} aria-hidden="true" />เข้าสู่ห้องรอ</button>
+          <p className="sheet-note">ระบบจะให้แพทย์เข้าร่วมเมื่อถึงเวลานัด</p>
+        </section>
+      ) : (
+        <section className="video-room">
+          <div className="room-topbar"><div className="call-status"><span /><div><strong>อยู่ในห้องรอ</strong><small>กำลังรอแพทย์เข้าร่วม</small></div></div><button className="room-chat-button" type="button" aria-label={`เปิดแชท${unreadMessages ? ` มี ${unreadMessages} ข้อความใหม่` : ""}`} onClick={openChat}><MessageCircle size={20} aria-hidden="true" />{unreadMessages > 0 && <span>{unreadMessages}</span>}</button></div>
+          <div className="remote-stage"><DoctorPhoto doctor={doctor} className="large" /><h2 id="video-call-title">{doctor.name}</h2><p>ระบบจะแจ้งแพทย์ว่าคุณพร้อมแล้ว</p>{cameraOn && <video className="floating-preview" ref={videoRef} autoPlay muted playsInline />}</div>
+          <div className="room-device-message" role="status">{deviceMessage}</div>
+          <div className="call-controls">
+            <button type="button" className={micOn ? "active" : ""} aria-label={micOn ? "ปิดไมโครโฟน" : "เปิดไมโครโฟน"} onClick={() => micOn ? disableDevice("microphone") : addDevice("microphone")}>{micOn ? <Mic size={21} /> : <MicOff size={21} />}</button>
+            <button type="button" className={cameraOn ? "active" : ""} aria-label={cameraOn ? "ปิดกล้อง" : "เปิดกล้อง"} onClick={() => cameraOn ? disableDevice("camera") : addDevice("camera")}>{cameraOn ? <Camera size={21} /> : <CameraOff size={21} />}</button>
+            <button type="button" aria-label="สลับกล้อง" onClick={switchCamera}><RefreshCw size={21} /></button>
+            <button className="hangup" type="button" aria-label="วางสาย" onClick={hangUp}><PhoneOff size={22} /></button>
+          </div>
+          <p className="room-caption">หน้าห้องวิดีโอคอลต้นแบบ • การเชื่อมต่อกับแพทย์จริงต้องใช้บริการวิดีโอของคลินิก</p>
+        </section>
+      )}
+      {chatOpen && (
+        <div className="video-chat-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setChatOpen(false)}>
+          <aside className="video-chat-panel" aria-label="ห้องแชทนัดหมาย">
+            <div className="video-chat-handle" aria-hidden="true" />
+            <header className="video-chat-header">
+              <div className="video-chat-person"><DoctorPhoto doctor={doctor} /><span><strong>ห้องแชทนัดหมาย</strong><small><i aria-hidden="true" />ทีมดูแลพร้อมช่วยเหลือ</small></span></div>
+              <button type="button" aria-label="ปิดห้องแชท" onClick={() => setChatOpen(false)}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button>
+            </header>
+            <div className="video-chat-date"><span>วันนี้ • นัดหมาย {time} น.</span></div>
+            <div className="video-chat-messages" aria-live="polite">
+              <div className="chat-system-message"><ShieldCheck size={14} aria-hidden="true" />ข้อความในห้องนี้ใช้สำหรับการนัดหมายและการดูแลของคลินิก</div>
+              {chatMessages.map((message) => (
+                <div className={`chat-message ${message.own ? "own" : "staff"}`} key={message.id}>
+                  {!message.own && <small>{message.sender}</small>}
+                  <p>{message.text}</p>
+                  <time>{message.time} น.</time>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+            <form className="video-chat-composer" onSubmit={sendChatMessage}>
+              <input value={chatText} onChange={(event) => setChatText(event.target.value)} placeholder="พิมพ์ข้อความ..." aria-label="พิมพ์ข้อความแชท" />
+              <button type="submit" disabled={!chatText.trim()} aria-label="ส่งข้อความ"><Send size={18} strokeWidth={2.4} aria-hidden="true" /></button>
+            </form>
+          </aside>
+        </div>
+      )}
+    </div>
+  );
+}
+
+type BookingStage = "doctor" | "schedule" | "payment" | "slip";
+
+function BookingSheet({ doctorId, date, time, onDoctor, onDate, onTime, onClose, onConfirm }: {
+  doctorId: DoctorId;
+  date: string;
+  time: string;
+  onDoctor: (doctorId: DoctorId) => void;
+  onDate: (date: string) => void;
+  onTime: (time: string) => void;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const [stage, setStage] = useState<BookingStage>("doctor");
+  const [slip, setSlip] = useState<File | null>(null);
+  const [slipError, setSlipError] = useState("");
+  const selectedDoctor = doctors.find((doctor) => doctor.id === doctorId) ?? doctors[0];
+  const stageOrder: BookingStage[] = ["doctor", "schedule", "payment", "slip"];
+  const step = stageOrder.indexOf(stage) + 1;
+  const titles: Record<BookingStage, string> = {
+    doctor: "เลือกแพทย์",
+    schedule: "เลือกวันและเวลา",
+    payment: "ชำระค่าปรึกษา",
+    slip: "แนบสลิป",
+  };
+
+  function goBack() {
+    const previous = stageOrder[step - 2];
+    if (previous) setStage(previous);
+  }
+
+  function chooseSlip(file?: File) {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setSlip(null);
+      setSlipError("ไฟล์มีขนาดเกิน 10 MB กรุณาเลือกไฟล์ใหม่");
+      return;
+    }
+    setSlip(file);
+    setSlipError("");
+  }
+
+  return (
+    <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="booking-sheet" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+        <div className="sheet-handle" />
+        <div className="booking-heading">
+          {stage === "doctor" ? <span /> : <button type="button" aria-label="ย้อนกลับ" onClick={goBack}><ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /></button>}
+          <div><p className="eyebrow">นัดหมายแพทย์</p><h2 id="booking-title">{titles[stage]}</h2></div>
+          <button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button>
+        </div>
+        <div className="booking-step-meta"><span>ขั้นตอนที่ {step} จาก 4</span><strong>{step * 25}%</strong></div>
+        <div className="booking-progress" aria-label={`ความคืบหน้า ${step} จาก 4 ขั้นตอน`}><span style={{ width: `${step * 25}%` }} /></div>
+
+        <div className="booking-content">
+          {stage === "doctor" && (
+            <>
+              <p className="booking-lead">เลือกแพทย์ที่ต้องการปรึกษา ค่าบริการจะแสดงก่อนชำระเงิน</p>
+              <div className="doctor-options" role="radiogroup" aria-label="เลือกแพทย์">
+                {doctors.map((doctor) => (
+                  <button key={doctor.id} type="button" className={`doctor-option ${doctorId === doctor.id ? "selected" : ""}`} role="radio" aria-checked={doctorId === doctor.id} onClick={() => onDoctor(doctor.id)}>
+                    <span className="doctor-option-photo"><DoctorPhoto doctor={doctor} /><i aria-hidden="true" /></span>
+                    <div className="doctor-option-info"><strong>{doctor.name}</strong><small>{doctor.specialty}</small><span><i><Video size={13} aria-hidden="true" />{doctor.duration}</i><i>คิวว่างวันนี้</i></span></div>
+                    <b><small>ค่าปรึกษา</small>฿{doctor.price.toLocaleString("th-TH")}</b>
+                    {doctorId === doctor.id && <span className="doctor-option-selected"><Check size={12} strokeWidth={3} aria-hidden="true" />เลือกแล้ว</span>}
+                  </button>
+                ))}
+              </div>
+              <button className="wide-button" type="button" onClick={() => setStage("schedule")}>เลือกวันและเวลา <ArrowRight size={17} aria-hidden="true" /></button>
+            </>
+          )}
+
+          {stage === "schedule" && (
+            <>
+              <DoctorBookingSummary doctor={selectedDoctor} />
+              <p className="field-label">สิงหาคม 2569</p>
+              <div className="date-options">
+                {[["27","อ."],["28","พ."],["29","พฤ."],["30","ศ."],["31","ส."]].map(([number, day]) => (
+                  <button key={number} type="button" className={date === number ? "selected" : ""} onClick={() => onDate(number)}><small>{day}</small><strong>{number}</strong></button>
+                ))}
+              </div>
+              <p className="field-label">เวลาที่ว่าง</p>
+              <div className="time-options">
+                {["09:30", "11:00", "13:00", "14:30", "16:00", "17:30"].map((value) => <button key={value} type="button" className={time === value ? "selected" : ""} onClick={() => onTime(value)}>{value}</button>)}
+              </div>
+              <button className="wide-button" type="button" onClick={() => setStage("payment")}>ไปหน้าชำระเงิน • ฿{selectedDoctor.price.toLocaleString("th-TH")}</button>
+            </>
+          )}
+
+          {stage === "payment" && (
+            <>
+              <div className="payment-summary">
+                <div><span>แพทย์</span><strong>{selectedDoctor.name}</strong></div>
+                <div><span>วันและเวลา</span><strong>{date} ส.ค. 2569 • {time} น.</strong></div>
+                <div className="payment-total"><span>ยอดชำระทั้งหมด</span><strong>฿{selectedDoctor.price.toLocaleString("th-TH")}</strong></div>
+              </div>
+              <div className="payment-panel">
+                <div className="payment-icon"><WalletCards size={25} aria-hidden="true" /></div>
+                <h3>สแกน QR หรือโอนผ่านธนาคาร</h3>
+                <p>ชำระตามยอดที่แสดง แล้วเก็บสลิปไว้สำหรับขั้นตอนถัดไป</p>
+                <div className="qr-placeholder" aria-label="ตัวอย่างคิวอาร์โค้ดสำหรับชำระเงิน"><span>QR</span><small>PAYMENT</small></div>
+                <div className="payment-account"><Building2 size={18} aria-hidden="true" /><div><small>บัญชีทดสอบสำหรับต้นแบบ</small><strong>XXX-X-12345-X</strong><span>บริษัท โปรแกรม รีไซซ์ จำกัด</span></div></div>
+              </div>
+              <p className="payment-demo-note">หน้าชำระเงินนี้เป็นต้นแบบและไม่มีการตัดเงินจริง</p>
+              <button className="wide-button" type="button" onClick={() => setStage("slip")}>ชำระเงินแล้ว ไปแนบสลิป <ArrowRight size={17} aria-hidden="true" /></button>
+            </>
+          )}
+
+          {stage === "slip" && (
+            <>
+              <div className="payment-summary compact">
+                <div><span>ยอดชำระ</span><strong>฿{selectedDoctor.price.toLocaleString("th-TH")}</strong></div>
+                <div><span>นัดหมาย</span><strong>{date} ส.ค. 2569 • {time} น.</strong></div>
+              </div>
+              <label className={`slip-upload ${slip ? "uploaded" : ""}`}>
+                <input type="file" accept="image/jpeg,image/png,application/pdf" onChange={(event) => chooseSlip(event.target.files?.[0])} />
+                <span>{slip ? <FileCheck2 size={25} aria-hidden="true" /> : <Upload size={25} aria-hidden="true" />}</span>
+                <strong>{slip ? slip.name : "แตะเพื่อแนบสลิป"}</strong>
+                <small>{slip ? `${(slip.size / 1024 / 1024).toFixed(2)} MB • แตะเพื่อเปลี่ยนไฟล์` : "รองรับ JPG, PNG หรือ PDF ขนาดไม่เกิน 10 MB"}</small>
+              </label>
+              {slipError && <p className="slip-error" role="alert">{slipError}</p>}
+              <div className="slip-privacy"><ShieldCheck size={17} aria-hidden="true" /><p>สลิปใช้เพื่อตรวจสอบค่าปรึกษาสำหรับนัดนี้เท่านั้น</p></div>
+              <button className="wide-button" type="button" disabled={!slip} onClick={onConfirm}>ส่งสลิปและยืนยันนัด</button>
+            </>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function DoctorBookingSummary({ doctor }: { doctor: Doctor }) {
+  return (
+    <div className="doctor-mini">
+      <DoctorPhoto doctor={doctor} />
+      <div><small>แพทย์ที่เลือก</small><strong>{doctor.name}</strong><p>{doctor.specialty}</p></div>
+      <span>{doctor.duration}<b>฿{doctor.price.toLocaleString("th-TH")}</b></span>
+    </div>
+  );
+}
