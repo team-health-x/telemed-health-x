@@ -25,7 +25,22 @@ pnpm dev --port 3000
 - คู่มือผู้ใช้และ SOP อยู่ใน `docs/`
 - CSS ของแต่ละส่วนถูกจำกัดขอบเขตไว้ใต้ `.landing-site` และ `.telemed-site` เพื่อรักษาสี ฟอนต์ และหน้าตาของแต่ละส่วน
 
-## ตรวจสอบ
+## Vercel
+
+รองรับ Next.js บน Vercel โดย `vercel.json` กำหนด build เป็น `pnpm build:vercel` ไว้แล้ว ใช้ root directory ของ repository (`./`) และติดตั้งด้วย `pnpm install --frozen-lockfile`
+
+ทดสอบ runtime เดียวกับ Vercel ในเครื่อง:
+
+```sh
+pnpm build:vercel
+pnpm start:vercel
+```
+
+สามารถตั้ง `NEXT_PUBLIC_SITE_URL` เป็นโดเมนจริงเพื่อใช้ใน metadata ได้ หากไม่กำหนดจะใช้โดเมน production จาก Vercel
+
+โค้ด Cloudflare D1 ใน `db/` และตัวอย่างใน `examples/` ไม่ได้เชื่อมเข้าหน้าเว็บ และไม่ใช่ backend สำหรับ Vercel
+
+## ตรวจสอบต้นแบบ Cloudflare
 
 ```sh
 pnpm test
