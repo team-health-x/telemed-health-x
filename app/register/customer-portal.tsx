@@ -130,7 +130,7 @@ export default function CustomerPortal({ customer, initialTab = 'home' }: { cust
 
   return (
     <main className="app-shell">
-      {customer && <p role="status" style={{ padding: '8px 16px', color: '#29634f' }}>บัญชี Dev · {customer.customerId}</p>}
+      {customer && <p role="status" style={{ padding: '8px 16px', color: '#29634f' }}>รหัสลูกค้า · {customer.customerId}</p>}
       <AppHeader
         title={activeTab === "home" ? undefined : navItems.find((item) => item.id === activeTab)?.label}
         profileName={profileData.name}

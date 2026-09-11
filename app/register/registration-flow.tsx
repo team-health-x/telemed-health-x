@@ -488,7 +488,6 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
       </header>
 
       <section className="registration-content">
-        {process.env.NODE_ENV === 'development' && <p role="status">โหมด Dev: การส่งแบบฟอร์มจะบันทึกลูกค้าในระบบทดสอบ</p>}
         {step === 1 && <PersonalStep form={form} errors={errors} identityMedia={identityMedia} onIdentityMedia={setIdentityMedia} update={updateForm} />}
         {step === 2 && <ContactStep form={form} errors={errors} update={updateForm} />}
         {step === 3 && <EmergencyStep form={form} errors={errors} update={updateForm} />}

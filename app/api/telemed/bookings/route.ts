@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
 import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
 import { allowedRequestOrigin, validMutation } from '../../../lib/telemed-dev-policy';
 
@@ -12,7 +13,7 @@ async function proxy(request: Request) {
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
   const session = withDemoStore(store => store.session(token));
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบก่อนส่งนัดหมาย' }, 401);
-  const origin = process.env.TELEMED_WORKFLOW_ORIGIN;
+  const origin = telemedApiOrigin();
   const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
   if (!origin || !secret) return json({ error: 'ยังไม่ได้ตั้งค่าเชื่อมระบบนัดหมาย Dev' }, 503);
   try {

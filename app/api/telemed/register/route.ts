@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
 import { NextResponse } from 'next/server';
 import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
 import { DemoAuthError } from '../../../lib/demo-auth';
@@ -8,9 +9,9 @@ export const runtime = 'nodejs';
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 export async function POST(request: Request) {
   const publicOrigin = allowedRequestOrigin(request);
-  if (!publicOrigin) return json({ error: 'Not found' }, 404);
+  if (!publicOrigin) return json({ error: 'ยังไม่ได้เปิดการสมัครสำหรับโดเมนนี้ กรุณาตรวจการตั้งค่า Telemed', code: 'TELEMED_REGISTRATION_NOT_CONFIGURED' }, 503);
   if (!validMutation(request, publicOrigin)) return json({ error: 'Invalid origin' }, 403);
-  const origin = process.env.TELEMED_WORKFLOW_ORIGIN;
+  const origin = telemedApiOrigin();
   const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
   if (!origin || !secret) return json({ error: 'ยังไม่ได้ตั้งค่าเชื่อมระบบสมัคร Dev' }, 503);
   try {
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     }
     // The route is Dev-only. This is an idempotency key, not proof of phone ownership.
     const key = createHash('sha256').update(`telemed-mock-signup:${requestId}:${signup.phoneNumber}`).digest('hex');
-    const response = await fetch(new URL('/api/v1/telemed/workflow/demo/register', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-registration-key': key }, body: JSON.stringify(signup) });
+    const response = await fetch(new URL('/api/v1/telemed/register', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-registration-key': key }, body: JSON.stringify(signup) });
     const result = await response.json();
     if (!response.ok || result.status !== '0000') return json({ error: result.message || 'สมัครไม่สำเร็จ' }, response.ok ? 409 : response.status);
     const customer = result.data;

@@ -25,7 +25,7 @@ export default function LoginForm() {
     <Link href="/" className="auth-back"><ArrowLeft size={18} />กลับหน้าแรก</Link>
     <Image src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={180} height={66} priority />
     <h1>เข้าสู่ระบบ Telemed</h1>
-    <p className="auth-demo">บัญชีทดสอบ Dev เท่านั้น</p>
+    <p className="auth-demo">เข้าสู่ระบบด้วยเบอร์ที่ลงทะเบียน</p>
     <p>OTP ทดสอบ <strong>123456</strong> · ไม่ส่ง SMS จริง</p>
     <form onSubmit={event => { event.preventDefault(); if (!busy) { if (sent) void verify(); else { setSent(true); setCode(''); setError(''); } } }}>
       <label htmlFor="login-phone">เบอร์โทรศัพท์</label>

@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { telemedApiOrigin } from '../../../../lib/telemed-api-origin';
 import { NextResponse } from 'next/server';
 import { DEMO_COOKIE, withDemoStore } from '../../../../lib/demo-auth';
 import { DemoAuthError } from '../../../../lib/demo-auth';
@@ -56,7 +57,7 @@ export async function POST(request: Request, context: Context) {
     if (action === 'send-otp') return json(withDemoStore(store => store.send(typeof body.phone === 'string' ? body.phone.trim() : '')));
     if (action === 'verify-signup') return json(withDemoStore(store => store.verifySignup(body.challengeId ?? '', body.code ?? '', body.phone ?? '')));
     if (typeof body.phone !== 'string' || !/^0[689]\d{8}$/.test(body.phone) || body.code !== '123456') return json({ error: 'เบอร์หรือ OTP ไม่ถูกต้อง' }, 401);
-    const origin = process.env.TELEMED_WORKFLOW_ORIGIN;
+    const origin = telemedApiOrigin();
     const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
     if (!origin || !secret) return json({ error: 'ยังไม่ได้ตั้งค่าเชื่อมระบบเข้าสู่ระบบ Dev' }, 503);
     const upstream = await fetch(new URL('/api/v1/telemed/workflow/demo/login', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret }, body: JSON.stringify({ phone: body.phone, code: body.code }) });

@@ -1,5 +1,12 @@
 # Telemed Dev deployment (Next.js / Vercel)
 
+Registration creates real persisted TL customers, registration details and
+consents in the configured database, not a demo account. The canonical backend
+endpoint is `POST /api/v1/telemed/register`. The previous
+`/api/v1/telemed/workflow/demo/register` remains only as a rollout alias.
+Only OTP verification is mocked. Confirming registration sends the form directly
+to the registration endpoint, with no send-OTP or verify-OTP requests.
+
 Login uses the registered primary phone and mock OTP `123456`. Clicking Request
 OTP is local UI only; submitting login calls the backend to find exactly one
 active TL customer in the configured Dev clinic/branch. Unknown or duplicate

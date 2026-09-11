@@ -1,6 +1,7 @@
+import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
 export const dynamic = 'force-dynamic';
 export async function GET() {
-  const origin = process.env.TELEMED_WORKFLOW_ORIGIN;
+  const origin = telemedApiOrigin();
   if (!origin) return Response.json({ error: 'ยังไม่ได้ตั้งค่าช่องทางชำระ' }, { status: 503 });
   try {
     const response = await fetch(new URL('/api/v1/public/telemed/payment-methods', origin), { cache: 'no-store', signal: AbortSignal.timeout(10000) });

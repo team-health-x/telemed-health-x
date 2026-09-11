@@ -38,7 +38,7 @@ test('Dev register forwards one request and reuses its key without an OTP reques
       assert.match(result.headers.get('set-cookie'), /HttpOnly/i);
     }
     assert.equal(calls.length, 2);
-    assert.ok(calls.every(call => call.url === 'https://backend.example.test/api/v1/telemed/workflow/demo/register'));
+    assert.ok(calls.every(call => call.url === 'https://backend.example.test/api/v1/telemed/register'));
     assert.equal(calls[0].options.headers['x-registration-key'], calls[1].options.headers['x-registration-key']);
     assert.equal((await POST(request({ ...body, mockOtp: '000000' }))).status, 400);
     assert.equal(calls.length, 2);

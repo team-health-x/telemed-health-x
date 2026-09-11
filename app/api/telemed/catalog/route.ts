@@ -1,7 +1,8 @@
+import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const origin = process.env.TELEMED_API_ORIGIN;
+  const origin = telemedApiOrigin('catalog');
   if (!origin) return Response.json({ error: "ยังไม่ได้ตั้งค่าการเชื่อมต่อ Telemed" }, { status: 503 });
   try {
     const url = new URL("/api/v1/public/telemed/catalog", origin);
