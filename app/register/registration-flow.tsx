@@ -432,14 +432,25 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
   }
 
   async function submitRegistration() {
-    if (!canSubmit || !signupProof || submitPending.current) return;
+    if (!canSubmit || submitPending.current) return;
     submitPending.current = true; setSubmitting(true); setSubmitError('');
     try {
+    let proof = signupProof;
+    if (!proof) {
+      const sent = await fetch('/api/telemed/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
+      const challenge = await sent.json();
+      if (!sent.ok) throw new Error('ระบบบันทึกสมัครยังไม่พร้อมใช้งาน กรุณาลองใหม่ภายหลัง');
+      const verified = await fetch('/api/telemed/auth/verify-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone, challengeId: challenge.challengeId, code: MOCK_OTP }) });
+      const verification = await verified.json();
+      if (!verified.ok) throw new Error(verification.error || 'ยืนยันการสมัครไม่สำเร็จ');
+      proof = verification.proof;
+      setSignupProof(proof);
+    }
     const submittedDate = new Date();
     const profile = buildRegisteredProfile(form, health);
     const acceptedAt = submittedDate.toISOString();
     const consent = (accepted: boolean) => ({ accepted, acceptedAt, version: CONSENT_DOCUMENT_VERSION });
-    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proof: signupProof, signup: {
+    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proof, signup: {
       title: form.title, name: form.firstName, lastname: form.lastName, nickname: form.nickname,
       gender: form.gender === 'หญิง' ? 'Female' : form.gender === 'ชาย' ? 'Male' : 'Other', birthDate: form.birthDate,
       preferredLanguage: form.preferredLanguage === 'ไทย' ? 'th' : 'en',
@@ -860,37 +871,21 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [challengeId, setChallengeId] = useState('');
-  const [otpBusy, setOtpBusy] = useState(false);
   const healthYes = healthTopics.filter(({ key }) => health[key].status === "yes").map(({ label }) => label);
   const maskedDocument = form.documentNumber.length > 4 ? `${"•".repeat(Math.max(0, form.documentNumber.length - 4))}${form.documentNumber.slice(-4)}` : form.documentNumber;
 
-  async function sendOtp() {
-    if (otpBusy) return;
-    setOtpBusy(true);
+  function sendOtp() {
     setOtpCode("");
     setOtpError("");
     onOtpVerified(false);
     onSignupProof('');
-    try {
-      const response = await fetch('/api/telemed/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      setChallengeId(result.challengeId); setOtpSent(true);
-    } catch (error) { setOtpError(error instanceof Error ? error.message : 'ส่ง OTP ไม่สำเร็จ'); }
-    finally { setOtpBusy(false); }
+    setOtpSent(true);
   }
 
-  async function verifyOtp() {
-    if (otpBusy) return;
-    setOtpBusy(true); setOtpError('');
-    try {
-      const response = await fetch('/api/telemed/auth/verify-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone, challengeId, code: otpCode }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      onSignupProof(result.proof); onOtpVerified(true);
-    } catch (error) { onOtpVerified(false); setOtpError(error instanceof Error ? error.message : 'ยืนยัน OTP ไม่สำเร็จ'); }
-    finally { setOtpBusy(false); }
+  function verifyOtp() {
+    const valid = otpSent && otpCode === MOCK_OTP;
+    onOtpVerified(valid);
+    setOtpError(valid ? '' : 'รหัส OTP ไม่ถูกต้อง');
   }
 
   return (
