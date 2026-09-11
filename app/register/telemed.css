@@ -170,6 +170,11 @@
 .telemed-site .hero-orb-one { width: 64px; height: 64px; right: 24px; top: 28px; }
 .telemed-site .hero-orb-two { width: 18px; height: 18px; right: 104px; top: 18px; }
 .telemed-site .hero-content { position: relative; z-index: 1; padding: 25px; }
+.telemed-site .consultation-card { min-height: 0; }
+.telemed-site .consultation-card::after { content: none; }
+.telemed-site .consultation-card .status-pill { align-items: center; gap: 8px; }
+.telemed-site .consultation-card h2 { max-width: 100%; letter-spacing: 0; }
+.telemed-site .consultation-card .primary-button { margin-top: 24px; max-width: 100%; gap: 12px; }
 
 .telemed-site .status-pill {
   display: inline-flex;
@@ -1163,3 +1168,16 @@
 }
 .telemed-site .portal-navigation a { color: inherit; text-decoration: none; }
 .telemed-site .portal-navigation a:hover { text-decoration: underline; }
+.booking-process-card { padding: 18px; margin-bottom: 16px; border: 1px solid #dedde5; border-radius: 8px; background: #fff; overflow-wrap: anywhere; }
+.booking-process-card h3 { font-size: 18px; margin: 12px 0 6px; }
+.booking-process-card p { margin: 8px 0; }
+.booking-process-status { display: flex; align-items: center; gap: 8px; color: #69508a; font-weight: 700; }
+.booking-process-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 16px 0; margin: 12px 0 0; list-style: none; border-top: 1px solid #eee; }
+.booking-process-steps li { display: flex; align-items: center; flex-direction: column; gap: 8px; text-align: center; color: #777; }
+.booking-process-steps li > span { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid #bbb; border-radius: 50%; flex-shrink: 0; }
+.booking-process-steps .current { color: #69508a; font-weight: 700; }
+.booking-process-steps .current > span { background: #69508a; border-color: #69508a; color: white; }
+.booking-process-steps .complete { color: #247356; }
+.booking-process-steps .complete > span { background: #e5f4ec; border-color: #247356; }
+.booking-process-steps small { font-size: 12px; line-height: 1.5; }
+.booking-process-description { font-size: 14px; line-height: 1.6; color: #625c70; }

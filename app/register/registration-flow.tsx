@@ -358,6 +358,10 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
   const [signatureData, setSignatureData] = useState("");
   const [signerIntent, setSignerIntent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [signupProof, setSignupProof] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const submitPending = useRef(false);
   const [signaturePadVersion, setSignaturePadVersion] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -428,27 +432,33 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
   }
 
   async function submitRegistration() {
-    if (!canSubmit) return;
+    if (!canSubmit || !signupProof || submitPending.current) return;
+    submitPending.current = true; setSubmitting(true); setSubmitError('');
+    try {
     const submittedDate = new Date();
-    const signedPayload = JSON.stringify({
-      documentVersion: CONSENT_DOCUMENT_VERSION,
-      form,
-      health,
-      consents,
-      signerIntent,
-      otpVerified,
-      signatureData,
-      identityEvidence: { idCardCaptured: Boolean(identityMedia.idCard), selfieWithCardCaptured: Boolean(identityMedia.selfieWithCard) },
-      signedAt: submittedDate.toISOString(),
-    });
-    const digest = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(signedPayload));
-    const hash = Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-    setEvidenceId(`ES-${window.crypto.randomUUID().toUpperCase()}`);
-    setEvidenceHash(hash.toUpperCase());
-    setSubmittedAt(new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeStyle: "short" }).format(submittedDate));
-    setConfirmOpen(false);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const profile = buildRegisteredProfile(form, health);
+    const acceptedAt = submittedDate.toISOString();
+    const consent = (accepted: boolean) => ({ accepted, acceptedAt, version: CONSENT_DOCUMENT_VERSION });
+    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proof: signupProof, signup: {
+      title: form.title, name: form.firstName, lastname: form.lastName, nickname: form.nickname,
+      gender: form.gender === 'หญิง' ? 'Female' : form.gender === 'ชาย' ? 'Male' : 'Other', birthDate: form.birthDate,
+      preferredLanguage: form.preferredLanguage === 'ไทย' ? 'th' : 'en',
+      identity: { type: form.documentType, number: form.documentNumber }, phoneNumber: form.primaryPhone,
+      secondPhoneNumber: form.alternatePhone || undefined, email: form.email || undefined, lineId: form.lineId,
+      statusMarry: form.maritalStatus, address: profile.address,
+      subDistrict: form.sameAddress ? form.docSubdistrict : form.currentSubdistrict,
+      district: form.sameAddress ? form.docDistrict : form.currentDistrict,
+      province: form.sameAddress ? form.docProvince : form.currentProvince,
+      postcode: form.sameAddress ? form.docPostalCode : form.currentPostalCode,
+      consents: { pdpa: consent(consents.personalData && consents.privacy), medical: consent(consents.treatmentContact), marketing: consent(consents.marketing) },
+      customerInfo: { height: Number(form.height), weight: Number(form.startWeight), allergy: [profile.allergyHistory], otherImportant: [profile.healthHistory], emergencyContactName: form.emergencyName, emergencyContactPhone: form.emergencyPhone, emergencyContactRelation: form.emergencyRelationship },
+      telemedDetails: { form, health, consents, consentVersion: CONSENT_DOCUMENT_VERSION, signedAt: acceptedAt, signerIntent, signatureData, identityMedia },
+    } }) });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'สมัครไม่สำเร็จ');
+    window.location.replace('/register');
+    } catch (error) { setSubmitError(error instanceof Error ? error.message : 'สมัครไม่สำเร็จ'); }
+    finally { submitPending.current = false; setSubmitting(false); }
   }
 
   if (submitted) {
@@ -476,6 +486,7 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
       </header>
 
       <section className="registration-content">
+        {process.env.NODE_ENV === 'development' && <p role="status">โหมด Dev: การส่งแบบฟอร์มจะบันทึกลูกค้าในระบบทดสอบ</p>}
         {step === 1 && <PersonalStep form={form} errors={errors} identityMedia={identityMedia} onIdentityMedia={setIdentityMedia} update={updateForm} />}
         {step === 2 && <ContactStep form={form} errors={errors} update={updateForm} />}
         {step === 3 && <EmergencyStep form={form} errors={errors} update={updateForm} />}
@@ -488,6 +499,7 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
             consents={consents}
             requiredConsents={requiredConsents}
             otpVerified={otpVerified}
+            onSignupProof={setSignupProof}
             onOtpVerified={(value) => {
               setOtpVerified(value);
               if (!value) {
@@ -533,13 +545,14 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
       </footer>
 
       {confirmOpen && (
-        <div className="confirmation-backdrop" role="presentation" onMouseDown={(event) => event.currentTarget === event.target && setConfirmOpen(false)}>
+        <div className="confirmation-backdrop" role="presentation" onMouseDown={(event) => !submitting && event.currentTarget === event.target && setConfirmOpen(false)}>
           <section className="confirmation-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-            <button className="confirmation-close" type="button" aria-label="ปิด" onClick={() => setConfirmOpen(false)}><X size={18} aria-hidden="true" /></button>
+            <button className="confirmation-close" type="button" disabled={submitting} aria-label="ปิด" onClick={() => setConfirmOpen(false)}><X size={18} aria-hidden="true" /></button>
             <span><ShieldCheck size={25} aria-hidden="true" /></span>
             <h2 id="confirm-title">ยืนยันส่งข้อมูลให้คลินิกหรือไม่</h2>
             <p>หลังส่งแล้วคุณจะไม่สามารถแก้ไขข้อมูลได้เอง กรุณาตรวจสอบข้อมูลอีกครั้งก่อนยืนยัน</p>
-            <div><button type="button" onClick={() => setConfirmOpen(false)}>กลับไปตรวจสอบ</button><button type="button" onClick={submitRegistration}>ยืนยันส่งข้อมูล</button></div>
+            {submitError && <p role="alert" className="field-error">{submitError}</p>}
+            <div><button type="button" disabled={submitting} onClick={() => setConfirmOpen(false)}>กลับไปตรวจสอบ</button><button type="button" disabled={submitting} onClick={submitRegistration}>{submitting ? 'กำลังบันทึก...' : 'ยืนยันส่งข้อมูล'}</button></div>
           </section>
         </div>
       )}
@@ -680,8 +693,8 @@ function IdentityCameraCapture({ mode, onClose, onCapture }: { mode: keyof Ident
 
   function chooseImage(file?: File) {
     if (!file) return;
-    if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) {
-      setCameraError("กรุณาใช้ไฟล์รูปภาพ JPG หรือ PNG ขนาดไม่เกิน 10 MB");
+    if (!["image/jpeg", "image/png"].includes(file.type) || file.size > 3 * 1024 * 1024) {
+      setCameraError("กรุณาใช้ไฟล์รูปภาพ JPG หรือ PNG ขนาดไม่เกิน 3 MB");
       return;
     }
     const reader = new FileReader();
@@ -827,7 +840,7 @@ function HealthStep({ form, health, errors, updateForm, updateHealth }: {
   );
 }
 
-function ReviewStep({ form, health, identityMedia, consents, requiredConsents, otpVerified, onOtpVerified, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange }: {
+function ReviewStep({ form, health, identityMedia, consents, requiredConsents, otpVerified, onOtpVerified, onSignupProof, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange }: {
   form: RegistrationData;
   health: HealthData;
   identityMedia: IdentityMedia;
@@ -835,6 +848,7 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
   requiredConsents: boolean;
   otpVerified: boolean;
   onOtpVerified: (value: boolean) => void;
+  onSignupProof: (value: string) => void;
   signerIntent: boolean;
   onSignerIntent: (value: boolean) => void;
   signaturePadVersion: number;
@@ -846,24 +860,37 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [challengeId, setChallengeId] = useState('');
+  const [otpBusy, setOtpBusy] = useState(false);
   const healthYes = healthTopics.filter(({ key }) => health[key].status === "yes").map(({ label }) => label);
   const maskedDocument = form.documentNumber.length > 4 ? `${"•".repeat(Math.max(0, form.documentNumber.length - 4))}${form.documentNumber.slice(-4)}` : form.documentNumber;
 
-  function sendOtp() {
-    setOtpSent(true);
+  async function sendOtp() {
+    if (otpBusy) return;
+    setOtpBusy(true);
     setOtpCode("");
     setOtpError("");
     onOtpVerified(false);
+    onSignupProof('');
+    try {
+      const response = await fetch('/api/telemed/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      setChallengeId(result.challengeId); setOtpSent(true);
+    } catch (error) { setOtpError(error instanceof Error ? error.message : 'ส่ง OTP ไม่สำเร็จ'); }
+    finally { setOtpBusy(false); }
   }
 
-  function verifyOtp() {
-    if (otpCode !== MOCK_OTP) {
-      setOtpError("รหัสไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
-      onOtpVerified(false);
-      return;
-    }
-    setOtpError("");
-    onOtpVerified(true);
+  async function verifyOtp() {
+    if (otpBusy) return;
+    setOtpBusy(true); setOtpError('');
+    try {
+      const response = await fetch('/api/telemed/auth/verify-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone, challengeId, code: otpCode }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      onSignupProof(result.proof); onOtpVerified(true);
+    } catch (error) { onOtpVerified(false); setOtpError(error instanceof Error ? error.message : 'ยืนยัน OTP ไม่สำเร็จ'); }
+    finally { setOtpBusy(false); }
   }
 
   return (

@@ -1,0 +1,23 @@
+.telemed-auth { width: min(100%, 560px); margin: 0 auto; min-height: 100dvh; padding: 32px 24px; background: white; color: #292530; font-family: 'Noto Sans Thai', sans-serif; }
+.telemed-auth * { box-sizing: border-box; letter-spacing: 0; }
+.telemed-auth h1 { font-size: 26px; line-height: 1.4; margin: 24px 0 12px; }
+.telemed-auth h2 { font-size: 18px; }
+.telemed-auth img { object-fit: contain; object-position: left; }
+.telemed-auth p { font-size: 15px; line-height: 1.7; overflow-wrap: anywhere; }
+.telemed-auth .auth-back { display: flex; gap: 8px; align-items: center; padding-bottom: 28px; }
+.telemed-auth .auth-demo { color: #29634f; border-left: 3px solid #29634f; padding-left: 12px; }
+.telemed-auth form { display: grid; gap: 12px; margin: 28px 0; }
+.telemed-auth label { font-size: 15px; font-weight: 600; }
+.telemed-auth input { width: 100%; min-height: 48px; font: inherit; font-size: 18px; border: 1px solid #a9a2b1; border-radius: 6px; padding: 10px 12px; }
+.telemed-auth button, .telemed-auth .auth-primary { font: inherit; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ccc6d2; padding: 10px 14px; border-radius: 6px; background: white; cursor: pointer; text-decoration: none; }
+.telemed-auth .auth-primary { background: #66457d; color: white; border-color: #66457d; margin-top: 8px; }
+.telemed-auth .auth-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.telemed-auth button:disabled { opacity: .55; cursor: not-allowed; }
+.telemed-auth .auth-error { color: #a22734; }
+.telemed-auth .account-details { border-block: 1px solid #e2dfe7; padding: 20px 0; margin: 24px 0; }
+.telemed-auth .account-details dt { color: #69616f; font-size: 14px; }
+.telemed-auth .account-details dd { margin: 4px 0 18px; overflow-wrap: anywhere; }
+.telemed-auth :focus-visible { outline: 3px solid #286957; outline-offset: 3px; }
+.auth-spinner { animation: auth-spin 1s linear infinite; }
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .auth-spinner { animation: none; } }

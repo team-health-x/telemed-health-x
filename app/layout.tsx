@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import DemoSession from "./demo-session";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")),
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="th">
-      <body>{children}</body>
+      <body>{process.env.NODE_ENV === 'development' && process.env.TELEMED_DEMO_AUTH_ENABLED === 'true' && <DemoSession />}{children}</body>
     </html>
   );
 }

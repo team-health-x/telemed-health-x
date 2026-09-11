@@ -13,6 +13,7 @@ export default function RegistrationLayout({ children }: { children: React.React
     <div className="telemed-site">
       <nav className="portal-navigation" aria-label="กลับหน้าเว็บไซต์">
         <Link href="/">← กลับหน้า Program Resize</Link>
+        {process.env.NODE_ENV === 'development' && process.env.TELEMED_DEMO_AUTH_ENABLED === 'true' && <Link href="/login" style={{ marginLeft: 'auto' }}>เข้าสู่ระบบ</Link>}
       </nav>
       {children}
     </div>
