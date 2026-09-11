@@ -1,5 +1,3 @@
-import { isAbsolute } from 'node:path';
-
 export function hostedDev() {
   return process.env.TELEMED_DEPLOY_ENV === 'dev';
 }
@@ -8,7 +6,7 @@ export function demoEnabled() {
   if (process.env.TELEMED_DEPLOY_ENV && !['local', 'dev'].includes(process.env.TELEMED_DEPLOY_ENV)) return false;
   return process.env.TELEMED_DEMO_AUTH_ENABLED === 'true' && (
     hostedDev()
-      ? !!process.env.TELEMED_SESSION_DB_PATH && isAbsolute(process.env.TELEMED_SESSION_DB_PATH)
+      ? (process.env.TELEMED_SESSION_SECRET || process.env.TELEMED_DEMO_BRIDGE_SECRET || '').length >= 32
       : process.env.NODE_ENV === 'development'
   );
 }

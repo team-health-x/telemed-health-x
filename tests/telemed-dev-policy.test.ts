@@ -10,9 +10,10 @@ test('Dev deployment is explicit, HTTPS-only and origin-scoped', () => {
     delete process.env.TELEMED_DEPLOY_ENV;
     assert.equal(demoEnabled(), false);
     process.env.TELEMED_DEPLOY_ENV = 'dev';
-    delete process.env.TELEMED_SESSION_DB_PATH;
+    delete process.env.TELEMED_SESSION_SECRET;
+    delete process.env.TELEMED_DEMO_BRIDGE_SECRET;
     assert.equal(demoEnabled(), false);
-    process.env.TELEMED_SESSION_DB_PATH = '/data/auth.sqlite';
+    process.env.TELEMED_SESSION_SECRET = 's'.repeat(32);
     process.env.TELEMED_DEV_ORIGINS = 'https://telemed-dev.example.com';
     const request = (host: string, origin: string) => new Request('http://internal:3000/api', { headers: { host, origin } });
     const good = request('telemed-dev.example.com', 'https://telemed-dev.example.com');

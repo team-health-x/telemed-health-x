@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
-import { DemoAuthError } from '../../../lib/demo-auth-store';
+import { DemoAuthError } from '../../../lib/demo-auth';
 import { allowedRequestOrigin, validMutation } from '../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
