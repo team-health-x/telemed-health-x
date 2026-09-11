@@ -435,22 +435,13 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
     if (!canSubmit || submitPending.current) return;
     submitPending.current = true; setSubmitting(true); setSubmitError('');
     try {
-    let proof = signupProof;
-    if (!proof) {
-      const sent = await fetch('/api/telemed/auth/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
-      const challenge = await sent.json();
-      if (!sent.ok) throw new Error('ระบบบันทึกสมัครยังไม่พร้อมใช้งาน กรุณาลองใหม่ภายหลัง');
-      const verified = await fetch('/api/telemed/auth/verify-signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone, challengeId: challenge.challengeId, code: MOCK_OTP }) });
-      const verification = await verified.json();
-      if (!verified.ok) throw new Error(verification.error || 'ยืนยันการสมัครไม่สำเร็จ');
-      proof = verification.proof;
-      setSignupProof(proof);
-    }
+    const requestId = signupProof || crypto.randomUUID();
+    if (!signupProof) setSignupProof(requestId);
     const submittedDate = new Date();
     const profile = buildRegisteredProfile(form, health);
     const acceptedAt = submittedDate.toISOString();
     const consent = (accepted: boolean) => ({ accepted, acceptedAt, version: CONSENT_DOCUMENT_VERSION });
-    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proof, signup: {
+    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestId, mockOtp: MOCK_OTP, signup: {
       title: form.title, name: form.firstName, lastname: form.lastName, nickname: form.nickname,
       gender: form.gender === 'หญิง' ? 'Female' : form.gender === 'ชาย' ? 'Male' : 'Other', birthDate: form.birthDate,
       preferredLanguage: form.preferredLanguage === 'ไทย' ? 'th' : 'en',

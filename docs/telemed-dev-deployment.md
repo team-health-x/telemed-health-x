@@ -45,7 +45,7 @@ data: do not reset or seed over existing records.
 
 ## Sessions and registration
 
-Sessions and signup proofs now use server-signed tickets in HttpOnly cookies;
+Sessions now use server-signed tickets in HttpOnly cookies;
 no SQLite file or persistent volume is required. Existing SQLite sessions no
 longer work: log in again with the registered phone. Signup-issued sessions and
 login-issued sessions use the same customer ID. Cookies are Secure on HTTPS.
@@ -54,8 +54,10 @@ Sessions expire after eight hours without sliding renewal. Logout clears the
 browser cookie, but does not revoke a copied token on the server. Rotate the
 session secret to invalidate all sessions. This limitation and replayable mock
 signup proofs are Dev-only; production requires real OTP, rate limiting and
-revocable sessions. Signup proofs are short-lived, phone-bound and signed;
-the existing backend registration key keeps retries idempotent.
+revocable sessions. Registration confirmation calls `/api/telemed/register`
+directly with the mock code and a stable request UUID, never the OTP endpoints.
+The Dev-only route validates the mock code and derives a phone-bound registration
+key to keep retries idempotent; this is not proof of phone ownership.
 
 ## Verification
 
