@@ -1,13 +1,14 @@
 import { cookies } from 'next/headers';
-import { DEMO_COOKIE, demoEnabled, withDemoStore } from '../../../lib/demo-auth';
+import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
+import { allowedRequestOrigin, validMutation } from '../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 async function proxy(request: Request) {
-  const host = request.headers.get('host') ?? '';
-  if (!demoEnabled() || !/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host)) return json({ error: 'Not found' }, 404);
-  if (request.method === 'POST' && (request.headers.get('origin') !== `${new URL(request.url).protocol}//${host}` || request.headers.get('sec-fetch-site') === 'cross-site')) return json({ error: 'Invalid origin' }, 403);
+  const publicOrigin = allowedRequestOrigin(request);
+  if (!publicOrigin) return json({ error: 'Not found' }, 404);
+  if (request.method === 'POST' && !validMutation(request, publicOrigin)) return json({ error: 'Invalid origin' }, 403);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
   const session = withDemoStore(store => store.session(token));
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบก่อนส่งนัดหมาย' }, 401);

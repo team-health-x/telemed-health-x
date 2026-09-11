@@ -5,6 +5,11 @@
 }
 
 .telemed-site .portal-navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  row-gap: 4px;
   max-width: var(--registration-width);
   padding: 12px var(--registration-gutter);
 }

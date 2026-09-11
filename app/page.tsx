@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { demoEnabled } from './lib/telemed-dev-policy';
 import {
   ClipboardCheck,
   Lightbulb,
@@ -56,7 +57,7 @@ export default function Home() {
           <a href="#steps">ขั้นตอน</a>
           <a href="#faq">คำถามที่พบบ่อย</a>
         </nav>
-        <div className="header-actions">{process.env.NODE_ENV === 'development' && process.env.TELEMED_DEMO_AUTH_ENABLED === 'true' && <a href="/login">เข้าสู่ระบบ</a>}<a className="register-button" href="/register">ลงทะเบียน</a></div>
+        <div className="header-actions">{demoEnabled() && <a href="/login">เข้าสู่ระบบ</a>}<a className="register-button" href="/register">ลงทะเบียน</a></div>
       </header>
 
       <section className="hero" id="top">

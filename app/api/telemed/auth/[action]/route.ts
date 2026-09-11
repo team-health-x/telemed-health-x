@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { DEMO_COOKIE, demoEnabled, withDemoStore } from '../../../../lib/demo-auth';
+import { DEMO_COOKIE, withDemoStore } from '../../../../lib/demo-auth';
 import { DemoAuthError } from '../../../../lib/demo-auth-store';
+import { allowedRequestOrigin, validMutation } from '../../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,11 +11,9 @@ function json(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { 'Cache-Control': 'no-store', 'Vary': 'Cookie' } });
 }
 function permitted(request: Request, mutation: boolean) {
-  const url = new URL(request.url);
-  const host = request.headers.get('host') ?? '';
-  const local = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
-  if (!demoEnabled() || !local) return json({ error: 'Not found' }, 404);
-  if (mutation && (request.headers.get('origin') !== `${url.protocol}//${host}` || request.headers.get('sec-fetch-site') === 'cross-site')) {
+  const origin = allowedRequestOrigin(request);
+  if (!origin) return json({ error: 'Not found' }, 404);
+  if (mutation && !validMutation(request, origin)) {
     return json({ error: 'Invalid origin' }, 403);
   }
   return null;
@@ -32,7 +31,7 @@ export async function POST(request: Request, context: Context) {
   if (blocked) return blocked;
   const { action } = await context.params;
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
-  const cookieOptions = { httpOnly: true, sameSite: 'strict' as const, secure: new URL(request.url).protocol === 'https:', path: '/' };
+  const cookieOptions = { httpOnly: true, sameSite: 'strict' as const, secure: allowedRequestOrigin(request)!.startsWith('https:'), path: '/' };
   try {
     if (action === 'logout') {
       withDemoStore(store => store.logout(token));
