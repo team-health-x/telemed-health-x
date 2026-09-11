@@ -347,7 +347,7 @@ function validateStep(step: number, form: RegistrationData, health: HealthData):
   return next;
 }
 
-export default function RegistrationFlow({ onComplete }: { onComplete: (profile: RegisteredProfile) => void }) {
+export default function RegistrationFlow({ onComplete, allowTestData = false }: { onComplete: (profile: RegisteredProfile) => void; allowTestData?: boolean }) {
   const [step, setStep] = useState(1);
   const [language, setLanguage] = useState<"th" | "en">("th");
   const [form, setForm] = useState<RegistrationData>(initialForm);
@@ -368,6 +368,34 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
   const [submittedAt, setSubmittedAt] = useState("");
   const [evidenceId, setEvidenceId] = useState("");
   const [evidenceHash, setEvidenceHash] = useState("");
+  const [testSignature, setTestSignature] = useState('');
+
+  function randomizeTestData() {
+    if (!allowTestData || submitting || submitPending.current) return;
+    const id = crypto.randomUUID().replaceAll('-', '').toUpperCase();
+    const phone = '08' + String(crypto.getRandomValues(new Uint32Array(1))[0] % 100000000).padStart(8, '0');
+    const canvas = document.createElement('canvas');
+    canvas.width = 760; canvas.height = 220;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 760, 220);
+    ctx.fillStyle = '#56377b'; ctx.font = 'bold 36px sans-serif';
+    ctx.fillText('TEST ONLY - NOT A REAL SIGNATURE', 22, 95);
+    ctx.font = '24px monospace'; ctx.fillText(id, 22, 145);
+    const signature = canvas.toDataURL('image/png');
+    setForm({ ...initialForm, documentType: 'passport', documentNumber: `T${id.slice(0, 11)}`,
+      firstName: `ทดสอบ${id.slice(0, 6)}`, lastName: `ระบบ${id.slice(6, 12)}`, nickname: 'ทดสอบ',
+      firstNameEn: 'TEST', lastNameEn: id.slice(0, 12), primaryPhone: phone, alternatePhone: '',
+      email: `test-${id.toLowerCase()}@example.com`, lineId: `test${id.slice(0, 12)}`,
+      emergencyName: 'ผู้ติดต่อทดสอบ', emergencyPhone: phone,
+    });
+    setHealth(Object.fromEntries(healthTopics.map(({ key }) => [key, { ...emptyHealth, status: 'none' }])) as HealthData);
+    setIdentityMedia({ idCard: '', selfieWithCard: '' });
+    setConsents({ accurate: true, personalData: true, privacy: true, treatmentContact: true, marketing: true });
+    setOtpVerified(true); setSignerIntent(true); setSignatureData(signature); setTestSignature(signature);
+    setSignaturePadVersion(value => value + 1); setSignupProof(''); setErrors({}); setSubmitError(''); setConfirmOpen(false);
+    setStep(5);
+  }
 
   const allStepsValid = useMemo(
     () => [1, 2, 3, 4].every((index) => Object.keys(validateStep(index, form, health)).length === 0),
@@ -485,6 +513,7 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
         <p className="eyebrow">CUSTOMER REGISTRATION</p>
         <h1>{steps[step - 1].title}</h1>
         <p>{steps[step - 1].description}</p>
+        {allowTestData && <button className="wide-button soft" type="button" disabled={submitting} onClick={randomizeTestData}><RefreshCw size={18} aria-hidden="true" />สุ่มข้อมูลทดสอบ + ยอมรับทั้งหมด + ลายเซ็นทดสอบ</button>}
       </header>
 
       <section className="registration-content">
@@ -494,6 +523,7 @@ export default function RegistrationFlow({ onComplete }: { onComplete: (profile:
         {step === 4 && <HealthStep form={form} health={health} errors={errors} updateForm={updateForm} updateHealth={updateHealth} />}
         {step === 5 && (
           <ReviewStep
+            testSignature={signatureData === testSignature ? testSignature : undefined}
             form={form}
             health={health}
             identityMedia={identityMedia}
@@ -841,7 +871,8 @@ function HealthStep({ form, health, errors, updateForm, updateHealth }: {
   );
 }
 
-function ReviewStep({ form, health, identityMedia, consents, requiredConsents, otpVerified, onOtpVerified, onSignupProof, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange }: {
+function ReviewStep({ form, health, identityMedia, consents, requiredConsents, otpVerified, onOtpVerified, onSignupProof, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange, testSignature }: {
+  testSignature?: string;
   form: RegistrationData;
   health: HealthData;
   identityMedia: IdentityMedia;
@@ -942,7 +973,7 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
                 <span>{signerIntent && <Check size={14} strokeWidth={3} aria-hidden="true" />}</span>
                 <div><strong>ฉันอ่านและยอมรับเอกสารแล้ว <em>*</em></strong><small>ยืนยันว่าลงลายมือชื่อด้วยตนเอง • {CONSENT_DOCUMENT_VERSION}</small></div>
               </label>
-              <SignaturePad key={signaturePadVersion} disabled={!requiredConsents || !otpVerified || !signerIntent} onSignatureChange={onSignatureChange} />
+              <SignaturePad key={signaturePadVersion} initialImage={testSignature} disabled={!requiredConsents || !otpVerified || !signerIntent} onSignatureChange={onSignatureChange} />
             </div>
           </section>
         </div>
@@ -975,10 +1006,22 @@ function ConsentDocument({ title, onClose }: { title: string; onClose: () => voi
   );
 }
 
-function SignaturePad({ disabled, onSignatureChange }: { disabled: boolean; onSignatureChange: (value: string) => void }) {
+function SignaturePad({ disabled, onSignatureChange, initialImage }: { disabled: boolean; onSignatureChange: (value: string) => void; initialImage?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const hasInk = useRef(false);
+  useEffect(() => {
+    if (!initialImage || disabled) return;
+    let active = true;
+    const image = new window.Image();
+    image.onload = () => {
+      if (!active || !canvasRef.current) return;
+      canvasRef.current.getContext('2d')?.drawImage(image, 0, 0);
+      hasInk.current = true;
+    };
+    image.src = initialImage;
+    return () => { active = false; };
+  }, [initialImage, disabled]);
 
   function point(event: React.PointerEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current!;

@@ -11,7 +11,7 @@ export default async function RegistrationPage({ searchParams }: { searchParams:
     const { DEMO_COOKIE, withDemoStore } = await import('../lib/demo-auth');
     const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
     const session = withDemoStore(store => store.session(token));
-    if (session) return <CustomerPortal customer={session.customer} initialTab={initialTab} />;
+    if (session) return <CustomerPortal customer={session.customer} initialTab={initialTab} allowTestData={demoEnabled()} />;
   }
-  return <CustomerPortal />;
+  return <CustomerPortal allowTestData={demoEnabled()} />;
 }

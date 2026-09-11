@@ -70,7 +70,7 @@ const doctors: Doctor[] = [
   { id: "pavee", initials: "ปช", image: "/doctors/doctor-pavee.jpg", name: "พญ. ปวีณ์ ชาญกิจ", specialty: "เวชศาสตร์ชะลอวัย", duration: "45 นาที", price: 800 },
 ];
 
-export default function CustomerPortal({ customer, initialTab = 'home' }: { customer?: { customerId?: string; name: string; phone: string }; initialTab?: 'home' | 'appointments' }) {
+export default function CustomerPortal({ customer, initialTab = 'home', allowTestData = false }: { customer?: { customerId?: string; name: string; phone: string }; initialTab?: 'home' | 'appointments'; allowTestData?: boolean }) {
   useEffect(() => {
     if (!customer) return;
     const channel = new BroadcastChannel('telemed-demo-auth');
@@ -118,6 +118,7 @@ export default function CustomerPortal({ customer, initialTab = 'home' }: { cust
     }
     return (
       <RegistrationFlow
+        allowTestData={allowTestData}
         key="mock-data-v1"
         onComplete={(profile) => {
           setProfileData(profile);
