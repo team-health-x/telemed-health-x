@@ -1,0 +1,129 @@
+name: Telemed Azure CI-CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the tested image to the existing Telemed production app
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telemed-azure-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: healthxregistry
+  IMAGE_REPOSITORY: healthxregistry.azurecr.io/healthx-telemed-web
+
+jobs:
+  verify:
+    name: Test and build container
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.17.0'
+      - name: Install locked dependencies
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.15.4 --activate
+          pnpm install --frozen-lockfile
+      - name: Test production guards and Dev regressions
+        run: |
+          node --experimental-strip-types --test tests/telemed-api-origin.test.ts tests/telemed-dev-policy.test.ts
+          node --test tests/signed-dev-auth.test.cjs tests/mock-registration-submit.test.cjs
+          python3 -B -m unittest discover -s tests -p deploy_azure_test.py
+      - name: Build production image (includes TypeScript check)
+        run: docker build --pull --tag telemed-ci:tested .
+      - name: Smoke-test the exact container without backend credentials
+        run: >-
+          docker run --rm --network none
+          --mount type=bind,source="$PWD/scripts/container-smoke.cjs",target=/tmp/container-smoke.cjs,readonly
+          telemed-ci:tested node /tmp/container-smoke.cjs
+      - name: Save tested image for publishing
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: docker save --output /tmp/telemed-image.tar telemed-ci:tested
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          name: telemed-tested-image
+          path: /tmp/telemed-image.tar
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+
+  release:
+    name: Publish and optionally deploy production
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check OIDC configuration
+        shell: bash
+        run: |
+          : "${AZURE_CLIENT_ID:?Set production environment variable AZURE_CLIENT_ID}"
+          : "${AZURE_TENANT_ID:?Set production environment variable AZURE_TENANT_ID}"
+          : "${AZURE_SUBSCRIPTION_ID:?Set production environment variable AZURE_SUBSCRIPTION_ID}"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: telemed-tested-image
+          path: /tmp/telemed-artifact
+      - name: Publish the verified image with a unique version tag
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker load --input /tmp/telemed-artifact/telemed-image.tar
+          az acr login --name "$REGISTRY"
+          image="$IMAGE_REPOSITORY:sha-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker tag telemed-ci:tested "$image"
+          docker push "$image"
+          digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$image")
+          [[ "$digest" == "$IMAGE_REPOSITORY@sha256:"* ]]
+          echo "reference=$digest" >> "$GITHUB_OUTPUT"
+          printf '### Published Telemed image\n\n`%s`\n\nDigest: `%s`\n' "$image" "$digest" >> "$GITHUB_STEP_SUMMARY"
+      - name: Update only the existing Telemed app
+        if: >-
+          (github.event_name == 'workflow_dispatch' && inputs.deploy) ||
+          (github.event_name == 'push' && vars.TELEMED_AUTO_DEPLOY == 'true')
+        env:
+          TELEMED_IMAGE: ${{ steps.image.outputs.reference }}
+          TELEMED_REVISION_SUFFIX: gh-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 scripts/deploy-azure.py
+      - name: Report publication-only run
+        if: >-
+          !((github.event_name == 'workflow_dispatch' && inputs.deploy) ||
+          (github.event_name == 'push' && vars.TELEMED_AUTO_DEPLOY == 'true'))
+        run: echo 'Image published only. No Container App was changed.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Clear registry login
+        if: always()
+        run: docker logout healthxregistry.azurecr.io
