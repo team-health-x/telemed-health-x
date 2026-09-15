@@ -10,6 +10,14 @@ import urllib.request
 APP = 'healthx-telemed-web'
 GROUP = 'healthx-clinic-app'
 REPOSITORY = 'healthxregistry.azurecr.io/healthx-telemed-web'
+DEV_GROUP = 'healthx-clinic-app-dev'
+DEV_ORIGIN = 'https://healthx-api.kindrock-9a3ea2bc.southeastasia.azurecontainerapps.io'
+
+
+def target_group(target):
+    if target not in ('prod', 'dev'):
+        raise ValueError('Unknown deployment target')
+    return DEV_GROUP if target == 'dev' else GROUP
 
 
 def az(*args):
@@ -18,12 +26,13 @@ def az(*args):
     return json.loads(result.stdout) if result.stdout.strip() else None
 
 
-def validate(app, image, suffix):
+def validate(app, image, suffix, target='prod'):
+    group = target_group(target)
     if not re.fullmatch(re.escape(REPOSITORY) + r'@sha256:[0-9a-f]{64}', image):
         raise ValueError('Deploy requires the exact Telemed repository and SHA256 digest')
     if not re.fullmatch(r'gh-[0-9]+-[0-9]+', suffix):
         raise ValueError('Invalid revision suffix')
-    if app.get('name') != APP or app.get('resourceGroup', '').lower() != GROUP:
+    if app.get('name') != APP or app.get('resourceGroup', '').lower() != group:
         raise ValueError('Unexpected app target')
     properties = app['properties']
     configuration = properties['configuration']
@@ -44,35 +53,55 @@ def validate(app, image, suffix):
     if container.get('command') or container.get('args'):
         raise ValueError('Remove startup overrides; use the image startup command')
     env = {entry['name']: entry for entry in container.get('env', [])}
-    for key, expected in [('TELEMED_DEPLOY_ENV', 'prod'), ('TELEMED_DEMO_AUTH_ENABLED', 'false')]:
-        if key in env and env[key].get('value') != expected:
-            raise ValueError(f'Unsafe or secret-backed override: {key}')
+    if target == 'prod':
+        for key, expected in [('TELEMED_DEPLOY_ENV', 'prod'), ('TELEMED_DEMO_AUTH_ENABLED', 'false')]:
+            if key in env and env[key].get('value') != expected:
+                raise ValueError(f'Unsafe or secret-backed override: {key}')
+    else:
+        # The image stays production-safe; Dev is an explicit runtime configuration.
+        for key, expected in [('TELEMED_DEPLOY_ENV', 'dev'),
+                              ('TELEMED_API_ORIGIN', DEV_ORIGIN),
+                              ('TELEMED_WORKFLOW_ORIGIN', DEV_ORIGIN)]:
+            if env.get(key, {}).get('value') != expected:
+                raise ValueError(f'Dev app requires explicit {key} pointing to Dev')
+        demo = env.get('TELEMED_DEMO_AUTH_ENABLED', {}).get('value', 'false')
+        if demo not in ('true', 'false') or env.get('TELEMED_DEMO_AUTH_ENABLED', {}).get('secretRef'):
+            raise ValueError('Dev demo flag must be an explicit boolean string')
+        if demo == 'true':
+            origins = env.get('TELEMED_DEV_ORIGINS', {}).get('value', '').split(',')
+            if 'https://' + fqdn not in [origin.strip() for origin in origins]:
+                raise ValueError('Dev mock authentication requires the app HTTPS origin allowlist')
+            for key in ('TELEMED_SESSION_SECRET', 'TELEMED_DEMO_BRIDGE_SECRET'):
+                if not env.get(key, {}).get('secretRef'):
+                    raise ValueError(f'Configure {key} through Azure Secrets before enabling Dev demo')
     return container['name'], fqdn
 
 
 def main():
+    target = os.environ.get('TELEMED_DEPLOY_TARGET', 'prod')
+    group = target_group(target)
     image = os.environ['TELEMED_IMAGE']
     suffix = os.environ['TELEMED_REVISION_SUFFIX']
-    app = az('containerapp', 'show', '--name', APP, '--resource-group', GROUP)
-    container, fqdn = validate(app, image, suffix)
+    app = az('containerapp', 'show', '--name', APP, '--resource-group', group)
+    container, fqdn = validate(app, image, suffix, target)
     previous = app['properties'].get('latestReadyRevisionName', '')
     revision = APP + '--' + suffix
-    print(f'Target: {GROUP}/{APP}; previous ready revision: {previous}')
+    print(f'Target: {group}/{APP}; previous ready revision: {previous}')
     summary = os.environ.get('GITHUB_STEP_SUMMARY')
     if summary:
         with open(summary, 'a', encoding='utf-8') as report:
             report.write(f'\n### Deployment\nPrevious ready revision: `{previous}`\n\nTarget: `{revision}`\n')
-    az('containerapp', 'update', '--name', APP, '--resource-group', GROUP,
+    az('containerapp', 'update', '--name', APP, '--resource-group', group,
        '--container-name', container, '--image', image, '--revision-suffix', suffix)
     for _ in range(60):
-        current = az('containerapp', 'show', '--name', APP, '--resource-group', GROUP)['properties']
+        current = az('containerapp', 'show', '--name', APP, '--resource-group', group)['properties']
         if current.get('latestReadyRevisionName') == revision:
             break
         time.sleep(10)
     else:
         raise RuntimeError('New revision did not become ready within 10 minutes; inspect Azure before retrying')
     deployed = az('containerapp', 'revision', 'show', '--name', APP,
-                  '--resource-group', GROUP, '--revision', revision)
+                  '--resource-group', group, '--revision', revision)
     actual = deployed['properties']['template']['containers']
     if not any(c['name'] == container and c['image'] == image for c in actual):
         raise RuntimeError('Ready revision does not contain the requested image digest')
