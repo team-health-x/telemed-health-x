@@ -20,6 +20,33 @@ class DeploymentGuardTests(unittest.TestCase):
     def test_expected_app(self):
         self.assertEqual(deploy.validate(self.app, self.image, 'gh-123-1')[0], 'telemed')
 
+    def test_runtime_merge_preserves_other_env_and_secret_refs(self):
+        self.app['properties']['configuration']['secrets'] = [{'name': 'session'}]
+        self.app['properties']['template']['containers'][0]['env'] = [
+            {'name': 'EXISTING', 'value': 'keep'},
+            {'name': 'TELEMED_SESSION_SECRET', 'secretRef': 'session'},
+            {'name': 'TELEMED_DEPLOY_ENV', 'value': 'prod'}]
+        planned = deploy.with_runtime_env(self.app, {'TELEMED_DEPLOY_ENV': 'dev'})
+        env = planned['properties']['template']['containers'][0]['env']
+        self.assertIn({'name': 'EXISTING', 'value': 'keep'}, env)
+        self.assertIn({'name': 'TELEMED_SESSION_SECRET', 'secretRef': 'session'}, env)
+        self.assertIn({'name': 'TELEMED_DEPLOY_ENV', 'value': 'dev'}, env)
+        self.assertEqual(self.app['properties']['template']['containers'][0]['env'][-1]['value'], 'prod')
+
+    def test_runtime_rejects_plaintext_and_missing_secret(self):
+        for value in ['plaintext', 'secretref:', 'secretref:missing']:
+            with self.assertRaises(ValueError):
+                deploy.with_runtime_env(self.app, {'TELEMED_SESSION_SECRET': value})
+        self.app['properties']['configuration']['secrets'] = [{'name': 'session'}]
+        result = deploy.with_runtime_env(self.app, {'TELEMED_SESSION_SECRET': 'secretref:session'})
+        self.assertIn({'name': 'TELEMED_SESSION_SECRET', 'secretRef': 'session'}, result['properties']['template']['containers'][0]['env'])
+
+    def test_local_revision_suffix(self):
+        deploy.validate(self.dev_app(), self.image, 'local-0123456789abcdef', 'dev')
+        for suffix in ['local-', 'local-../prod', 'local-123', 'local-' + 'z' * 16]:
+            with self.assertRaises(ValueError):
+                deploy.validate(self.dev_app(), self.image, suffix, 'dev')
+
     def test_rejects_other_images_and_tags(self):
         for image in ['healthxregistry.azurecr.io/healthx-web@sha256:' + 'a'*64, deploy.REPOSITORY + ':prod']:
             with self.assertRaises(ValueError):

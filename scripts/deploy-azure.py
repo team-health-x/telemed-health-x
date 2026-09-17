@@ -1,5 +1,6 @@
 """Update the Telemed image only; never create resources or replace app secrets."""
 import json
+import copy
 import os
 import re
 import subprocess
@@ -30,7 +31,7 @@ def validate(app, image, suffix, target='prod'):
     group = target_group(target)
     if not re.fullmatch(re.escape(REPOSITORY) + r'@sha256:[0-9a-f]{64}', image):
         raise ValueError('Deploy requires the exact Telemed repository and SHA256 digest')
-    if not re.fullmatch(r'gh-[0-9]+-[0-9]+', suffix):
+    if not re.fullmatch(r'gh-[0-9]+-[0-9]+|local-[0-9a-f]{16}', suffix):
         raise ValueError('Invalid revision suffix')
     if app.get('name') != APP or app.get('resourceGroup', '').lower() != group:
         raise ValueError('Unexpected app target')
@@ -77,12 +78,39 @@ def validate(app, image, suffix, target='prod'):
     return container['name'], fqdn
 
 
-def main():
+def with_runtime_env(app, runtime_env):
+    planned = copy.deepcopy(app)
+    containers = planned['properties']['template']['containers']
+    if len(containers) != 1:
+        raise ValueError('Expected a single-container Telemed app')
+    entries = {entry['name']: entry for entry in containers[0].get('env', [])}
+    secrets = {entry['name'] for entry in planned['properties']['configuration'].get('secrets', [])}
+    for key, value in runtime_env.items():
+        if not re.fullmatch(r'TELEMED_[A-Z0-9_]+', key) or not isinstance(value, str):
+            raise ValueError('Invalid Telemed runtime variable')
+        if re.search(r'SECRET|PASSWORD|TOKEN|API_KEY|PRIVATE_KEY', key) and not value.startswith('secretref:'):
+            raise ValueError(f'{key} must reference an Azure secret, not a plaintext value')
+        if value.startswith('secretref:'):
+            name = value[len('secretref:'):]
+            if not name or name not in secrets:
+                raise ValueError(f'Azure secret referenced by {key} does not exist')
+            entries[key] = {'name': key, 'secretRef': name}
+        else:
+            entries[key] = {'name': key, 'value': value}
+    containers[0]['env'] = list(entries.values())
+    return planned
+
+
+def main(runtime_env=None):
     target = os.environ.get('TELEMED_DEPLOY_TARGET', 'prod')
     group = target_group(target)
     image = os.environ['TELEMED_IMAGE']
     suffix = os.environ['TELEMED_REVISION_SUFFIX']
     app = az('containerapp', 'show', '--name', APP, '--resource-group', group)
+    if runtime_env is not None:
+        if target != 'dev':
+            raise ValueError('Local runtime env updates are Dev-only')
+        app = with_runtime_env(app, runtime_env)
     container, fqdn = validate(app, image, suffix, target)
     previous = app['properties'].get('latestReadyRevisionName', '')
     revision = APP + '--' + suffix
@@ -91,8 +119,9 @@ def main():
     if summary:
         with open(summary, 'a', encoding='utf-8') as report:
             report.write(f'\n### Deployment\nPrevious ready revision: `{previous}`\n\nTarget: `{revision}`\n')
+    env_args = ['--set-env-vars', *[f'{key}={value}' for key, value in runtime_env.items()]] if runtime_env else []
     az('containerapp', 'update', '--name', APP, '--resource-group', group,
-       '--container-name', container, '--image', image, '--revision-suffix', suffix)
+       '--container-name', container, '--image', image, '--revision-suffix', suffix, *env_args)
     for _ in range(60):
         current = az('containerapp', 'show', '--name', APP, '--resource-group', group)['properties']
         if current.get('latestReadyRevisionName') == revision:

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "./loading-image";
 import { useRef } from "react";
 
 const results = [
