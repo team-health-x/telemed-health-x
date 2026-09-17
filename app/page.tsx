@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "./loading-image";
 import {
   RefreshCw,
   Stethoscope,

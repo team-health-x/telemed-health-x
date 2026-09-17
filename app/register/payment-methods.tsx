@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Building2, RefreshCw } from 'lucide-react';
+import UiSkeleton from '../ui-skeleton';
 export default function PaymentMethods({ onAvailable }: { onAvailable: (available: boolean) => void }) {
   const [methods, setMethods] = useState<{id: string; name: string}[] | null>(null);
   const [error, setError] = useState('');
@@ -17,7 +18,7 @@ export default function PaymentMethods({ onAvailable }: { onAvailable: (availabl
   }, [attempt, onAvailable]);
   return <div className='payment-panel'>
     <h3>ช่องทางชำระของสาขา Telemed</h3>
-    {!methods && !error && <p role='status'>กำลังโหลดช่องทางชำระ...</p>}
+    {!methods && !error && <UiSkeleton rows={2} label="กำลังโหลดช่องทางชำระ" />}
     {error && <div role='alert'><p>{error}</p><button type='button' className='wide-button soft' onClick={() => setAttempt(n => n + 1)}><RefreshCw size={18} />ลองใหม่</button></div>}
     {methods?.length === 0 && <p role='status'>ยังไม่มีช่องทางชำระออนไลน์ที่เปิดใช้งาน</p>}
     {methods?.map(method => <div className='payment-account' key={method.id}><Building2 size={20} aria-hidden='true' /><strong>{method.name}</strong></div>)}
