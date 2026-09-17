@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Building2, Check, FileCheck2, ImagePlus, LoaderCircle, RefreshCw, ShieldCheck, Stethoscope, Upload, Video, WalletCards, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Check, FileCheck2, ImagePlus, RefreshCw, ShieldCheck, Stethoscope, Upload, Video, WalletCards, X } from "lucide-react";
 import "./booking-sheet.css";
 import PaymentMethods from './payment-methods';
+import UiSkeleton from '../ui-skeleton';
 
 type Offering = {
   courseId: string; courseItemId: string; courseName: string; courseCode: string;
@@ -77,7 +78,7 @@ export default function BookingSheet({ onClose, onSubmitted }: { onClose?: () =>
         <div className="booking-load-state">
           {error ? <><p role="alert">{error}</p><button className="wide-button" type="button" onClick={retry}><RefreshCw size={18} />ลองใหม่</button></> :
             doctors ? <><p role="status">ยังไม่มีแพทย์เปิดรับนัดในช่วงนี้</p><button className="wide-button" type="button" onClick={retry}>ตรวจสอบอีกครั้ง</button></> :
-            <p role="status"><LoaderCircle className="booking-spinner" size={22} />กำลังโหลดแพทย์และคอร์ส...</p>}
+            <UiSkeleton label="กำลังโหลดแพทย์และคอร์ส" />}
         </div>
       </>}
     </section>

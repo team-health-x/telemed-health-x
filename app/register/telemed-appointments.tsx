@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { CalendarDays, RefreshCw, Video, Check, Clock } from 'lucide-react';
+import UiSkeleton from '../ui-skeleton';
 
 type Booking = { id: string; state: string; doctorName: string; courseName: string; date: string; time: string; price: number; saleOrderId: string; meetingUrl: string | null };
 const labels: Record<string, string> = { PENDING_PAYMENT: 'รอตรวจสอบการชำระเงิน', PENDING_MEETING: 'รอลิงก์ Meeting', CONFIRMED: 'นัดหมายเรียบร้อย', CANCELLED: 'ยกเลิกแล้ว' };
@@ -38,7 +39,7 @@ export default function TelemedAppointments({ refreshKey, onBook, compact = fals
     .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)) : items;
   return <section className={compact ? 'booking-summary' : 'tab-page'}>
     {!compact && <h2>นัดหมายของคุณ</h2>}
-    {loading && <p role="status">กำลังโหลดนัดหมาย...</p>}
+    {loading && !error && <UiSkeleton rows={compact ? 1 : 3} label="กำลังโหลดนัดหมาย" />}
     {error && <div role="alert"><p>{error}</p><button type="button" className="wide-button soft" onClick={() => setAttempt(x => x + 1)}><RefreshCw size={18} />ลองใหม่</button></div>}
     {!loading && !error && !visibleItems.length && <p>ยังไม่มีนัดหมายที่กำลังดำเนินการ</p>}
     {!error && visibleItems.map(item => <article className="booking-process-card" key={item.id}>

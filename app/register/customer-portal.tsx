@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import RegistrationFlow, { type RegisteredProfile } from "./registration-flow";
 import BookingSheet from "./booking-sheet";
 import TelemedAppointments from "./telemed-appointments";
+import UiSkeleton from '../ui-skeleton';
 import {
   ArrowRight,
   CalendarDays,
@@ -357,7 +358,7 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
         <h2>ประวัติการนัดหมายและชำระเงิน</h2>
         <p>รายการล่าสุดไม่เกิน 100 รายการ</p>
       </div>
-      {loading && <p role="status">กำลังโหลดประวัติ...</p>}
+      {loading && !error && <UiSkeleton label="กำลังโหลดประวัติ" />}
       {error && <div role="alert"><p>{error}</p><button type="button" className="wide-button soft" onClick={() => setAttempt(value => value + 1)}><RefreshCw size={18} />ลองใหม่</button></div>}
       {!loading && !error && <>
       <div className="history-summary-grid">

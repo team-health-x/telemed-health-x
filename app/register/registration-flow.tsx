@@ -100,7 +100,12 @@ type HealthKey =
   | "majorTreatment"
   | "pregnancy"
   | "breastfeeding"
-  | "pregnancyPlan";
+  | "pregnancyPlan"
+  | "pancreatitis"
+  | "hypoglycemia"
+  | "severeGastrointestinalDisease"
+  | "diabeticRetinopathy"
+  | "medicationReview";
 
 type HealthData = Record<HealthKey, HealthEntry>;
 type Errors = Record<string, string>;
@@ -189,6 +194,11 @@ const healthTopics: { key: HealthKey; label: string; hint: string }[] = [
   { key: "pregnancy", label: "การตั้งครรภ์", hint: "เลือกสถานะที่ตรงกับปัจจุบัน" },
   { key: "breastfeeding", label: "ให้นมบุตร", hint: "เลือกสถานะที่ตรงกับปัจจุบัน" },
   { key: "pregnancyPlan", label: "วางแผนตั้งครรภ์", hint: "รวมแผนในช่วง 12 เดือนข้างหน้า" },
+  { key: "pancreatitis", label: "มีภาวะหรือประวัติตับอ่อนอักเสบหรือไม่", hint: "หากมี โปรดระบุรายละเอียดและช่วงเวลาที่ได้รับการวินิจฉัย" },
+  { key: "hypoglycemia", label: "มีภาวะหรือประวัติน้ำตาลในเลือดต่ำหรือไม่", hint: "หากมี โปรดระบุอาการและช่วงเวลาที่เกิด" },
+  { key: "severeGastrointestinalDisease", label: "มีโรคเกี่ยวกับทางเดินอาหารรุนแรงหรือไม่", hint: "หากมี โปรดระบุชื่อโรคและการรักษาปัจจุบัน" },
+  { key: "diabeticRetinopathy", label: "มีภาวะเบาหวานขึ้นจอประสาทตาหรือไม่", hint: "หากมี โปรดระบุรายละเอียดการรักษาหรือติดตามอาการ" },
+  { key: "medicationReview", label: "กำลังใช้ยากลุ่มซัลโฟนิลยูเรีย อินซูลิน วาร์ฟาริน หรือดิจอกซินหรือไม่", hint: "โปรดระบุชื่อยาและขนาดยาที่ใช้ หากไม่แน่ใจเลือกไม่ทราบ เพื่อให้แพทย์หรือเภสัชกรตรวจสอบ" },
 ];
 
 const mockHealth: Partial<Record<HealthKey, Partial<HealthEntry>>> = {
@@ -197,7 +207,7 @@ const mockHealth: Partial<Record<HealthKey, Partial<HealthEntry>>> = {
 };
 
 const initialHealth = Object.fromEntries(
-  healthTopics.map(({ key }) => [key, { ...emptyHealth, status: "none", ...mockHealth[key] }]),
+  healthTopics.map(({ key }) => [key, { ...emptyHealth, ...mockHealth[key] }]),
 ) as HealthData;
 
 function formatAddress(form: RegistrationData, current: boolean) {
@@ -892,7 +902,6 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
-  const healthYes = healthTopics.filter(({ key }) => health[key].status === "yes").map(({ label }) => label);
   const maskedDocument = form.documentNumber.length > 4 ? `${"•".repeat(Math.max(0, form.documentNumber.length - 4))}${form.documentNumber.slice(-4)}` : form.documentNumber;
 
   function sendOtp() {
@@ -917,7 +926,16 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
       <SummarySection title="ข้อมูลติดต่อ" onEdit={() => onEdit(2)}><SummaryLine label="โทรศัพท์" value={form.primaryPhone} /><SummaryLine label="อีเมล" value={form.email || "ไม่ได้ระบุ"} /><SummaryLine label="ช่องทางที่สะดวก" value={form.preferredChannel} /></SummarySection>
       <SummarySection title="ที่อยู่" onEdit={() => onEdit(2)}><SummaryLine label="ตามเอกสาร" value={`${form.docHouseNo} ${form.docSubdistrict} ${form.docDistrict} ${form.docProvince} ${form.docPostalCode}`} /><SummaryLine label="ปัจจุบัน" value={form.sameAddress ? "เหมือนที่อยู่ตามเอกสาร" : `${form.currentHouseNo} ${form.currentDistrict} ${form.currentProvince}`} /></SummarySection>
       <SummarySection title="ผู้ติดต่อฉุกเฉิน" onEdit={() => onEdit(3)}><SummaryLine label="ชื่อ" value={form.emergencyName} /><SummaryLine label="ความสัมพันธ์" value={form.emergencyRelationship || "ไม่ได้ระบุ"} /><SummaryLine label="โทรศัพท์" value={form.emergencyPhone} /></SummarySection>
-      <SummarySection title="ข้อมูลสุขภาพ" onEdit={() => onEdit(4)}><SummaryLine label="ส่วนสูง / น้ำหนักตั้งต้น" value={`${form.height} ซม. / ${form.startWeight} กก.`} /><SummaryLine label="หัวข้อที่ตอบว่ามี" value={healthYes.length ? healthYes.join(", ") : "ไม่มี"} /><SummaryLine label="ตอบครบ" value={`${healthTopics.filter(({ key }) => health[key].status).length}/${healthTopics.length} หัวข้อ`} /></SummarySection>
+      <SummarySection title="ข้อมูลสุขภาพ" onEdit={() => onEdit(4)}>
+        <SummaryLine label="ส่วนสูง / น้ำหนักตั้งต้น" value={`${form.height} ซม. / ${form.startWeight} กก.`} />
+        {healthTopics.map(({ key, label }) => {
+          const entry = health[key];
+          const status = { none: "ไม่มี", yes: "มี", unknown: "ไม่ทราบ", "": "ยังไม่ได้ตอบ" }[entry.status];
+          const details = key === "drugAllergy" ? [entry.drugName, entry.reaction, entry.severity].filter(Boolean).join(", ") : entry.details;
+          return <SummaryLine key={key} label={label} value={entry.status === "yes" && details ? `${status}: ${details}` : status} />;
+        })}
+        <SummaryLine label="ตอบครบ" value={`${healthTopics.filter(({ key }) => health[key].status).length}/${healthTopics.length} หัวข้อ`} />
+      </SummarySection>
       <SummarySection title="ข้อมูลนัดหมาย"><SummaryLine label="นัดติดตามผล" value="29 สิงหาคม 2569 เวลา 14:30 น." /><SummaryLine label="สาขา" value="The Ritz Clinic" /></SummarySection>
 
       <SectionTitle title="การยินยอม" detail="รายการโปรโมชั่นเป็นทางเลือกและไม่ได้เลือกไว้ล่วงหน้า" />

@@ -1,43 +1,36 @@
-import Image from "next/image";
+import Image from "./loading-image";
 import {
-  ClipboardCheck,
-  Lightbulb,
   RefreshCw,
-  SlidersHorizontal,
   Stethoscope,
-  TrendingUp,
   Video,
 } from "lucide-react";
 import RegistrationCta from "./registration-cta";
+import DoctorVideo from "./doctor-video";
+import CustomerReviews from "./customer-reviews";
 
 const programItems = [
-  { number: "01", icon: ClipboardCheck, title: "ประเมินโดยแพทย์", text: "ทบทวนประวัติสุขภาพ เป้าหมาย และปัจจัยที่เกี่ยวข้อง เพื่อดูว่าแนวทางใดเหมาะกับคุณ", tag: "เริ่มจากสุขภาพของคุณ" },
-  { number: "02", icon: SlidersHorizontal, title: "แผนดูแลเฉพาะบุคคล", text: "ออกแบบแนวทางตามผลประเมิน ทั้งการรักษา โภชนาการ และกิจวัตรที่ทำได้จริง", tag: "เหมาะกับชีวิตประจำวัน" },
-  { number: "03", icon: TrendingUp, title: "ติดตามผลเป็นระยะ", text: "มีทีมดูแลคอยติดตามความคืบหน้าและปรับแผนตามการตอบสนองของร่างกาย", tag: "ปรับแผนตามผลลัพธ์" },
-  { number: "04", icon: Lightbulb, title: "ความรู้เพื่อไปต่อได้", text: "เข้าใจสัญญาณความหิว การเลือกอาหาร และวิธีสร้างนิสัยที่ช่วยดูแลน้ำหนักระยะยาว", tag: "สร้างนิสัยที่ยั่งยืน" },
+  { number: "01", title: "แพทย์ประเมินก่อนเริ่ม", image: "/program-doctor-assessment.webp", alt: "การปรึกษาแพทย์ผ่านวิดีโอคอลเพื่อประเมินก่อนเริ่มโปรแกรม" },
+  { number: "02", title: "วางแผนการรักษาเฉพาะบุคคล", image: "/program-personal-plan.webp", alt: "ทีมดูแลทบทวนและบันทึกข้อมูลสำหรับแผนการรักษาเฉพาะบุคคล" },
+  { number: "03", title: "ติดตามและปรับแผนต่อเนื่อง", image: "/program-follow-up.webp", alt: "ทีมดูแลโทรศัพท์ติดตามผลการดูแลอย่างต่อเนื่อง" },
 ];
 
 const serviceItems = [
-  { icon: Stethoscope, title: "ประเมินและวางแผนโดยแพทย์", text: "ทบทวนสุขภาพ เป้าหมาย ข้อบ่งใช้ และข้อควรระวัง ก่อนออกแบบแนวทางที่เหมาะกับคุณ" },
-  { icon: Video, title: "ปรึกษาทางไกลอย่างเป็นส่วนตัว", text: "นัดหมายพูดคุยกับทีมดูแลได้สะดวก โดยแพทย์จะพิจารณาว่ากรณีใดเหมาะกับการปรึกษาทางไกล" },
-  { icon: RefreshCw, title: "ติดตามผลและปรับแผนต่อเนื่อง", text: "ติดตามความคืบหน้า อาการไม่พึงประสงค์ และปรับแผนตามการตอบสนองของร่างกาย" },
+  { icon: Stethoscope, title: "CONVENIENCE", text: "ดูแลสะดวกขึ้น พร้อมทางเลือกสำหรับผู้ที่ไม่สะดวกมาคลินิก" },
+  { icon: Video, title: "DOCTOR CARE", text: "เริ่มจากการปรึกษาแพทย์ออนไลน์ และประเมินความเหมาะสมเป็นรายบุคคล" },
+  { icon: RefreshCw, title: "CONTINUOUS CARE", text: "จัดส่งแบบ Cold Chain พร้อมทีมดูแลและติดตามผลอย่างต่อเนื่อง" },
 ];
 
 const steps = [
-  ["ทำแบบประเมิน", "ตอบคำถามสุขภาพและเป้าหมายเบื้องต้น ใช้เวลาประมาณ 3–5 นาที"],
-  ["คุยกับทีมดูแล", "เจ้าหน้าที่ติดต่อกลับเพื่อนัดหมายและอธิบายขั้นตอนอย่างเป็นส่วนตัว"],
-  ["พบแพทย์", "แพทย์ประเมินความเหมาะสมและร่วมวางแผนดูแลที่เหมาะกับคุณ"],
-  ["เริ่มและติดตามผล", "เริ่มโปรแกรมพร้อมนัดติดตาม เพื่อดูผลลัพธ์และปรับแผนเมื่อจำเป็น"],
+  ["ลงทะเบียน / จองคิว", ""],
+  ["Online Consultation", "ปรึกษาแพทย์ออนไลน์ เพื่อประเมินและวางแผนการรักษา"],
+  ["Cold Chain Delivery", "จัดส่งยาตามแผนการรักษา โดยควบคุมมาตรฐานการจัดส่ง"],
+  ["Start & Follow-up", "เริ่มแผนการรักษาและติดตามผลต่อเนื่อง"],
 ];
 
 const faqs = [
-  ["โปรแกรมนี้เหมาะกับใคร?", "เหมาะสำหรับผู้ใหญ่ที่ต้องการดูแลน้ำหนักอย่างเป็นระบบ และพร้อมให้แพทย์ประเมินประวัติสุขภาพก่อนเริ่ม ทั้งนี้ความเหมาะสมขึ้นอยู่กับดุลยพินิจของแพทย์เป็นรายบุคคล"],
-  ["จำเป็นต้องใช้ยาหรือปากกาลดน้ำหนักทุกคนไหม?", "ไม่จำเป็น แพทย์จะพิจารณาจากประวัติสุขภาพ ผลประเมิน และข้อบ่งใช้ของแต่ละคน หากไม่เหมาะสม ทีมดูแลจะแนะนำทางเลือกอื่น โดยจะไม่มีการจ่ายยาก่อนการประเมินจากแพทย์"],
-  ["จะรู้ได้อย่างไรว่าฉันเหมาะกับโปรแกรม?", "เริ่มจากศึกษารายละเอียดและลงทะเบียนให้ทีมดูแลติดต่อกลับ จากนั้นจึงเข้าสู่ขั้นตอนนัดหมายและประเมินโดยแพทย์ หากมีข้อจำกัดหรือความเสี่ยง แพทย์จะอธิบายให้ทราบก่อนตัดสินใจทุกครั้ง"],
-  ["ผลลัพธ์ใช้เวลานานเท่าไร?", "แต่ละคนตอบสนองแตกต่างกันตามสุขภาพ จุดเริ่มต้น และการปฏิบัติตามแผน โปรแกรมจึงเน้นเป้าหมายที่เหมาะสมและการติดตามผล มากกว่าการรับประกันตัวเลขหรือตารางเวลาตายตัว"],
-  ["ค่าใช้จ่ายเท่าไร?", "ค่าใช้จ่ายขึ้นอยู่กับแผนที่แพทย์เห็นว่าเหมาะสม หลังประเมินแล้วทีมดูแลจะแจ้งรายละเอียดอย่างชัดเจนก่อนเริ่ม โดยคุณสามารถตัดสินใจได้โดยไม่มีข้อผูกมัด"],
-  ["ปรึกษาทางไกลได้ทุกกรณีไหม?", "ขึ้นอยู่กับความเหมาะสมของแต่ละคน บางกรณีแพทย์อาจแนะนำให้ตรวจร่างกาย ตรวจทางห้องปฏิบัติการ หรือเข้ารับบริการที่สถานพยาบาลก่อนเริ่มแผน"],
-  ["หากแพทย์เห็นว่าเหมาะสม จะรับยาอย่างไร?", "ทีมดูแลจะแจ้งชื่อยา วิธีใช้ ข้อควรระวัง ค่าใช้จ่าย และช่องทางรับยาที่ถูกต้องหลังแพทย์ประเมิน ไม่ควรซื้อปากกาลดน้ำหนักหรือปรับขนาดยาด้วยตนเองผ่านช่องทางออนไลน์"],
+  ["ผลข้างเคียงที่พบบ่อยมีอะไรบ้าง?", "อาจพบอาการทางระบบทางเดินอาหาร เช่น คลื่นไส้ อาเจียน ท้องผูก ท้องเสีย หรือท้องอืด โดยอาการและความรุนแรงแตกต่างกันในแต่ละบุคคล หากมีอาการมาก ผิดปกติ หรือกังวล ควรติดต่อทีมดูแล/แพทย์"],
+  ["ใครบ้างที่ควรแจ้งแพทย์ก่อนเริ่ม?", "ควรแจ้งประวัติโรคประจำตัว ยาที่ใช้อยู่ การตั้งครรภ์/วางแผนตั้งครรภ์ ผู้ป่วยที่รับประทานยาโรคเบาหวาน หรือทานยาอื่นร่วมด้วย รวมถึงประวัติทางการแพทย์ที่เกี่ยวข้อง เพื่อให้แพทย์ประเมินความเหมาะสมก่อนเริ่ม"],
+  ["ใช้ร่วมกับยาอื่นได้ไหม?", "ควรแจ้งยาและอาหารเสริมทั้งหมดที่ใช้อยู่ก่อนเริ่ม เพื่อให้แพทย์ประเมินการใช้ร่วมกันและความเสี่ยงเฉพาะบุคคล"],
 ];
 
 export default function Home() {
@@ -62,8 +55,8 @@ export default function Home() {
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow">MEDICAL WEIGHT MANAGEMENT</p>
-          <h1>ลดน้ำหนักอย่างเข้าใจร่างกาย<span>ด้วยแผนที่ออกแบบเพื่อคุณ</span></h1>
-          <p className="hero-lead">โปรแกรมดูแลน้ำหนักภายใต้การประเมินของแพทย์ ครบทั้งการติดตามผล โภชนาการ และการปรับพฤติกรรม เพื่อเป้าหมายที่ยั่งยืนกว่าเดิม</p>
+          <h1>Resize ใกล้คุณ<span>ดูแลสะดวกขึ้น</span></h1>
+          <p className="hero-lead">Resize by THE RITZ โปรแกรมดูแลน้ำหนักภายใต้การประเมินของแพทย์ พร้อมทางเลือกการใช้ยาควบคุมน้ำหนักตามความเหมาะสมของแต่ละบุคคล</p>
           <div className="hero-actions">
             <a className="button" href="/register">ลงทะเบียนรับคำปรึกษา</a>
             <a className="text-link" href="#program">ดูรายละเอียดโปรแกรม <span aria-hidden="true">→</span></a>
@@ -92,34 +85,34 @@ export default function Home() {
         <div><strong>ง่ายและเป็นส่วนตัว</strong><span>เริ่มต้นด้วยการประเมินออนไลน์</span></div>
       </section>
 
+      <DoctorVideo />
+
       <section className="program-section section-pad" id="program">
         <div className="section-heading">
           <p className="eyebrow">PROGRAM RESIZE</p>
-          <h2>ให้การลดน้ำหนักครั้งนี้<br />เป็นครั้งที่คุณรู้สึกว่า “ทำได้จริง”</h2>
-          <p>เราผสานการดูแลทางการแพทย์เข้ากับคำแนะนำที่นำไปใช้ได้ในชีวิตประจำวัน เพื่อช่วยให้คุณเริ่มต้นอย่างมั่นใจและไปต่อได้ด้วยวิธีที่เหมาะกับตัวเอง</p>
+          <h2>Resize by THE RITZ<br /><span>ดูแลน้ำหนักในแบบที่เหมาะกับคุณ</span></h2>
+          <p>สำหรับผู้ที่ไม่สะดวกเดินทางมาคลินิก สามารถเลือกปรึกษาแพทย์ออนไลน์ พร้อมทางเลือก Resize at Home</p>
         </div>
         <div className="program-grid">
-          {programItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <article className="program-card" key={item.number}>
-                <div className="program-card-top">
-                  <span className="card-number">{item.number}</span>
-                  <span className="program-icon" aria-hidden="true"><Icon /></span>
-                </div>
-                <h3>{item.title}</h3><p>{item.text}</p>
-                <span className="program-tag"><span aria-hidden="true">✓</span>{item.tag}</span>
-              </article>
-            );
-          })}
+          {programItems.map((item) => (
+            <article className="program-feature" key={item.number}>
+              <div className="program-feature-heading">
+                <span className="program-number" aria-hidden="true">{item.number}</span>
+                <h3>{item.title}</h3>
+              </div>
+              <div className="program-photo">
+                <Image src={item.image} alt={item.alt} fill sizes="(max-width: 900px) 100vw, 33vw" />
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
       <section className="services-section section-pad" aria-labelledby="services-title">
         <div className="section-heading services-heading">
           <p className="eyebrow">WHAT YOU RECEIVE</p>
-          <h2 id="services-title">บริการหลักที่ดูแลคุณ<br />ตั้งแต่เริ่มต้นจนติดตามผล</h2>
-          <p>ครบทั้งการประเมินโดยแพทย์ การปรึกษาที่เข้าถึงง่าย และการติดตามอย่างต่อเนื่องในเส้นทางเดียว</p>
+          <h2 id="services-title">ปรึกษาปัญหาลดน้ำหนักกับแพทย์ผู้ชำนาญการ<br />ได้ง่ายๆ ได้ทุกที่</h2>
+          <p>ง่าย สะดวก รวดเร็ว ได้มาตรฐาน มีแพทย์คอยให้คำปรึกษาแบบส่วนตัว</p>
         </div>
         <div className="service-grid">
           {serviceItems.map((item, index) => {
@@ -136,26 +129,24 @@ export default function Home() {
           <span className="safety-mark" aria-hidden="true">✓</span>
           <div>
             <p className="eyebrow">MEDICAL SAFETY FIRST</p>
-            <h3>โปรแกรมที่ดีเริ่มจาก “ความเหมาะสม” ไม่ใช่การขายยา</h3>
-            <p>หากมีการใช้ปากกาลดน้ำหนัก แพทย์จะเป็นผู้ประเมิน สั่งใช้ และติดตามผลเป็นรายบุคคล พร้อมอธิบายทางเลือกและข้อควรระวังก่อนตัดสินใจ</p>
+            <h3>ทุกแผนของ Resize เริ่มจากการประเมินความเหมาะสมโดยแพทย์</h3>
           </div>
-          <ul><li>ไม่มีการจ่ายยาก่อนแพทย์ประเมิน</li><li>แจ้งรายละเอียดแผนและค่าใช้จ่ายก่อนเริ่ม</li><li>ติดตามอาการและปรับแผนเมื่อจำเป็น</li></ul>
         </aside>
       </section>
 
-      <section className="clinical-section section-pad">
+      <section className="clinical-section section-pad" id="medical-care">
         <div className="clinical-image-wrap">
-          <Image src="/doctor-telehealth.jpg" alt="แพทย์ให้คำปรึกษาผ่านวิดีโอคอล" fill sizes="(max-width: 900px) 100vw, 46vw" />
-          <div className="image-caption"><strong>ดูแลโดยทีมวิชาชีพ</strong><span>ตั้งแต่การประเมินจนถึงการติดตามผล</span></div>
+          <Image src="/clinical-doctor-care.webp" alt="ผู้รับบริการและแพทย์ THE RITZ CLINIC ดูแลโดยแพทย์อย่างใกล้ชิดและปรับแผนให้เหมาะกับแต่ละบุคคล ผลลัพธ์ขึ้นอยู่กับแต่ละบุคคล" fill sizes="(max-width: 900px) 100vw, 46vw" />
         </div>
         <div className="clinical-copy">
           <p className="eyebrow">WHY MEDICAL CARE</p>
           <h2>เพราะน้ำหนักไม่ได้ขึ้นอยู่กับ<br />“ความพยายาม” เพียงอย่างเดียว</h2>
-          <p className="large-copy">การนอน ฮอร์โมน ความเครียด ยาบางชนิด และพันธุกรรม ล้วนมีผลต่อความหิวและการใช้พลังงานของร่างกาย การประเมินที่รอบด้านจึงช่วยให้เราเห็นภาพมากกว่าตัวเลขบนตาชั่ง</p>
+          <p className="large-copy">การดูแลน้ำหนักด้วยยาไม่ได้เหมาะกับทุกคน แพทย์จึงต้องประเมินข้อมูลสุขภาพ ประวัติการใช้ยา เป้าหมาย และปัจจัยที่เกี่ยวข้องก่อนเริ่ม</p>
           <ul className="check-panel">
-            <li><span>✓</span><div><strong>เข้าใจจุดเริ่มต้น</strong><p>ทบทวนสุขภาพ พฤติกรรม และเป้าหมายของคุณ</p></div></li>
-            <li><span>✓</span><div><strong>เลือกแนวทางอย่างปลอดภัย</strong><p>พิจารณาข้อบ่งใช้ ข้อควรระวัง และทางเลือกที่เหมาะสม</p></div></li>
-            <li><span>✓</span><div><strong>ติดตามการตอบสนอง</strong><p>ประเมินผลข้างเคียง ความคืบหน้า และปรับแผนเมื่อจำเป็น</p></div></li>
+            <li><span aria-hidden="true">✓</span><strong>ประเมินความเหมาะสมก่อนเริ่ม</strong></li>
+            <li><span aria-hidden="true">✓</span><strong>พิจารณาทางเลือกและแผนเฉพาะบุคคล</strong></li>
+            <li><span aria-hidden="true">✓</span><strong>ติดตามผลและอาการระหว่างการดูแล</strong></li>
+            <li><span aria-hidden="true">✓</span><strong>ปรับแผนตามความเหมาะสม</strong></li>
           </ul>
           <a className="text-link" href="/register">ลงทะเบียนรับคำปรึกษา <span aria-hidden="true">→</span></a>
         </div>
@@ -163,23 +154,25 @@ export default function Home() {
 
       <section className="steps-section section-pad" id="steps">
         <div className="section-heading narrow">
-          <p className="eyebrow">HOW IT WORKS</p><h2>จากเริ่มต้นจนถึงติดตามผล<br />ครบในเส้นทางเดียว</h2><p>กระบวนการ 4 ขั้นตอนที่เรียบง่าย เป็นส่วนตัว และมีทีมดูแลคุณตลอดเส้นทาง</p>
+          <p className="eyebrow">HOW IT WORKS</p>
+          <h2>Resize by THE RITZ Home<br /><span>สะดวกตั้งแต่เริ่มต้น จนถึงการติดตามผล</span></h2>
         </div>
         <div className="steps-grid">
           {steps.map(([title, text], index) => (
             <article className="step-card" key={title}>
-              <div className="step-index">{index + 1}</div><h3>{title}</h3><p>{text}</p>
+              <div className="step-index">{index + 1}</div><h3>{title}</h3>{text && <p>{text}</p>}
               {index < steps.length - 1 && <span className="step-arrow" aria-hidden="true">→</span>}
             </article>
           ))}
         </div>
-        <div className="center-action"><a className="button" href="/register">ลงทะเบียนรับคำปรึกษา</a><p>ฝากชื่อและเบอร์โทร แล้วทีมดูแลจะติดต่อกลับ</p></div>
+        <div className="center-action"><a className="button" href="/register">ลงทะเบียนรับคำปรึกษา</a></div>
       </section>
 
       <section className="principles-section section-pad">
         <div className="principles-copy">
           <p className="eyebrow light">OUR APPROACH</p><h2>เป้าหมายไม่ใช่แค่ “ลด”<br />แต่คือดูแลให้ไปต่อได้</h2>
           <p>เราไม่ใช้แผนเดียวกับทุกคน และไม่กดดันให้คุณสมบูรณ์แบบ แต่ช่วยออกแบบการเปลี่ยนแปลงเล็ก ๆ ที่เหมาะกับชีวิตจริง</p>
+          <p>พร้อมออกแบบรูปแบบการดูแลให้เหมาะกับสุขภาพ เป้าหมาย และ Lifestyle ของคุณ</p>
         </div>
         <div className="principles-list">
           <article><span>ก</span><div><strong>กาย</strong><p>ดูแลปัจจัยสุขภาพ ความหิว และพลังงาน</p></div></article>
@@ -187,6 +180,8 @@ export default function Home() {
           <article><span>วัน</span><div><strong>ชีวิตประจำวัน</strong><p>เลือกพฤติกรรมที่ทำซ้ำได้ ไม่ใช่แค่ทำได้ชั่วคราว</p></div></article>
         </div>
       </section>
+
+      <CustomerReviews />
 
       <section className="faq-section section-pad" id="faq">
         <div className="faq-intro">
@@ -196,16 +191,16 @@ export default function Home() {
         </div>
         <div className="faq-list">
           {faqs.map(([question, answer]) => (
-            <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>
+            <article key={question}><h3>{question}</h3><p>{answer}</p></article>
           ))}
         </div>
       </section>
 
       <section className="registration-section" id="registration">
         <div className="registration-copy">
-          <p className="eyebrow light">GET STARTED</p><h2>เริ่มต้นง่าย ๆ<br />ให้ทีมดูแลติดต่อกลับ</h2>
-          <p>กรอกข้อมูลติดต่อเพียงเล็กน้อย ทีมดูแลจะโทรกลับเพื่ออธิบายโปรแกรม ตอบคำถาม และช่วยนัดหมายขั้นตอนถัดไป โดยยังไม่มีข้อผูกมัด</p>
-          <div className="registration-points"><span>✓ ใช้เวลาไม่ถึง 1 นาที</span><span>✓ ไม่มีค่าใช้จ่ายในการลงทะเบียน</span><span>✓ ดูแลข้อมูลอย่างเหมาะสม</span></div>
+          <p className="eyebrow light">GET STARTED</p>
+          <h2>เริ่ม Resize by THE RITZ at Home ด้วยการปรึกษาแพทย์ออนไลน์</h2>
+          <p>ลงทะเบียนเพื่อจองคิวปรึกษาแพทย์ผู้ชำนาญการ</p>
         </div>
         <RegistrationCta />
       </section>
