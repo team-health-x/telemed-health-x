@@ -1,0 +1,7 @@
+.telemed-site .shipping-address-fields .sheet-field { min-width: 0; font-size: 14px; }
+.telemed-site .shipping-address-fields select { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid #ded8e6; border-radius: 8px; color: #302a38; background: white; font: inherit; font-weight: 400; }
+.telemed-site .shipping-address-fields select:focus-visible { outline: 2px solid #9270b1; outline-offset: 2px; }
+.telemed-site .shipping-address-fields select:disabled { background: #f2f2f4; color: #737078; }
+.telemed-site .shipping-address-fields input, .telemed-site .shipping-address-fields textarea { font-size: 16px; }
+.telemed-site .shipping-address-fields [role] { grid-column: 1 / -1; }
+@media (max-width: 480px) { .telemed-site .shipping-address-fields { grid-template-columns: minmax(0, 1fr); } }

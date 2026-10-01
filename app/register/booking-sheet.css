@@ -14,4 +14,8 @@
 .telemed-site .telemed-booking :focus-visible { outline: 2px solid #286957; outline-offset: 2px; }
 .telemed-site .telemed-booking .booking-spinner { animation: booking-spin 1s linear infinite; }
 @keyframes booking-spin { to { transform: rotate(360deg); } }
+.telemed-site .telemed-booking .booking-mode { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:4px; border:1px solid #cbd5d3; border-radius:8px; background:#f4f7f6; }
+.telemed-site .telemed-booking .booking-mode button { display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:8px 4px; border:0; border-radius:5px; background:transparent; color:#455852; font:inherit; font-size:14px; cursor:pointer; }
+.telemed-site .telemed-booking .booking-mode button[aria-pressed=true] { background:#176f68; color:#fff; }
+.telemed-site .telemed-booking .booking-mode svg { flex-shrink:0; }
 @media (prefers-reduced-motion: reduce) { .telemed-site .telemed-booking, .telemed-site .telemed-booking .booking-spinner { animation: none; } }

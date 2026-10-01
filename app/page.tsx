@@ -160,8 +160,7 @@ export default function Home() {
         <div className="steps-grid">
           {steps.map(([title, text], index) => (
             <article className="step-card" key={title}>
-              <div className="step-index">{index + 1}</div><h3>{title}</h3>{text && <p>{text}</p>}
-              {index < steps.length - 1 && <span className="step-arrow" aria-hidden="true">→</span>}
+              <img className="step-image" src={`/how-it-works-${index + 1}.png`} alt={`ขั้นตอนที่ ${index + 1}: ${title}${text ? ` — ${text}` : ""}`} width={1254} height={1254} loading="lazy" />
             </article>
           ))}
         </div>
@@ -175,9 +174,9 @@ export default function Home() {
           <p>พร้อมออกแบบรูปแบบการดูแลให้เหมาะกับสุขภาพ เป้าหมาย และ Lifestyle ของคุณ</p>
         </div>
         <div className="principles-list">
-          <article><span>ก</span><div><strong>กาย</strong><p>ดูแลปัจจัยสุขภาพ ความหิว และพลังงาน</p></div></article>
-          <article><span>ใจ</span><div><strong>ความคิด</strong><p>ลดความรู้สึกผิด และสร้างความสัมพันธ์ที่ดีกับอาหาร</p></div></article>
-          <article><span>วัน</span><div><strong>ชีวิตประจำวัน</strong><p>เลือกพฤติกรรมที่ทำซ้ำได้ ไม่ใช่แค่ทำได้ชั่วคราว</p></div></article>
+          <article><span>ก</span><div><strong>สุขภาพ</strong><p>ดูแลน้ำหนักควบคู่กับสุขภาพ ความแข็งแรง และพลังงานในแต่ละวัน</p></div></article>
+          <article><span>ใจ</span><div><strong>การกิน</strong><p>ปรับพฤติกรรมการกินให้เหมาะกับคุณ โดยไม่ต้องฝืนหรือจำกัดตัวเองเกินไป</p></div></article>
+          <article><span>วัน</span><div><strong>ไลฟ์สไตล์</strong><p>สร้างกิจวัตรเล็ก ๆ ที่ทำได้จริง และช่วยให้ดูแลตัวเองได้อย่างต่อเนื่อง</p></div></article>
         </div>
       </section>
 

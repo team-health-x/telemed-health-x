@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowLeft, LogIn, LoaderCircle } from 'lucide-react';
 
-export default function LoginForm() {
+export default function LoginForm({ returnTo = '/register' }: { returnTo?: string }) {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
@@ -18,7 +18,7 @@ export default function LoginForm() {
       const response = await fetch('/api/telemed/auth/verify-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'เข้าสู่ระบบไม่สำเร็จ');
-      window.location.assign('/register');
+      window.location.assign(returnTo);
     } catch (e) { setError(e instanceof Error ? e.message : 'ไม่สามารถเข้าสู่ระบบได้'); setBusy(false); }
   }
   return <main className="telemed-auth">
