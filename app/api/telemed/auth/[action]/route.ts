@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { localLoginEnabled } from '../../../../lib/local-login';
 import { telemedApiOrigin } from '../../../../lib/telemed-api-origin';
 import { NextResponse } from 'next/server';
 import { DEMO_COOKIE, withDemoStore } from '../../../../lib/demo-auth';
@@ -48,21 +49,23 @@ export async function POST(request: Request, context: Context) {
       response.cookies.set(DEMO_COOKIE, token, { ...cookieOptions, expires: new Date(session.expiresAt) });
       return response;
     }
-    if (!['send-otp', 'verify-otp', 'verify-signup'].includes(action)) return json({ error: 'Not found' }, 404);
+    if (action === 'local-login' && !localLoginEnabled()) return json({ error: 'Not found' }, 404);
+    if (!['send-otp', 'verify-otp', 'local-login'].includes(action)) return json({ error: 'Not found' }, 404);
     if (!request.headers.get('content-type')?.startsWith('application/json')) return json({ error: 'Invalid content type' }, 415);
     if (Number(request.headers.get('content-length')) > 2048) return json({ error: 'Request too large' }, 413);
     const raw = await request.text();
     if (raw.length > 2048) return json({ error: 'Request too large' }, 413);
     const body = JSON.parse(raw);
-    if (action === 'send-otp') return json(withDemoStore(store => store.send(typeof body.phone === 'string' ? body.phone.trim() : '')));
-    if (action === 'verify-signup') return json(withDemoStore(store => store.verifySignup(body.challengeId ?? '', body.code ?? '', body.phone ?? '')));
-    if (typeof body.phone !== 'string' || !/^0[689]\d{8}$/.test(body.phone) || body.code !== '123456') return json({ error: 'เบอร์หรือ OTP ไม่ถูกต้อง' }, 401);
+    if (typeof body?.phone !== 'string' || !/^0[689]\d{8}$/.test(body.phone)) return json({ error: 'เบอร์โทรศัพท์ไม่ถูกต้อง' }, 400);
+    if (action === 'verify-otp' && (typeof body.code !== 'string' || !/^\d{6}$/.test(body.code) || typeof body.challengeId !== 'string')) return json({ error: 'รูปแบบ OTP ไม่ถูกต้อง' }, 400);
     const origin = telemedApiOrigin();
     const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
     if (!origin || !secret) return json({ error: 'ยังไม่ได้ตั้งค่าเชื่อมระบบเข้าสู่ระบบ Dev' }, 503);
-    const upstream = await fetch(new URL('/api/v1/telemed/workflow/demo/login', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret }, body: JSON.stringify({ phone: body.phone, code: body.code }) });
+    const path = action === 'local-login' ? '/api/v1/telemed/workflow/local/login' : action === 'send-otp' ? '/api/v1/telemed/workflow/login/send-otp' : '/api/v1/telemed/workflow/demo/login';
+    const upstream = await fetch(new URL(path, origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret }, body: JSON.stringify({ phone: body.phone, code: body.code, challengeId: body.challengeId }) });
     const payload = await upstream.json();
     if (!upstream.ok || payload.status !== '0000') return json({ error: payload.message || 'เข้าสู่ระบบไม่สำเร็จ' }, upstream.ok ? 401 : upstream.status);
+    if (action === 'send-otp') return json(payload.data);
     if (payload.data?.phone !== body.phone) return json({ error: 'ข้อมูลบัญชีไม่ตรงกัน' }, 502);
     const result = withDemoStore(store => store.issue(payload.data));
     const response = json({ customer: result.customer, expiresAt: result.expiresAt });

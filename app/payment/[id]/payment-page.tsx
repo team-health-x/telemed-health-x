@@ -3,15 +3,18 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import UiSkeleton from '../../ui-skeleton';
+import { SaleBeamPayment, useSaleBeam } from './sale-beam-payment';
 import { ArrowLeft, RefreshCw, Upload, X, CheckCircle2, Clock3, Building2, Copy, ImagePlus } from 'lucide-react';
 type Detail = { id: string; saleOrderId: string; total: number; paid: number; balance: number; version: string; status: string; devOnly: boolean;
   consultationDiscount?: { amount: number; originalTotal: number; sourceSaleId: string } | null;
   items: { id: string; name: string; quantity: number; price: number; net: number }[];
-  bank: { name: string; accountName: string; accountNumber: string } | null;
+  bank: { name: string; accountName: string | null; accountNumber: string; methodName?: string | null } | null;
   slip: { id: string; file_name: string; created_at: string } | null };
 const money = (value: number) => value.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const labels: Record<string, string> = { UNPAID: 'รอชำระเงิน', PENDING_REVIEW: 'รอตรวจสอบสลิป', PAID: 'ชำระครบแล้ว', CANCELLED: 'ยกเลิกใบขาย', REVIEW_REQUIRED: 'กรุณาติดต่อเจ้าหน้าที่' };
 export default function PaymentPage({ id }: { id: string }) {
+  const beam = useSaleBeam(id);
+  const [method, setMethod] = useState<'qr' | 'bank'>('qr');
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [actionError, setActionError] = useState('');
@@ -39,6 +42,10 @@ export default function PaymentPage({ id }: { id: string }) {
       }
     } catch (e) { if (!signal?.aborted) setError(e instanceof Error ? e.message : 'โหลดใบขายไม่สำเร็จ'); }
   }, [id]);
+  useEffect(() => { if (beam.state?.payment?.status === 'PAID') void refresh(); }, [beam.state?.payment?.status, refresh]);
+  useEffect(() => {
+    if (beam.state && !beam.state.available && !beam.state.payment) setMethod('bank');
+  }, [beam.state]);
   useEffect(() => {
     const controller = new AbortController();
     let pending = false;
@@ -77,7 +84,7 @@ export default function PaymentPage({ id }: { id: string }) {
     choose(new File([bytes], 'TEST-ONLY-local-slip.png', { type: 'image/png' }));
   }
   async function submit() {
-    if (!file || !detail || busy) return;
+    if (!file || !detail || busy || beam.bankLocked) return;
     setBusy(true); setActionError(''); setSuccess(false);
     if (retry.current?.file !== file || retry.current.version !== detail.version) retry.current = { file, version: detail.version, key: crypto.randomUUID() };
     const version = detail.version;
@@ -94,19 +101,28 @@ export default function PaymentPage({ id }: { id: string }) {
     } catch (e) { setActionError(e instanceof Error ? e.message : 'ส่งสลิปไม่สำเร็จ'); }
     finally { setBusy(false); }
   }
-  const open = detail && ['UNPAID', 'PENDING_REVIEW'].includes(detail.status);
+  const payable = detail && ['UNPAID', 'PENDING_REVIEW'].includes(detail.status);
+  const open = payable && method === 'bank' && !beam.bankLocked;
   return <main className="sales-payment">
     <header><Image src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={150} height={55} priority /><Link href="/register?tab=appointments"><ArrowLeft size={18} />นัดหมายของฉัน</Link></header>
     <div className="payment-heading"><div><p>TELEMED</p><h1>รายการชำระเงิน</h1>{detail && <p>ใบขาย {detail.saleOrderId}</p>}</div>{detail && <span className={`payment-state ${detail.status === 'PAID' ? 'paid' : ''}`}>{detail.status === 'PAID' ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}{labels[detail.status]}</span>}</div>
-    <p className="payment-warning">ระบบทดสอบ Dev กรุณาอย่าโอนเงินจริง</p>
+    <p className="payment-warning">{beam.state?.sandbox === false ? 'ข้อมูลใบขายอยู่ในระบบ Dev · ช่องทาง Beam Production รับชำระเงินจริง' : 'ระบบทดสอบ Dev กรุณาอย่าโอนเงินจริง'}</p>
     {error && <div role="alert" className="payment-error">{error}<button type="button" title="โหลดข้อมูลใหม่" aria-label="โหลดข้อมูลใหม่" onClick={() => refresh()}><RefreshCw size={18} /></button></div>}
     {!detail && !error && <UiSkeleton rows={3} label="กำลังโหลดรายการชำระเงิน" />}
     {detail && <>
       <section className="payment-items"><h2>สรุปรายการ</h2><div className="payment-table"><table><thead><tr><th>รายการ</th><th>จำนวน</th><th>ยอดสุทธิ</th></tr></thead><tbody>{detail.items.map(item => <tr key={item.id}><td>{item.name}<small>{money(item.price)} บาท / หน่วย</small></td><td>{item.quantity}</td><td>{money(item.net)}</td></tr>)}</tbody></table></div>
         <dl className="payment-totals">{detail.consultationDiscount && <><div><dt>ยอดก่อนหักสิทธิ์</dt><dd>{money(detail.consultationDiscount.originalTotal)} บาท</dd></div><div><dt>หักสิทธิ์ค่าปรึกษา<small>อ้างอิง {detail.consultationDiscount.sourceSaleId}</small></dt><dd>-{money(detail.consultationDiscount.amount)} บาท</dd></div></>}<div><dt>ยอดสุทธิใบขาย</dt><dd>{money(detail.total)} บาท</dd></div><div><dt>รับชำระแล้ว</dt><dd>{money(detail.paid)} บาท</dd></div><div className="payment-balance"><dt>ยอดคงเหลือ</dt><dd>{money(detail.balance)} บาท</dd></div></dl>
       </section>
+      {payable && <>
+        <fieldset className="payment-methods"><legend>ช่องทางชำระเงิน</legend>
+          <label><input type="radio" name="payment-method" checked={method === 'qr'} disabled={busy || beam.busy} onChange={() => setMethod('qr')} />พร้อมเพย์ QR</label>
+          <label><input type="radio" name="payment-method" checked={method === 'bank'} disabled={busy || beam.bankLocked} onChange={() => setMethod('bank')} />โอนบัญชีและแนบสลิป</label>
+        </fieldset>
+        {method === 'qr' && <SaleBeamPayment beam={beam} saleVersion={detail.version} unpaid={detail.status === 'UNPAID'} />}
+        {method === 'bank' && beam.bankLocked && <p role="status">กรุณาตรวจสอบรายการ QR ก่อนโอนบัญชี</p>}
+      </>}
       {detail.slip && <section className="payment-submitted"><CheckCircle2 size={22} /><div><h2>{detail.status === 'PAID' ? 'ชำระครบแล้ว' : 'ได้รับสลิปแล้ว'}</h2><p>{detail.slip.file_name}</p><p>{new Date(detail.slip.created_at).toLocaleString('th-TH')}</p>{detail.status === 'PENDING_REVIEW' && <p>รอเจ้าหน้าที่ตรวจสอบและบันทึกรับชำระ ยังไม่ถือว่าชำระสำเร็จ</p>}</div></section>}
-      {open && <section className="payment-transfer"><h2><Building2 size={20} />บัญชีรับชำระ</h2>{detail.bank ? <dl><div><dt>ธนาคาร</dt><dd>{detail.bank.name}</dd></div><div><dt>ชื่อบัญชี</dt><dd>{detail.bank.accountName}</dd></div><div><dt>เลขบัญชี</dt><dd>{detail.bank.accountNumber}<button type="button" title="คัดลอกเลขบัญชี" aria-label="คัดลอกเลขบัญชี" onClick={async () => { try { await navigator.clipboard.writeText(detail.bank!.accountNumber); setCopied(true); } catch { setActionError('คัดลอกไม่สำเร็จ'); } }}><Copy size={18} /></button>{copied && <small role="status">คัดลอกแล้ว</small>}</dd></div></dl> : <p>ยังไม่ได้ตั้งค่าบัญชีรับชำระ กรุณาติดต่อเจ้าหน้าที่</p>}</section>}
+      {open && <section className="payment-transfer"><h2><Building2 size={20} />บัญชีรับชำระ</h2>{detail.bank ? <dl><div><dt>ธนาคาร</dt><dd>{detail.bank.name}</dd></div>{detail.bank.methodName && <div><dt>ช่องทางรับชำระ</dt><dd>{detail.bank.methodName}</dd></div>}{detail.bank.accountName && <div><dt>ชื่อบัญชี</dt><dd>{detail.bank.accountName}</dd></div>}<div><dt>เลขบัญชี</dt><dd>{detail.bank.accountNumber}<button type="button" title="คัดลอกเลขบัญชี" aria-label="คัดลอกเลขบัญชี" onClick={async () => { try { await navigator.clipboard.writeText(detail.bank!.accountNumber); setCopied(true); } catch { setActionError('คัดลอกไม่สำเร็จ'); } }}><Copy size={18} /></button>{copied && <small role="status">คัดลอกแล้ว</small>}</dd></div></dl> : <p>ยังไม่ได้ตั้งค่าบัญชีรับชำระ กรุณาติดต่อเจ้าหน้าที่</p>}</section>}
       {open && <form className="payment-upload" onSubmit={e => { e.preventDefault(); void submit(); }}><h2>{detail.slip ? 'ส่งสลิปเพิ่มเติม' : 'แนบหลักฐานการชำระเงิน'}</h2><p>PNG, JPG หรือ PDF ไม่เกิน 3 MB</p>
         <input type="file" hidden disabled={busy} ref={fileInput} accept=".png,.jpg,.jpeg,.pdf" onChange={e => { choose(e.target.files?.[0]); e.target.value = ''; }} />
         <button className="payment-choose" type="button" disabled={busy} onClick={() => fileInput.current?.click()}><Upload size={20} />เลือกสลิป</button>

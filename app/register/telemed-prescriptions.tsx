@@ -44,7 +44,7 @@ export default function TelemedPrescriptions() {
     <div className="rx-heading"><h2>ใบสั่งยาของฉัน</h2><button type="button" title="โหลดใบสั่งยาใหม่" aria-label="โหลดใบสั่งยาใหม่" disabled={loading} onClick={() => setRefresh(value => value + 1)}><RefreshCw size={20} /></button></div>
     {loading && <p role="status">กำลังโหลดใบสั่งยา...</p>}
     {error && <div role="alert"><p>{error}</p><button className="wide-button soft" onClick={() => setRefresh(value => value + 1)}>ลองใหม่</button></div>}
-    {!loading && !error && rows.length === 0 && <div className="rx-empty"><FileText size={32} aria-hidden="true" /><p>ยังไม่มีใบสั่งยา</p></div>}
+    {!loading && !error && rows.length === 0 && <div className="rx-empty" role="status"><FileText size={56} strokeWidth={1.5} aria-hidden="true" /><h2>ยังไม่มีใบสั่งยา</h2></div>}
     {!loading && !error && rows.map((row, index) => <article className="rx-record" key={row.id}>
       <header><FileText size={24} aria-hidden="true" /><div><small>{index === 0 ? 'ใบสั่งยาล่าสุด' : 'ประวัติใบสั่งยา'}</small><h3 title={row.id}>{displayReference(row)}</h3><p>{date(row.issuedAt)}</p></div><span className="rx-status">บันทึกแล้ว</span></header>
       <dl className="rx-meta"><div><dt>แพทย์ผู้ตรวจ</dt><dd>{row.doctorName || 'ไม่ระบุ'}</dd></div><div><dt>OPD</dt><dd>{row.opdId}</dd></div></dl>

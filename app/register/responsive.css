@@ -82,6 +82,50 @@
   .consent-row button, .summary-section summary button) { min-height: 44px; font-size: .8125rem; }
 .telemed-site .consent-row { flex-wrap: wrap; }
 .telemed-site .consent-row label { min-width: 0; }
+
+/* Keep the pre-registration notice spacing separate from the review form. */
+.telemed-site .registration-notice .registration-header { padding-block: 28px; }
+.telemed-site .registration-notice .registration-header h1 { font-size: 1.75rem; }
+.telemed-site .registration-notice .registration-header p { margin-top: 12px; }
+.telemed-site .registration-notice .registration-content {
+  display: grid;
+  gap: 28px;
+  padding-block: 28px 40px;
+}
+.telemed-site .registration-notice-intro h2 { margin: 0 0 12px; font-size: 1.125rem; }
+.telemed-site .registration-notice-intro p,
+.telemed-site .registration-notice-actions p { margin: 0; font-size: .9375rem; line-height: 1.8; }
+.telemed-site .registration-notice .consent-list { gap: 12px; }
+.telemed-site .registration-notice .consent-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 20px;
+}
+.telemed-site .registration-notice .consent-row label { align-items: start; gap: 12px; }
+.telemed-site .registration-notice .consent-row strong { line-height: 1.7; }
+.telemed-site .registration-notice .consent-row > button {
+  justify-self: start;
+  margin-left: 35px;
+  padding-inline: 0;
+}
+.telemed-site .registration-notice-actions {
+  display: grid;
+  gap: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.telemed-site .registration-notice-actions p { color: var(--muted); }
+.telemed-site .registration-notice-actions .wide-button { margin: 0; min-height: 52px; }
+@media (min-width: 600px) {
+  .telemed-site .registration-notice .consent-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 24px;
+  }
+  .telemed-site .registration-notice .consent-row > button { margin-left: 0; }
+}
 .telemed-site .esign-step-title,
 .telemed-site .esign-document-meta,
 .telemed-site .signature-pad > div { flex-wrap: wrap; }

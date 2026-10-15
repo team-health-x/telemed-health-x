@@ -2,7 +2,9 @@
 .rx-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
 .rx-heading h2 { margin: 0; font-size: 24px; }
 .rx-heading button { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border: 1px solid #d9dfe1; border-radius: 8px; background: white; color: #276f66; cursor: pointer; }
-.rx-empty { text-align: center; padding: 40px 8px; color: #606b71; }
+.rx-empty { min-height: max(280px, calc(100dvh - 324px)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; text-align: center; padding: 32px 16px; }
+.rx-empty > svg { flex-shrink: 0; color: #28756b; }
+.rx-empty h2 { margin: 0; font-size: 20px; line-height: 1.5; }
 .rx-record { min-width: 0; padding: 18px; margin-bottom: 16px; border: 1px solid #d9dfe1; border-radius: 8px; background: white; overflow-wrap: anywhere; }
 .rx-record header { display: flex; align-items: flex-start; gap: 12px; }
 .rx-record header > svg { flex-shrink: 0; color: #276f66; }

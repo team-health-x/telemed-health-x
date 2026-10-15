@@ -119,7 +119,6 @@ type ConsentData = {
 type IdentityMedia = { idCard: string; selfieWithCard: string };
 
 const CONSENT_DOCUMENT_VERSION = "PR-REG-CONSENT v1.0";
-const MOCK_OTP = "123456";
 
 const initialForm: RegistrationData = {
   documentType: "thai_id",
@@ -405,7 +404,7 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     setHealth(Object.fromEntries(healthTopics.map(({ key }) => [key, { ...emptyHealth, status: 'none' }])) as HealthData);
     setIdentityMedia({ idCard: '', selfieWithCard: '' });
     setConsents({ accurate: true, personalData: true, privacy: true, treatmentContact: true, marketing: true });
-    setOtpVerified(true); setSignerIntent(true); setSignatureData(signature); setTestSignature(signature);
+    setOtpVerified(false); setSignerIntent(true); setSignatureData(signature); setTestSignature(signature);
     setSignaturePadVersion(value => value + 1); setSignupProof(''); setErrors({}); setSubmitError(''); setConfirmOpen(false);
     setStep(5);
   }
@@ -415,11 +414,12 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     [form, health],
   );
   const requiredConsents = consents.accurate && consents.personalData && consents.privacy && consents.treatmentContact;
-  const canSubmit = Boolean(noticeAcceptedAt) && sensitiveConsent && allStepsValid && requiredConsents && otpVerified && signerIntent && Boolean(signatureData);
+  const canSubmit = Boolean(noticeAcceptedAt) && sensitiveConsent && allStepsValid && requiredConsents && otpVerified && Boolean(signupProof) && signerIntent && Boolean(signatureData);
 
   function updateForm<K extends keyof RegistrationData>(key: K, value: RegistrationData[K]) {
     if (key === "documentNumber" || key === "primaryPhone") {
       setOtpVerified(false);
+      setSignupProof('');
       setSignatureData("");
       setSignerIntent(false);
       setSignaturePadVersion((current) => current + 1);
@@ -476,13 +476,11 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     if (!canSubmit || submitPending.current) return;
     submitPending.current = true; setSubmitting(true); setSubmitError('');
     try {
-    const requestId = signupProof || crypto.randomUUID();
-    if (!signupProof) setSignupProof(requestId);
     const submittedDate = new Date();
     const profile = buildRegisteredProfile(form, health);
     const acceptedAt = submittedDate.toISOString();
     const consent = (accepted: boolean) => ({ accepted, acceptedAt, version: CONSENT_DOCUMENT_VERSION });
-    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestId, mockOtp: MOCK_OTP, signup: {
+    const response = await fetch('/api/telemed/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ signupProof, signup: {
       title: form.title, name: form.firstName, lastname: form.lastName, nickname: form.nickname,
       gender: form.gender === 'หญิง' ? 'Female' : form.gender === 'ชาย' ? 'Male' : 'Other', birthDate: form.birthDate,
       preferredLanguage: form.preferredLanguage === 'ไทย' ? 'th' : 'en',
@@ -498,28 +496,35 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
       telemedDetails: { form, health, consents, preCollectionConsent: { acceptedAt: noticeAcceptedAt, sensitiveData: sensitiveConsent, version: CONSENT_DOCUMENT_VERSION }, consentVersion: CONSENT_DOCUMENT_VERSION, signedAt: acceptedAt, signerIntent, signatureData, identityMedia },
     } }) });
     const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'สมัครไม่สำเร็จ');
+    if (!response.ok) {
+      if (response.status === 403) { setOtpVerified(false); setSignupProof(''); setSignatureData(''); }
+      throw new Error(result.error || 'สมัครไม่สำเร็จ');
+    }
     window.location.replace('/register');
     } catch (error) { setSubmitError(error instanceof Error ? error.message : 'สมัครไม่สำเร็จ'); }
     finally { submitPending.current = false; setSubmitting(false); }
   }
 
   if (!noticeAcceptedAt) {
-    return <main className="app-shell registration-shell">
+    return <main className="app-shell registration-shell registration-notice">
       <header className="registration-header">
         <h1>ก่อนเริ่มลงทะเบียน</h1>
         <p>ขั้นตอนถัดไปจะเก็บข้อมูลส่วนบุคคล ข้อมูลทางการแพทย์ และข้อมูลสุขภาพซึ่งเป็นข้อมูลส่วนบุคคลอ่อนไหว</p>
       </header>
       <section className="registration-content">
+        <div className="registration-notice-intro">
         <h2>ข้อมูลที่ต้องใช้</h2>
         <p>ข้อมูลระบุตัวตนและข้อมูลติดต่อ รวมถึงโรคประจำตัว ยาที่ใช้ ประวัติการรักษา และประวัติแพ้ยา เพื่อจัดทำประวัติ ประเมินสุขภาพ นัดหมาย และให้บริการทางการแพทย์</p>
+        </div>
         <div className="consent-list">
           <ConsentRow checked={consents.privacy} required label="รับทราบนโยบายความเป็นส่วนตัว" link="อ่านนโยบาย" onLink={() => setNoticeDocument("นโยบายความเป็นส่วนตัว")} onChange={value => setConsents(previous => ({ ...previous, privacy: value }))} />
           <ConsentRow checked={consents.personalData} required label="ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการลงทะเบียนและบริการ" link="อ่านรายละเอียด" onLink={() => setNoticeDocument("หนังสือยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล")} onChange={value => setConsents(previous => ({ ...previous, personalData: value }))} />
           <ConsentRow checked={sensitiveConsent} required label="ยินยอมให้เก็บและใช้ข้อมูลสุขภาพและข้อมูลทางการแพทย์ ซึ่งเป็นข้อมูลส่วนบุคคลอ่อนไหว เพื่อประเมินและให้บริการทางการแพทย์" link="อ่านรายละเอียด" onLink={() => setNoticeDocument("ความยินยอมในการใช้ข้อมูลสุขภาพและข้อมูลอ่อนไหว")} onChange={setSensitiveConsent} />
         </div>
+        <div className="registration-notice-actions">
         <p>หากยังไม่ยินยอม คุณสามารถออกจากหน้านี้โดยไม่เริ่มกรอกข้อมูล หรือติดต่อคลินิกเพื่อสอบถาม การรับข่าวสารและโปรโมชั่นเป็นทางเลือกแยกต่างหากในขั้นตอนสุดท้าย</p>
         <button className="wide-button" type="button" disabled={!consents.privacy || !consents.personalData || !sensitiveConsent} onClick={() => { setNoticeAcceptedAt(new Date().toISOString()); window.scrollTo({ top: 0 }); }}>ยืนยันและเริ่มกรอกข้อมูล</button>
+        </div>
       </section>
       {noticeDocument && <ConsentDocument title={noticeDocument} onClose={() => setNoticeDocument("")} />}
     </main>;
@@ -557,6 +562,7 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
         {step === 4 && <HealthStep form={form} health={health} errors={errors} updateForm={updateForm} updateHealth={updateHealth} />}
         {step === 5 && (
           <ReviewStep
+            key={form.primaryPhone + ':' + form.documentNumber}
             testSignature={signatureData === testSignature ? testSignature : undefined}
             form={form}
             health={health}
@@ -928,20 +934,50 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [challengeId, setChallengeId] = useState('');
+  const [busyOtp, setBusyOtp] = useState(false);
+  const [resendAt, setResendAt] = useState(0);
+  const [expiresAt, setExpiresAt] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const inFlight = useRef(false);
+  const active = useRef(true);
+  useEffect(() => {
+    active.current = true;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => { active.current = false; clearInterval(timer); };
+  }, []);
+  const resendSeconds = Math.max(0, Math.ceil((resendAt - now) / 1000));
   const maskedDocument = form.documentNumber.length > 4 ? `${"•".repeat(Math.max(0, form.documentNumber.length - 4))}${form.documentNumber.slice(-4)}` : form.documentNumber;
 
-  function sendOtp() {
+  async function sendOtp() {
+    if (inFlight.current || Date.now() < resendAt) return;
+    inFlight.current = true; setBusyOtp(true);
     setOtpCode("");
     setOtpError("");
     onOtpVerified(false);
     onSignupProof('');
-    setOtpSent(true);
+    setOtpSent(false); setChallengeId('');
+    try {
+      const response = await fetch('/api/telemed/signup-otp/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
+      const result = await response.json();
+      if (!active.current) return;
+      if (!response.ok) { if (response.status === 429) setResendAt(Date.now() + 60_000); throw new Error(result.error || 'ส่ง SMS ไม่สำเร็จ'); }
+      setNow(Date.now()); setChallengeId(result.challengeId); setExpiresAt(result.expiresAt); setResendAt(result.resendAt); setOtpSent(true);
+    } catch (error) { if (active.current) setOtpError(error instanceof Error ? error.message : 'ส่ง SMS ไม่สำเร็จ'); }
+    finally { inFlight.current = false; if (active.current) setBusyOtp(false); }
   }
 
-  function verifyOtp() {
-    const valid = otpSent && otpCode === MOCK_OTP;
-    onOtpVerified(valid);
-    setOtpError(valid ? '' : 'รหัส OTP ไม่ถูกต้อง');
+  async function verifyOtp() {
+    if (inFlight.current || !challengeId || otpCode.length !== 6) return;
+    inFlight.current = true; setBusyOtp(true); setOtpError('');
+    try {
+      const response = await fetch('/api/telemed/signup-otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone, challengeId, code: otpCode }) });
+      const result = await response.json();
+      if (!active.current) return;
+      if (!response.ok) throw new Error(result.error || 'รหัส OTP ไม่ถูกต้อง');
+      onSignupProof(result.proof); onOtpVerified(true); setOtpCode('');
+    } catch (error) { if (active.current) { onOtpVerified(false); onSignupProof(''); setOtpError(error instanceof Error ? error.message : 'ยืนยัน OTP ไม่สำเร็จ'); } }
+    finally { inFlight.current = false; if (active.current) setBusyOtp(false); }
   }
 
   return (
@@ -998,11 +1034,11 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
               <div className="esign-step-title"><div><small>ขั้นตอนที่ 2</small><h3>ยืนยันเบอร์โทรศัพท์</h3></div>{otpVerified && <span>เรียบร้อย</span>}</div>
               <div className={`otp-verification ${otpVerified ? "verified" : ""}`}>
                 <div className="otp-heading"><div><small>ส่งรหัส OTP ไปที่</small><strong>{form.primaryPhone.replace(/(\d{3})\d{4}(\d{3})/, "$1••••$2")}</strong></div>{otpVerified && <span><Check size={14} strokeWidth={3} aria-hidden="true" />ยืนยันแล้ว</span>}</div>
-                {!otpVerified && <button className="otp-send" type="button" onClick={sendOtp}>{otpSent ? "ส่งรหัสอีกครั้ง" : "ส่งรหัส OTP"}</button>}
+                {!otpVerified && <button className="otp-send" type="button" onClick={sendOtp} disabled={busyOtp || resendSeconds > 0}>{busyOtp ? 'กำลังดำเนินการ...' : resendSeconds > 0 ? `ส่งใหม่ได้ใน ${resendSeconds} วินาที` : otpSent ? "ส่งรหัสอีกครั้ง" : "ส่งรหัส OTP"}</button>}
                 {otpSent && !otpVerified && (
-                  <div className="otp-entry"><input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otpCode} onChange={(event) => { setOtpCode(event.target.value.replace(/\D/g, "")); setOtpError(""); }} placeholder="รหัส 6 หลัก" aria-label="รหัส OTP 6 หลัก" /><button type="button" onClick={verifyOtp} disabled={otpCode.length !== 6}>ยืนยัน</button></div>
+                  <div className="otp-entry"><input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otpCode} disabled={busyOtp} onChange={(event) => { setOtpCode(event.target.value.replace(/\D/g, "")); setOtpError(""); }} placeholder="รหัส 6 หลัก" aria-label="รหัส OTP 6 หลัก" /><button type="button" onClick={verifyOtp} disabled={busyOtp || otpCode.length !== 6 || now >= expiresAt}>ยืนยัน</button></div>
                 )}
-                {otpSent && !otpVerified && <p className="otp-demo">รหัสสำหรับทดสอบ: 123456</p>}
+                {otpSent && !otpVerified && now >= expiresAt && <p role="status">รหัสหมดอายุ กรุณาขอรหัสใหม่</p>}
                 {otpError && <p className="field-error">{otpError}</p>}
               </div>
             </div>

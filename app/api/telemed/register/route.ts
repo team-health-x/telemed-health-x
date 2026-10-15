@@ -18,13 +18,13 @@ export async function POST(request: Request) {
     if (!request.headers.get('content-type')?.startsWith('application/json')) return json({ error: 'Invalid content type' }, 415);
     const raw = await request.text();
     if (raw.length > 14_000_000) return json({ error: 'ข้อมูลใหญ่เกินไป' }, 413);
-    const { requestId, mockOtp, signup } = JSON.parse(raw);
-    if (mockOtp !== '123456' || typeof requestId !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(requestId) || typeof signup?.phoneNumber !== 'string' || !/^0[689]\d{8}$/.test(signup.phoneNumber)) {
+    const { signupProof, signup } = JSON.parse(raw);
+    if (typeof signupProof !== 'string' || !/^[a-f0-9-]{36}\.[a-f0-9]{64}$/i.test(signupProof) || typeof signup?.phoneNumber !== 'string' || !/^0[689]\d{8}$/.test(signup.phoneNumber)) {
       return json({ error: 'ข้อมูลยืนยันการสมัครไม่ถูกต้อง' }, 400);
     }
-    // The route is Dev-only. This is an idempotency key, not proof of phone ownership.
-    const key = createHash('sha256').update(`telemed-mock-signup:${requestId}:${signup.phoneNumber}`).digest('hex');
-    const response = await fetch(new URL('/api/v1/telemed/register', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-registration-key': key }, body: JSON.stringify(signup) });
+    // Stable retries share a key; the backend verifies and consumes the proof atomically.
+    const key = createHash('sha256').update(`telemed-signup:${signupProof}:${signup.phoneNumber}`).digest('hex');
+    const response = await fetch(new URL('/api/v1/telemed/register', origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-registration-key': key, 'x-registration-proof': signupProof }, body: JSON.stringify(signup) });
     const result = await response.json();
     if (!response.ok || result.status !== '0000') return json({ error: result.message || 'สมัครไม่สำเร็จ' }, response.ok ? 409 : response.status);
     const customer = result.data;

@@ -7,6 +7,7 @@ import TelemedAppointments from "./telemed-appointments";
 import TelemedPrescriptions from './telemed-prescriptions';
 import ShippingAddressEditor, { type ShippingAddress } from './shipping-address';
 import UiSkeleton from '../ui-skeleton';
+import { customerFirstName } from '../lib/customer-display-name';
 import {
   ArrowRight,
   CalendarDays,
@@ -252,7 +253,7 @@ function RegistrationWelcome({ onStart }: { onStart: () => void }) {
 }
 
 function firstName(name: string) {
-  return name.trim().split(/\s+/)[0] || "สมาชิก";
+  return customerFirstName(name);
 }
 
 function profileInitial(name: string) {
@@ -359,7 +360,6 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
   return (
     <section className="tab-page history-page">
       <div className="page-intro">
-        <p className="eyebrow">APPOINTMENT & PAYMENT</p>
         <h2>ประวัติการนัดหมายและชำระเงิน</h2>
         <p>นัดหมายและใบขายค่ายา อย่างละไม่เกิน 100 รายการ</p>
       </div>
@@ -370,10 +370,18 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
         <article><span><CalendarDays size={18} aria-hidden="true" /></span><div><small>นัดหมายในรายการ</small><strong>{historyItems.length} ครั้ง</strong></div></article>
         <article><span><WalletCards size={18} aria-hidden="true" /></span><div><small>ชำระแล้ว</small><strong>฿{totalPaid.toLocaleString("th-TH")}</strong></div></article>
       </div>
-      <p>ค่าปรึกษาที่รับชำระ ฿{consultationPaid.toLocaleString('th-TH')} · ค่ายาที่รับชำระ ฿{medicinePaid.toLocaleString('th-TH')}</p>
+      <dl className="history-payment-summary">
+        <div><dt>ค่าปรึกษาที่รับชำระ</dt><dd>฿{consultationPaid.toLocaleString('th-TH')}</dd></div>
+        <div><dt>ค่ายาที่รับชำระ</dt><dd>฿{medicinePaid.toLocaleString('th-TH')}</dd></div>
+      </dl>
+      {!medicines.length && !historyItems.length ? <div className="history-empty" role="status">
+        <History size={56} strokeWidth={1.5} aria-hidden="true" />
+        <h2>ยังไม่มีประวัติ</h2>
+        <p>ประวัติการนัดหมายและชำระเงินของคุณจะแสดงที่นี่</p>
+      </div> : <>
       <div className="section-heading compact"><h2>ประวัติชำระค่ายา</h2></div>
       <div className="history-list">
-        {!medicines.length && <p>ยังไม่มีรายการค่ายา</p>}
+        {!medicines.length && <p className="history-section-empty">ยังไม่มีรายการค่ายา</p>}
         {medicines.map(item => <article key={item.saleOrderId} className="history-card">
           <div className="history-card-top"><span className="history-date"><Pill size={24} aria-hidden="true" /></span><div><small>{new Date(item.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}</small><strong>ค่ายา · {item.saleOrderId}</strong><p>{item.names.join(', ')}</p></div></div>
           <div className="history-payment-row"><span><WalletCards size={16} aria-hidden="true" />{paymentLabels[item.status] || 'ไม่ทราบสถานะ'}</span><strong>รับชำระ ฿{item.paidAmount.toLocaleString('th-TH')}</strong></div>
@@ -382,9 +390,9 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
           {item.paymentUrl && <a className="wide-button soft" href={item.paymentUrl}>ดูรายการชำระเงิน</a>}
         </article>)}
       </div>
-      <div className="section-heading compact"><div><p className="eyebrow">รายการล่าสุด</p><h2>ประวัติของคุณ</h2></div></div>
+      <div className="section-heading compact"><h2>ประวัติการนัดหมาย</h2></div>
       <div className="history-list">
-        {!historyItems.length && <p>ยังไม่มีประวัติการนัดหมาย</p>}
+        {!historyItems.length && <p className="history-section-empty">ยังไม่มีประวัติการนัดหมาย</p>}
         {historyItems.map((item) => (
           <article key={item.id} className={`history-card ${item.current ? "current" : ""}`}>
             <div className="history-card-top">
@@ -397,6 +405,7 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
           </article>
         ))}
       </div>
+      </>}
       </>}
     </section>
   );

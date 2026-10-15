@@ -1,0 +1,11 @@
+.beam-payment { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px 0; min-width: 0; }
+.beam-payment h3, .beam-timer, .beam-status, .beam-download { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; text-align: center; }
+.beam-payment h3 { font-size: 18px; }
+.beam-sandbox { font-size: 13px; color: #8b490e; background: #fff4dd; padding: 8px 12px; margin: 0; text-align: center; border-radius: 6px; }
+.beam-amount { font-size: 22px; }
+.beam-qr { width: min(240px, 100%); height: auto; aspect-ratio: 1; object-fit: contain; padding: 12px; background: #fff; border: 1px solid #dedee4; border-radius: 8px; }
+.beam-payment .wide-button { width: 100%; }
+.beam-download { color: #236558; min-height: 44px; }
+.beam-status { color: #285d50; line-height: 1.6; }
+.booking-payment-choice { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+.booking-payment-choice label { display: flex; align-items: center; gap: 8px; min-height: 44px; }

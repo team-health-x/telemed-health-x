@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, FileCheck2, ImagePlus, RefreshCw, ShieldCheck, Stethoscope, Upload, Video, X } from "lucide-react";
 import "./booking-sheet.css";
 import PaymentMethods from './payment-methods';
+import BeamConsultationPayment from './beam-consultation-payment';
 import UiSkeleton from '../ui-skeleton';
 
 type Offering = {
@@ -89,6 +90,8 @@ type BookingStage = "date" | "doctor" | "schedule" | "payment" | "slip";
 
 function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors: Doctor[]; onClose: () => void; onSubmitted: () => void; onPending: (value: boolean) => void }) {
   const [paymentAvailable, setPaymentAvailable] = useState(false);
+  const [paymentMode, setPaymentMode] = useState<'beam' | 'transfer'>('beam');
+  const [beamStarted, setBeamStarted] = useState(false);
   const [mode, setMode] = useState<'doctor' | 'date'>('doctor');
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -151,7 +154,8 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
   const visibleDoctors = mode === 'date' ? availableDoctors.filter(doctor => doctor.availability.some(day => day.date === date)) : availableDoctors;
   const times = doctorDays.find(day => day.date === date)?.times ?? [];
   const validTime = !!date && times.includes(time);
-  const stageOrder: BookingStage[] = mode === 'date' ? ["date", "doctor", "schedule", "payment", "slip"] : ["doctor", "schedule", "payment", "slip"];
+  const stageOrder: BookingStage[] = [ ...(mode === 'date' ? ['date' as const] : []), 'doctor', 'schedule', 'payment',
+    ...(paymentMode === 'transfer' ? ['slip' as const] : []) ];
   const step = stageOrder.indexOf(stage) + 1;
   const titles: Record<BookingStage, string> = {
     date: 'เลือกวันที่',
@@ -162,6 +166,7 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
   };
 
   function goBack() {
+    if (beamStarted) return;
     const previous = stageOrder[step - 2];
     if (previous) setStage(previous);
   }
@@ -192,7 +197,7 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
     <fieldset disabled={submitting} style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }} aria-busy={submitting}>
         <div className="sheet-handle" />
         <div className="booking-heading">
-          {step === 1 ? <span /> : <button type="button" aria-label="ย้อนกลับ" onClick={goBack}><ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /></button>}
+          {step === 1 || beamStarted ? <span /> : <button type="button" aria-label="ย้อนกลับ" onClick={goBack}><ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /></button>}
           <div><p className="eyebrow">นัดหมายแพทย์</p><h2 id="booking-title">{titles[stage]}</h2></div>
           <button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button>
         </div>
@@ -266,9 +271,17 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
                 <div><span>วันและเวลา</span><strong>{formatDate(date)} • {time} น.</strong></div>
                 <div className="payment-total"><span>ยอดชำระทั้งหมด</span><strong>฿{selectedDoctor.price.toLocaleString("th-TH")}</strong></div>
               </div>
+              {!beamStarted && <div className="booking-payment-choice" role="radiogroup" aria-label="ช่องทางชำระเงิน">
+                <label><input type="radio" name="consultation-payment" checked={paymentMode === 'beam'} onChange={() => setPaymentMode('beam')} />พร้อมเพย์ QR</label>
+                <label><input type="radio" name="consultation-payment" checked={paymentMode === 'transfer'} onChange={() => setPaymentMode('transfer')} />โอนและแนบสลิป</label>
+              </div>}
+              {paymentMode === 'beam' ? <BeamConsultationPayment
+                selection={{ doctorId: selectedDoctor.doctorId, courseItemId: selectedDoctor.courseItemId, date, time, expectedPrice: selectedDoctor.price }}
+                onStarted={() => setBeamStarted(true)} onPaid={onSubmitted} /> : <>
               <PaymentMethods onAvailable={setPaymentAvailable} />
               <p className="payment-demo-note">ทดสอบเท่านั้น กรุณาอย่าโอนเงินจริง ยังไม่มีการจองคิว</p>
               <button className="wide-button" type="button" disabled={!paymentAvailable} onClick={() => setStage("slip")}>ไปแนบสลิปทดสอบ <ArrowRight size={17} aria-hidden="true" /></button>
+              </>}
             </>
           )}
 
