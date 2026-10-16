@@ -411,7 +411,8 @@ body { margin: 0; }
 .landing-site .steps-section .section-heading h2 span { display: inline-block; margin-top: 12px; font-size: 30px; }
 .landing-site .step-card h3 { overflow-wrap: anywhere; line-height: 1.5; letter-spacing: 0; }
 .landing-site .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-.landing-site .step-card { padding: 28px 24px 30px; position: relative; border-top: 1px solid rgba(109,73,152,.25); }
+.landing-site .step-card { padding: 0; min-width: 0; }
+.landing-site .step-image { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
 .landing-site .step-index { width: 50px; height: 50px; margin-bottom: 30px; display: grid; place-items: center; border-radius: 16px; color: #fff; background: linear-gradient(135deg, var(--purple), var(--blue)); font-size: 18px; font-weight: 800; box-shadow: 0 10px 24px rgba(88, 58, 121, .2); }
 .landing-site .step-arrow { position: absolute; top: 42px; right: -15px; z-index: 2; color: var(--purple); font-size: 27px; }
 .landing-site .center-action { margin-top: 58px; text-align: center; }

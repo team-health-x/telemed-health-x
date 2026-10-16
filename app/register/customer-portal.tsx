@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import RegistrationFlow, { type RegisteredProfile } from "./registration-flow";
 import BookingSheet from "./booking-sheet";
 import TelemedAppointments from "./telemed-appointments";
+import TelemedPrescriptions from './telemed-prescriptions';
+import ShippingAddressEditor, { type ShippingAddress } from './shipping-address';
 import UiSkeleton from '../ui-skeleton';
+import { customerFirstName } from '../lib/customer-display-name';
 import {
   ArrowRight,
   CalendarDays,
@@ -55,7 +58,7 @@ type Doctor = {
   price: number;
 };
 
-type ProfileData = RegisteredProfile;
+type ProfileData = RegisteredProfile & { shippingAddress?: ShippingAddress };
 
 const navItems: { id: Tab; Icon: LucideIcon; label: string }[] = [
   { id: "home", Icon: HomeIcon, label: "หน้าหลัก" },
@@ -88,7 +91,6 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
   const [selectedDoctorId] = useState<DoctorId>("nicha");
   const [appointmentBooked] = useState(false);
   const [appointmentConfirmationOpen, setAppointmentConfirmationOpen] = useState(false);
-  const [prescriptionOpen, setPrescriptionOpen] = useState(false);
   const [profilePanel, setProfilePanel] = useState<ProfilePanel>(null);
   const [videoOpen, setVideoOpen] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>(customer ? {
@@ -154,7 +156,7 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
           refreshKey={bookingRefresh}
         />
       )}
-      {activeTab === "prescriptions" && <PrescriptionsView doctor={selectedDoctor} onOpen={() => setPrescriptionOpen(true)} />}
+      {activeTab === "prescriptions" && <TelemedPrescriptions />}
       {activeTab === "profile" && <ProfileView data={profileData} onOpen={setProfilePanel} />}
 
       <BottomNav active={activeTab} onChange={setActiveTab} />
@@ -172,7 +174,6 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
         />
       )}
 
-      {prescriptionOpen && <PrescriptionSheet doctor={selectedDoctor} onClose={() => setPrescriptionOpen(false)} />}
 
       {profilePanel && (
         <ProfileSheet
@@ -244,7 +245,7 @@ function RegistrationWelcome({ onStart }: { onStart: () => void }) {
         </div>
       </section>
 
-      <div className="onboarding-privacy"><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /><p><strong>ข้อมูลของคุณได้รับการดูแลอย่างปลอดภัย</strong><small>ใช้เพื่อการลงทะเบียนและบริการทางการแพทย์เท่านั้น</small></p></div>
+      <div className="onboarding-privacy"><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /><p><strong>ขั้นตอนถัดไปเกี่ยวข้องกับข้อมูลสุขภาพและข้อมูลอ่อนไหว</strong><small>โปรดอ่านรายละเอียดและให้ความยินยอมก่อนเริ่มกรอกข้อมูล เพื่อการลงทะเบียนและบริการทางการแพทย์</small></p></div>
       <button className="onboarding-start" type="button" onClick={onStart}>เริ่มลงทะเบียน <ArrowRight size={19} strokeWidth={2.5} aria-hidden="true" /></button>
       <p className="onboarding-time">ใช้เวลาประมาณ 5–7 นาที</p>
     </main>
@@ -252,7 +253,7 @@ function RegistrationWelcome({ onStart }: { onStart: () => void }) {
 }
 
 function firstName(name: string) {
-  return name.trim().split(/\s+/)[0] || "สมาชิก";
+  return customerFirstName(name);
 }
 
 function profileInitial(name: string) {
@@ -311,7 +312,9 @@ function HomeView({ userName, onAppointment, bookingRefresh }: { userName: strin
 
 function HistoryView({ refreshKey }: { refreshKey: number }) {
   type HistoryBooking = { id: string; date: string; time: string; doctorName: string; courseName: string; price: number; paidAmount: number; state: string; saleOrderId: string };
+  type MedicineHistory = { saleOrderId: string; date: string; names: string[]; total: number; paidAmount: number; balance: number; status: string; paymentUrl: string | null; receipts: { id: string; date: string | null; amount: number }[] };
   const [bookings, setBookings] = useState<HistoryBooking[]>([]);
+  const [medicines, setMedicines] = useState<MedicineHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -322,11 +325,11 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
       if (pending) return;
       pending = true;
       try {
-        const response = await fetch('/api/telemed/bookings', { cache: 'no-store', signal: controller.signal });
+        const response = await fetch('/api/telemed/history', { cache: 'no-store', signal: controller.signal });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'โหลดประวัติไม่สำเร็จ');
-        if (!Array.isArray(result) || result.some(item => !Number.isFinite(item.paidAmount))) throw new Error('ข้อมูลชำระเงินยังไม่พร้อม กรุณาลองใหม่');
-        setBookings(result); setError('');
+        if (!Array.isArray(result.bookings) || !Array.isArray(result.medicines) || [...result.bookings, ...result.medicines].some(item => !Number.isFinite(item.paidAmount))) throw new Error('ข้อมูลชำระเงินยังไม่พร้อม กรุณาลองใหม่');
+        if (!controller.signal.aborted) { setBookings(result.bookings); setMedicines(result.medicines); setError(''); }
       } catch (e) {
         if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'โหลดประวัติไม่สำเร็จ');
       } finally { pending = false; if (!controller.signal.aborted) setLoading(false); }
@@ -349,14 +352,16 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
       reference: item.saleOrderId, current: item.state !== 'CANCELLED',
     };
   });
-  const totalPaid = historyItems.reduce((sum, item) => sum + item.amount, 0);
+  const consultationPaid = historyItems.reduce((sum, item) => sum + Math.round(item.amount * 100), 0) / 100;
+  const medicinePaid = medicines.reduce((sum, item) => sum + Math.round(item.paidAmount * 100), 0) / 100;
+  const totalPaid = Math.round((consultationPaid + medicinePaid) * 100) / 100;
+  const paymentLabels: Record<string, string> = { PAID: 'ชำระครบแล้ว', PARTIAL: 'ชำระบางส่วน', PENDING_REVIEW: 'รอตรวจสอบสลิป', UNPAID: 'ยังไม่มียอดรับชำระ', CANCELLED: 'ยกเลิกใบขาย' };
 
   return (
     <section className="tab-page history-page">
       <div className="page-intro">
-        <p className="eyebrow">APPOINTMENT & PAYMENT</p>
         <h2>ประวัติการนัดหมายและชำระเงิน</h2>
-        <p>รายการล่าสุดไม่เกิน 100 รายการ</p>
+        <p>นัดหมายและใบขายค่ายา อย่างละไม่เกิน 100 รายการ</p>
       </div>
       {loading && !error && <UiSkeleton label="กำลังโหลดประวัติ" />}
       {error && <div role="alert"><p>{error}</p><button type="button" className="wide-button soft" onClick={() => setAttempt(value => value + 1)}><RefreshCw size={18} />ลองใหม่</button></div>}
@@ -365,9 +370,29 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
         <article><span><CalendarDays size={18} aria-hidden="true" /></span><div><small>นัดหมายในรายการ</small><strong>{historyItems.length} ครั้ง</strong></div></article>
         <article><span><WalletCards size={18} aria-hidden="true" /></span><div><small>ชำระแล้ว</small><strong>฿{totalPaid.toLocaleString("th-TH")}</strong></div></article>
       </div>
-      <div className="section-heading compact"><div><p className="eyebrow">รายการล่าสุด</p><h2>ประวัติของคุณ</h2></div></div>
+      <dl className="history-payment-summary">
+        <div><dt>ค่าปรึกษาที่รับชำระ</dt><dd>฿{consultationPaid.toLocaleString('th-TH')}</dd></div>
+        <div><dt>ค่ายาที่รับชำระ</dt><dd>฿{medicinePaid.toLocaleString('th-TH')}</dd></div>
+      </dl>
+      {!medicines.length && !historyItems.length ? <div className="history-empty" role="status">
+        <History size={56} strokeWidth={1.5} aria-hidden="true" />
+        <h2>ยังไม่มีประวัติ</h2>
+        <p>ประวัติการนัดหมายและชำระเงินของคุณจะแสดงที่นี่</p>
+      </div> : <>
+      <div className="section-heading compact"><h2>ประวัติชำระค่ายา</h2></div>
       <div className="history-list">
-        {!historyItems.length && <p>ยังไม่มีประวัติการนัดหมาย</p>}
+        {!medicines.length && <p className="history-section-empty">ยังไม่มีรายการค่ายา</p>}
+        {medicines.map(item => <article key={item.saleOrderId} className="history-card">
+          <div className="history-card-top"><span className="history-date"><Pill size={24} aria-hidden="true" /></span><div><small>{new Date(item.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}</small><strong>ค่ายา · {item.saleOrderId}</strong><p>{item.names.join(', ')}</p></div></div>
+          <div className="history-payment-row"><span><WalletCards size={16} aria-hidden="true" />{paymentLabels[item.status] || 'ไม่ทราบสถานะ'}</span><strong>รับชำระ ฿{item.paidAmount.toLocaleString('th-TH')}</strong></div>
+          <p className="history-reference">ยอดสุทธิ ฿{item.total.toLocaleString('th-TH')} · คงเหลือ ฿{item.balance.toLocaleString('th-TH')}</p>
+          {item.receipts.map(receipt => <p className="history-reference" key={receipt.id}>ใบเสร็จ {receipt.id}{receipt.date ? ` · ${new Date(receipt.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}` : ''} · ฿{receipt.amount.toLocaleString('th-TH')}</p>)}
+          {item.paymentUrl && <a className="wide-button soft" href={item.paymentUrl}>ดูรายการชำระเงิน</a>}
+        </article>)}
+      </div>
+      <div className="section-heading compact"><h2>ประวัติการนัดหมาย</h2></div>
+      <div className="history-list">
+        {!historyItems.length && <p className="history-section-empty">ยังไม่มีประวัติการนัดหมาย</p>}
         {historyItems.map((item) => (
           <article key={item.id} className={`history-card ${item.current ? "current" : ""}`}>
             <div className="history-card-top">
@@ -380,6 +405,7 @@ function HistoryView({ refreshKey }: { refreshKey: number }) {
           </article>
         ))}
       </div>
+      </>}
       </>}
     </section>
   );
@@ -414,68 +440,6 @@ function AppointmentsView({ appointmentBooked, selectedDate, selectedTime, docto
   );
 }
 
-function PrescriptionsView({ doctor, onOpen }: { doctor: Doctor; onOpen: () => void }) {
-  return (
-    <section className="tab-page prescription-page">
-      <div className="page-intro">
-        <p className="eyebrow">MY PRESCRIPTION</p>
-        <h2>ใบสั่งยาของฉัน</h2>
-        <p>ตรวจสอบรายการยา วิธีใช้ และคำแนะนำล่าสุดจากแพทย์</p>
-      </div>
-
-      <article className="prescription-card">
-        <div className="prescription-card-top">
-          <span className="prescription-icon"><FileText size={22} strokeWidth={2.2} aria-hidden="true" /></span>
-          <div><small>ใบสั่งยาปัจจุบัน</small><strong>RX-2569-0829-001</strong><p>ออกเมื่อ 29 สิงหาคม 2569</p></div>
-          <i><Check size={12} strokeWidth={3} aria-hidden="true" />ใช้งานอยู่</i>
-        </div>
-
-        <div className="prescription-doctor"><DoctorPhoto doctor={doctor} /><div><small>แพทย์ผู้สั่งยา</small><strong>{doctor.name}</strong><p>{doctor.specialty}</p></div></div>
-
-        <div className="medicine-preview">
-          <span><Pill size={19} strokeWidth={2.3} aria-hidden="true" /></span>
-          <div><small>รายการยา 1 รายการ</small><strong>ปากกาควบคุมน้ำหนักตามแผนแพทย์</strong><p>ใช้ตามขนาดบนฉลากและคำสั่งแพทย์ สัปดาห์ละ 1 ครั้ง</p></div>
-        </div>
-
-        <div className="prescription-schedule"><CalendarDays size={17} strokeWidth={2.3} aria-hidden="true" /><div><small>กำหนดใช้ครั้งถัดไป</small><strong>วันพฤหัสบดี เวลา 20:00 น.</strong></div></div>
-        <button className="wide-button" type="button" onClick={onOpen}>ดูรายละเอียดใบสั่งยา <ChevronRight size={17} strokeWidth={2.4} aria-hidden="true" /></button>
-      </article>
-
-      <div className="prescription-safety"><ShieldCheck size={18} strokeWidth={2.3} aria-hidden="true" /><p><strong>ใช้ยาตามคำสั่งแพทย์เท่านั้น</strong><small>อย่าปรับขนาดยาเอง หากมีอาการผิดปกติให้ติดต่อทีมดูแลก่อนใช้ครั้งถัดไป</small></p></div>
-    </section>
-  );
-}
-
-function PrescriptionSheet({ doctor, onClose }: { doctor: Doctor; onClose: () => void }) {
-  return (
-    <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section className="prescription-sheet" role="dialog" aria-modal="true" aria-labelledby="prescription-title">
-        <div className="sheet-handle" />
-        <div className="sheet-heading"><div><p className="eyebrow">PRESCRIPTION DETAIL</p><h2 id="prescription-title">รายละเอียดใบสั่งยา</h2></div><button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button></div>
-
-        <div className="prescription-sheet-meta">
-          <div><small>เลขที่ใบสั่งยา</small><strong>RX-2569-0829-001</strong></div>
-          <span><Check size={13} strokeWidth={3} aria-hidden="true" />แพทย์รับรองแล้ว</span>
-        </div>
-
-        <div className="prescription-sheet-doctor"><DoctorPhoto doctor={doctor} /><div><small>แพทย์ผู้สั่งยา</small><strong>{doctor.name}</strong><p>ออกเมื่อ 29 สิงหาคม 2569</p></div></div>
-
-        <article className="medicine-detail-card">
-          <div className="medicine-detail-heading"><span><Pill size={19} strokeWidth={2.3} aria-hidden="true" /></span><div><small>รายการที่ 1</small><h3>ปากกาควบคุมน้ำหนัก</h3></div></div>
-          <dl>
-            <div><dt>วิธีใช้</dt><dd>ฉีดใต้ผิวหนังตามตำแหน่งที่แพทย์หรือพยาบาลแนะนำ</dd></div>
-            <div><dt>ความถี่</dt><dd>สัปดาห์ละ 1 ครั้ง ในวันและเวลาใกล้เคียงเดิม</dd></div>
-            <div><dt>ขนาดยา</dt><dd>ตรวจสอบขนาดบนฉลากยาที่ได้รับทุกครั้งก่อนใช้</dd></div>
-            <div><dt>การจัดเก็บ</dt><dd>เก็บตามเงื่อนไขบนฉลาก หลีกเลี่ยงความร้อนและแสง</dd></div>
-          </dl>
-        </article>
-
-        <div className="prescription-warning"><ShieldCheck size={17} strokeWidth={2.3} aria-hidden="true" /><p>ข้อมูลในต้นแบบนี้ไม่ใช้แทนฉลากยา ใบสั่งยาฉบับจริง หรือคำแนะนำจากแพทย์</p></div>
-        <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>
-      </section>
-    </div>
-  );
-}
 
 function AppointmentConfirmationModal({ doctor, date, time, onClose }: { doctor: Doctor; date: string; time: string; onClose: () => void }) {
   return (
@@ -572,6 +536,7 @@ function ProfileSheet({ panel, data, onClose, onSave, onLogout }: {
   onLogout: () => void;
 }) {
   const [draft, setDraft] = useState(data);
+  const [addressValid, setAddressValid] = useState(false);
   const titles: Record<Exclude<ProfilePanel, null>, string> = {
     personal: "แก้ไขข้อมูลส่วนตัว",
     basic: "ข้อมูลพื้นฐาน",
@@ -601,7 +566,7 @@ function ProfileSheet({ panel, data, onClose, onSave, onLogout }: {
           {panel === "personal" && <><SheetField label="ชื่อ–นามสกุล"><input value={draft.name} onChange={(event) => update("name", event.target.value)} /></SheetField><SheetField label="เบอร์โทรศัพท์"><input inputMode="tel" value={draft.phone} onChange={(event) => update("phone", event.target.value)} /></SheetField></>}
           {panel === "basic" && <div className="profile-field-grid"><SheetField label="วันเดือนปีเกิด"><input type="date" value={draft.birthDate} onChange={(event) => update("birthDate", event.target.value)} /></SheetField><SheetField label="ส่วนสูง (ซม.)"><input type="number" value={draft.height} onChange={(event) => update("height", event.target.value)} /></SheetField><SheetField label="น้ำหนักตั้งต้น (กก.)" full><input type="number" step="0.1" value={draft.startWeight} onChange={(event) => update("startWeight", event.target.value)} /></SheetField></div>}
           {panel === "health" && <><p className="sheet-description">ข้อมูลนี้ช่วยให้ทีมแพทย์ติดตามความปลอดภัย กรุณาระบุโรคประจำตัว ยาที่ใช้อยู่ และประวัติแพ้ยา</p><SheetField label="รายละเอียด"><textarea rows={6} value={draft.healthHistory} onChange={(event) => update("healthHistory", event.target.value)} /></SheetField></>}
-          {panel === "address" && <><p className="sheet-description">ใช้สำหรับการจัดส่งปากกาและอุปกรณ์ตามแผนแพทย์เท่านั้น</p><SheetField label="ที่อยู่จัดส่ง"><textarea rows={5} value={draft.address} onChange={(event) => update("address", event.target.value)} /></SheetField></>}
+          {panel === "address" && <ShippingAddressEditor onValidity={setAddressValid} value={draft.shippingAddress || { detail: draft.address, province: '', district: '', subdistrict: '', postcode: '' }} onChange={(shippingAddress, address, valid) => { setDraft(previous => ({ ...previous, shippingAddress, address })); setAddressValid(valid); }} />}
           {panel === "email" && <><SheetField label="อีเมล"><input type="email" value={draft.email} onChange={(event) => update("email", event.target.value)} /></SheetField><p className="sheet-description">ระบบจะใช้สำหรับแจ้งนัดและส่งลิงก์สำรองของห้องวิดีโอคอล</p></>}
           {panel === "privacy" && <div className="information-panel"><ShieldCheck size={28} aria-hidden="true" /><h3>การใช้และคุ้มครองข้อมูลสุขภาพ</h3><p>คลินิกใช้ข้อมูลเพื่อสร้างประวัติ นัดหมาย ติดตามการรักษา และติดต่อเกี่ยวกับบริการ โดยจำกัดการเข้าถึงเฉพาะผู้เกี่ยวข้อง</p><p>คุณสามารถขอเข้าถึง แก้ไข หรือลบข้อมูลตามช่องทางของคลินิกได้ เอกสารฉบับนี้เป็นข้อความสำหรับต้นแบบและต้องผ่านการตรวจทานก่อนใช้งานจริง</p></div>}
           {panel === "help" && <div className="help-panel"><details open><summary>เตรียมตัวก่อนใช้ปากกา</summary><p>ตรวจชื่อบนฉลาก วันหมดอายุ ลักษณะยา และทำตามคำสั่งแพทย์ที่ได้รับทุกครั้ง</p></details><details><summary>ควรจัดเก็บอย่างไร</summary><p>เก็บตามเงื่อนไขบนฉลากยา หลีกเลี่ยงความร้อนและแสง และไม่ใช้หากสภาพยาเปลี่ยนไป</p></details><details><summary>มีอาการผิดปกติทำอย่างไร</summary><p>ติดต่อทีมดูแลเพื่อขอคำแนะนำ หากอาการรุนแรงให้งดฉีดและติดต่อแพทย์หรือบริการฉุกเฉินทันที</p></details></div>}
@@ -616,7 +581,7 @@ function ProfileSheet({ panel, data, onClose, onSave, onLogout }: {
           )}
         </div>
 
-        {messages[panel] && <button className="wide-button" type="button" disabled={panel === "email" && !draft.email.includes("@")} onClick={() => onSave(draft, messages[panel] ?? "บันทึกแล้ว")}><Save size={17} aria-hidden="true" />บันทึกข้อมูล</button>}
+        {messages[panel] && <button className="wide-button" type="button" disabled={(panel === "email" && !draft.email.includes("@")) || (panel === "address" && !addressValid)} onClick={() => onSave(draft, messages[panel] ?? "บันทึกแล้ว")}><Save size={17} aria-hidden="true" />บันทึกข้อมูล</button>}
         {panel === "privacy" && <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>}
         {panel === "help" && <button className="wide-button" type="button" onClick={onClose}>รับทราบและปิด</button>}
         {panel === "logout" && <div className="logout-actions"><button type="button" onClick={onClose}>ยกเลิก</button><button type="button" onClick={onLogout}><LogOut size={16} strokeWidth={2.4} aria-hidden="true" />ออกจากระบบ</button></div>}

@@ -16,7 +16,7 @@ test('confirm registration calls register directly, not OTP endpoints', () => {
   assert.deepEqual(urls, ['/api/telemed/register']);
 });
 
-test('Dev register forwards one request and reuses its key without an OTP request', async () => {
+test('register forwards verified proof and reuses its key without resending SMS', async () => {
   process.env.NODE_ENV = 'development';
   process.env.TELEMED_DEPLOY_ENV = 'local';
   process.env.TELEMED_DEMO_AUTH_ENABLED = 'true';
@@ -29,7 +29,7 @@ test('Dev register forwards one request and reuses its key without an OTP reques
     calls.push({ url: String(url), options });
     return Response.json({ status: '0000', data: { customerId: 'TL-TEST', name: 'Test', phone: '0812345678' } });
   };
-  const body = { requestId: '1b5de1aa-14b6-45f0-9f12-65777b790cd4', mockOtp: '123456', signup: { phoneNumber: '0812345678' } };
+  const body = { signupProof: '1b5de1aa-14b6-45f0-9f12-65777b790cd4.' + 'a'.repeat(64), signup: { phoneNumber: '0812345678' } };
   const request = data => new Request('http://localhost:3100/api/telemed/register', { method: 'POST', headers: { host: 'localhost:3100', origin: 'http://localhost:3100', 'content-type': 'application/json' }, body: JSON.stringify(data) });
   try {
     for (let i = 0; i < 2; i++) {
@@ -40,7 +40,8 @@ test('Dev register forwards one request and reuses its key without an OTP reques
     assert.equal(calls.length, 2);
     assert.ok(calls.every(call => call.url === 'https://backend.example.test/api/v1/telemed/register'));
     assert.equal(calls[0].options.headers['x-registration-key'], calls[1].options.headers['x-registration-key']);
-    assert.equal((await POST(request({ ...body, mockOtp: '000000' }))).status, 400);
+    assert.equal(calls[0].options.headers['x-registration-proof'], body.signupProof);
+    assert.equal((await POST(request({ ...body, signupProof: undefined, mockOtp: '123456' }))).status, 400);
     assert.equal(calls.length, 2);
   } finally { global.fetch = originalFetch; }
 });

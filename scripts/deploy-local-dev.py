@@ -1,10 +1,12 @@
 """Build in ACR and deploy Dev using the current Azure CLI login."""
 import argparse
+import copy
 import importlib.util
 import os
 from pathlib import Path
 import re
 import shlex
+import secrets
 import subprocess
 import uuid
 
@@ -19,6 +21,70 @@ EXPECTED = {
     'AZURE_CONTAINER_APP_NAME': deploy.APP,
     'AZURE_CONTAINER_REGISTRY': 'healthxregistry',
 }
+
+
+def registration_plan(app, runtime_env):
+    """Read Dev configuration only; return planned env and secret writes in memory."""
+    if runtime_env.get('TELEMED_DEMO_AUTH_ENABLED') != 'true':
+        return app, runtime_env, {}
+    if app.get('name') != deploy.APP or app.get('resourceGroup', '').lower() != deploy.DEV_GROUP:
+        raise ValueError('Registration bootstrap is restricted to the Dev Telemed app')
+    planned = copy.deepcopy(app)
+    runtime_env = dict(runtime_env)
+    for key, name in [('TELEMED_SESSION_SECRET', 'telemed-session-secret'),
+                      ('TELEMED_DEMO_BRIDGE_SECRET', 'telemed-bridge-secret')]:
+        if runtime_env.get(key) != 'secretref:' + name:
+            raise ValueError(f'{key} must use the managed Dev secret reference')
+        entries = planned['properties']['configuration'].setdefault('secrets', [])
+        if not any(entry['name'] == name for entry in entries):
+            entries.append({'name': name})
+    fqdn = planned['properties']['configuration']['ingress']['fqdn']
+    runtime_env['TELEMED_DEV_ORIGINS'] = 'https://' + fqdn
+    deploy.validate(deploy.with_runtime_env(planned, runtime_env),
+                    deploy.REPOSITORY + '@sha256:' + '0' * 64, 'local-' + '0' * 16, 'dev')
+    common = ('--subscription', EXPECTED['AZURE_SUBSCRIPTION_ID'], '--resource-group', deploy.DEV_GROUP)
+    backend = deploy.az('containerapp', 'show', *common, '--name', 'healthx-api')
+    if (backend.get('name') != 'healthx-api' or backend.get('resourceGroup', '').lower() != deploy.DEV_GROUP
+            or 'https://' + backend['properties']['configuration']['ingress']['fqdn'] != deploy.DEV_ORIGIN):
+        raise ValueError('Unexpected backend; refusing to copy secrets')
+    containers = backend['properties']['template']['containers']
+    if len(containers) != 1:
+        raise ValueError('Expected one Dev backend container')
+    env = {entry['name']: entry for entry in containers[0].get('env', [])}
+    if env.get('TELEMED_DEPLOY_ENV', {}).get('value') != 'dev' or env.get('TELEMED_WORKFLOW_ENABLED', {}).get('value') != 'true':
+        raise ValueError('Backend Dev workflow must already be enabled')
+    ref = env.get('TELEMED_DEMO_BRIDGE_SECRET', {}).get('secretRef')
+    if not ref:
+        raise ValueError('Backend must have a secret-backed bridge key')
+    backend_secrets = deploy.az('containerapp', 'secret', 'list', *common, '--name', 'healthx-api', '--show-values')
+    bridge = next((s.get('value') for s in backend_secrets if s['name'] == ref), None)
+    if not isinstance(bridge, str) or len(bridge) < 32:
+        raise ValueError('Cannot resolve backend bridge secret (requires 32+ characters); check Azure permissions')
+    frontend_secrets = deploy.az('containerapp', 'secret', 'list', *common, '--name', deploy.APP, '--show-values')
+    current = {s['name']: s for s in frontend_secrets}
+    writes = {}
+    if current.get('telemed-bridge-secret', {}).get('value') != bridge:
+        if current.get('telemed-bridge-secret', {}).get('keyVaultUrl'):
+            raise ValueError('Refusing to replace a Key Vault bridge reference')
+        writes['telemed-bridge-secret'] = bridge
+    session = current.get('telemed-session-secret')
+    if session is None:
+        writes['telemed-session-secret'] = secrets.token_urlsafe(48)
+    elif len(session.get('value') or '') < 32:
+        raise ValueError('Existing session secret cannot be resolved or is too short; refusing automatic rotation')
+    return planned, runtime_env, writes
+
+
+def apply_registration_secrets(writes):
+    if not writes:
+        return
+    try:
+        deploy.az('containerapp', 'secret', 'set', '--subscription', EXPECTED['AZURE_SUBSCRIPTION_ID'],
+                  '--resource-group', deploy.DEV_GROUP, '--name', deploy.APP,
+                  '--secrets', *(f'{name}={value}' for name, value in writes.items()))
+    except subprocess.CalledProcessError:
+        # CalledProcessError includes argv, which contains secret values.
+        raise RuntimeError('Unable to configure Dev Azure secrets; check write permissions. Values withheld.') from None
 
 
 def load_runtime_env(path):
@@ -59,11 +125,13 @@ def main(argv=None):
     runtime_env = load_runtime_env(ROOT / 'deployment/environment/dev.env')
     app = deploy.az('containerapp', 'show', '--subscription', subscription,
                     '--name', deploy.APP, '--resource-group', deploy.DEV_GROUP)
+    app, runtime_env, secret_writes = registration_plan(app, runtime_env)
     # Validate app safety before paying for an ACR build. The digest is resolved after build.
     planned = deploy.with_runtime_env(app, runtime_env)
     deploy.validate(planned, deploy.REPOSITORY + '@sha256:' + '0' * 64, suffix, 'dev')
     print(f'Configuration OK: {deploy.DEV_GROUP}/{deploy.APP}', flush=True)
     print('Runtime variables to apply: ' + ', '.join(runtime_env), flush=True)
+    print('Azure secrets to configure: ' + (', '.join(secret_writes) or 'none'), flush=True)
     if args.check_only:
         print('No build or deployment performed. Write permissions have not been tested.')
         return
@@ -83,6 +151,7 @@ def main(argv=None):
             raise ValueError('ACR did not return an immutable image digest')
         os.environ.update(TELEMED_DEPLOY_TARGET='dev', TELEMED_IMAGE=deploy.REPOSITORY + '@' + digest,
                           TELEMED_REVISION_SUFFIX=suffix)
+        apply_registration_secrets(secret_writes)
         deploy.main(runtime_env=runtime_env)
     finally:
         if previous != subscription:

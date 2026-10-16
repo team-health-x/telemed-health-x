@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Building2, Check, FileCheck2, ImagePlus, RefreshCw, ShieldCheck, Stethoscope, Upload, Video, WalletCards, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Check, FileCheck2, ImagePlus, RefreshCw, ShieldCheck, Stethoscope, Upload, Video, X } from "lucide-react";
 import "./booking-sheet.css";
 import PaymentMethods from './payment-methods';
+import BeamConsultationPayment from './beam-consultation-payment';
 import UiSkeleton from '../ui-skeleton';
 
 type Offering = {
@@ -85,10 +86,24 @@ export default function BookingSheet({ onClose, onSubmitted }: { onClose?: () =>
   </div>;
 }
 
-type BookingStage = "doctor" | "schedule" | "payment" | "slip";
+type BookingStage = "date" | "doctor" | "schedule" | "payment" | "slip";
 
 function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors: Doctor[]; onClose: () => void; onSubmitted: () => void; onPending: (value: boolean) => void }) {
   const [paymentAvailable, setPaymentAvailable] = useState(false);
+  const [paymentMode, setPaymentMode] = useState<'beam' | 'transfer'>('beam');
+  const [beamStarted, setBeamStarted] = useState(false);
+  const [mode, setMode] = useState<'doctor' | 'date'>('doctor');
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const refresh = () => setNow(Date.now());
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener('focus', refresh);
+    return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
+  }, []);
+  const hasNotice = (day: string, value: string, clock = now) => new Date(`${day}T${value}:00+07:00`).getTime() - clock >= 86400000;
+  const availableDoctors = doctors.map(doctor => ({ ...doctor, availability: doctor.availability
+    .map(day => ({ ...day, times: day.times.filter(value => hasNotice(day.date, value)) }))
+    .filter(day => day.times.length > 0) })).filter(doctor => doctor.availability.length > 0);
   const [doctorId, setDoctorId] = useState(doctors[0].id);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -98,12 +113,23 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
   const pending = useRef(false);
   function onDoctor(id: string) {
     if (id === doctorId) return;
-    setDoctorId(id); setDate(""); setTime(""); setSlip(null); setSlipError(""); requestKey.current = '';
+    setDoctorId(id); if (mode === 'doctor') setDate(""); setTime(""); setSlip(null); setSlipError(""); setSubmitError(''); requestKey.current = '';
   }
-  function onDate(value: string) { setDate(value); setTime(""); setSlip(null); setSlipError(""); }
-  function onTime(value: string) { setTime(value); setSlip(null); setSlipError(""); }
+  function onDate(value: string) {
+    setDate(value); setTime(""); setSlip(null); setSlipError(""); setSubmitError(''); requestKey.current = '';
+    if (mode === 'date') setDoctorId(availableDoctors.find(doctor => doctor.availability.some(day => day.date === value))?.id ?? '');
+  }
+  function onTime(value: string) { setTime(value); setSlip(null); setSlipError(""); setSubmitError(''); requestKey.current = ''; }
+  function changeMode(value: 'doctor' | 'date') {
+    if (value === mode) return;
+    setMode(value); setStage(value); setDoctorId(availableDoctors[0]?.id ?? ''); setDate(''); setTime(''); setSlip(null); setSlipError(''); setSubmitError(''); requestKey.current = '';
+  }
   async function onConfirm() {
     if (!slip || !validTime || pending.current) return;
+    // Read the clock at submission, not during rendering, to reject expired selections.
+    // eslint-disable-next-line react-hooks/purity
+    const submittedAt = Date.now();
+    if (!hasNotice(date, time, submittedAt)) { setNow(submittedAt); setSubmitError('กรุณานัดหมายล่วงหน้าอย่างน้อย 24 ชั่วโมง และเลือกเวลาใหม่'); return; }
     onPending(true);
     pending.current = true; setSubmitting(true); setSubmitError('');
     requestKey.current ||= crypto.randomUUID();
@@ -123,18 +149,24 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
   const [slip, setSlip] = useState<File | null>(null);
   const [slipError, setSlipError] = useState("");
   const selectedDoctor = doctors.find((doctor) => doctor.id === doctorId) ?? doctors[0];
-  const times = selectedDoctor.availability.find(day => day.date === date)?.times ?? [];
+  const doctorDays = availableDoctors.find(doctor => doctor.id === doctorId)?.availability ?? [];
+  const dates = [...new Set(availableDoctors.flatMap(doctor => doctor.availability.map(day => day.date)))].sort();
+  const visibleDoctors = mode === 'date' ? availableDoctors.filter(doctor => doctor.availability.some(day => day.date === date)) : availableDoctors;
+  const times = doctorDays.find(day => day.date === date)?.times ?? [];
   const validTime = !!date && times.includes(time);
-  const stageOrder: BookingStage[] = ["doctor", "schedule", "payment", "slip"];
+  const stageOrder: BookingStage[] = [ ...(mode === 'date' ? ['date' as const] : []), 'doctor', 'schedule', 'payment',
+    ...(paymentMode === 'transfer' ? ['slip' as const] : []) ];
   const step = stageOrder.indexOf(stage) + 1;
   const titles: Record<BookingStage, string> = {
+    date: 'เลือกวันที่',
     doctor: "เลือกแพทย์",
-    schedule: "เลือกวันและเวลา",
+    schedule: mode === 'date' ? 'เลือกเวลา' : 'เลือกวันและเวลา',
     payment: "ชำระค่าปรึกษา",
     slip: "แนบสลิป",
   };
 
   function goBack() {
+    if (beamStarted) return;
     const previous = stageOrder[step - 2];
     if (previous) setStage(previous);
   }
@@ -165,19 +197,34 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
     <fieldset disabled={submitting} style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }} aria-busy={submitting}>
         <div className="sheet-handle" />
         <div className="booking-heading">
-          {stage === "doctor" ? <span /> : <button type="button" aria-label="ย้อนกลับ" onClick={goBack}><ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /></button>}
+          {step === 1 || beamStarted ? <span /> : <button type="button" aria-label="ย้อนกลับ" onClick={goBack}><ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /></button>}
           <div><p className="eyebrow">นัดหมายแพทย์</p><h2 id="booking-title">{titles[stage]}</h2></div>
           <button type="button" aria-label="ปิด" onClick={onClose}><X size={18} strokeWidth={2.5} aria-hidden="true" /></button>
         </div>
-        <div className="booking-step-meta"><span>ขั้นตอนที่ {step} จาก 4</span><strong>{step * 25}%</strong></div>
-        <div className="booking-progress" aria-label={`ความคืบหน้า ${step} จาก 4 ขั้นตอน`}><span style={{ width: `${step * 25}%` }} /></div>
+        <div className="booking-step-meta"><span>ขั้นตอนที่ {step} จาก {stageOrder.length}</span><strong>{Math.round(step / stageOrder.length * 100)}%</strong></div>
+        <div className="booking-progress" aria-label={`ความคืบหน้า ${step} จาก ${stageOrder.length} ขั้นตอน`}><span style={{ width: `${step / stageOrder.length * 100}%` }} /></div>
 
         <div className="booking-content">
+          {['payment', 'slip'].includes(stage) && !validTime && <p role="alert" className="slip-error">เวลาที่เลือกไม่อยู่ในช่วงจองล่วงหน้า 24 ชั่วโมงแล้ว กรุณาย้อนกลับไปเลือกเวลาใหม่</p>}
+          {['date', 'doctor', 'schedule'].includes(stage) && <div className="booking-mode" role="group" aria-label="วิธีเลือกนัดหมาย">
+            <button type="button" aria-pressed={mode === 'doctor'} onClick={() => changeMode('doctor')}><Stethoscope size={18} />เลือกแพทย์ก่อน</button>
+            <button type="button" aria-pressed={mode === 'date'} onClick={() => changeMode('date')}><CalendarDays size={18} />เลือกวันก่อน</button>
+          </div>}
+          {stage === 'date' && <>
+            <p className="field-label">วันที่เปิดรับนัด · เวลาประเทศไทย</p>
+            <div className="date-options" role="group" aria-label="เลือกวันที่">
+              {dates.map(value => <button key={value} type="button" aria-label={formatDate(value)} aria-pressed={date === value} className={date === value ? 'selected' : ''} onClick={() => onDate(value)}>
+                <small>{formatDate(value, { weekday: 'short' })}</small><strong>{formatDate(value, { day: 'numeric' })}</strong><small>{formatDate(value, { month: 'short', year: '2-digit' })}</small>
+              </button>)}
+            </div>
+            {!dates.length && <p role="status">ไม่มีเวลาว่างที่จองล่วงหน้าได้อย่างน้อย 24 ชั่วโมง</p>}
+            <button className="wide-button" type="button" disabled={!dates.includes(date)} onClick={() => setStage('doctor')}>เลือกแพทย์ที่ว่าง <ArrowRight size={17} /></button>
+          </>}
           {stage === "doctor" && (
             <>
-              <p className="booking-lead">เลือกแพทย์ที่ต้องการปรึกษา ค่าบริการจะแสดงก่อนชำระเงิน</p>
+              <p className="booking-lead">{mode === 'date' ? `แพทย์ที่ว่างวันที่ ${formatDate(date)}` : 'แพทย์ที่เปิดรับนัด'}</p>
               <div className="doctor-options" role="radiogroup" aria-label="เลือกแพทย์">
-                {doctors.map((doctor) => (
+                {visibleDoctors.map((doctor) => (
                   <button key={doctor.id} type="button" className={`doctor-option ${doctorId === doctor.id ? "selected" : ""}`} role="radio" aria-checked={doctorId === doctor.id} onClick={() => onDoctor(doctor.id)}>
                     <span className="doctor-option-photo"><DoctorPhoto doctor={doctor} /></span>
                     <div className="doctor-option-info"><strong>{doctor.name}</strong><small>{doctor.specialty}</small><span><i><Video size={13} aria-hidden="true" />{doctor.duration}</i><i>เปิดรับนัด</i></span></div>
@@ -186,16 +233,18 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
                   </button>
                 ))}
               </div>
-              <button className="wide-button" type="button" disabled={!selectedDoctor.availability.length} onClick={() => setStage("schedule")}>เลือกวันและเวลา <ArrowRight size={17} aria-hidden="true" /></button>
+              {!visibleDoctors.length && <p role="status">ไม่มีแพทย์ว่างในช่วงที่เลือก</p>}
+              <button className="wide-button" type="button" disabled={!visibleDoctors.some(doctor => doctor.id === doctorId)} onClick={() => setStage("schedule")}>{mode === 'date' ? 'เลือกเวลา' : 'เลือกวันและเวลา'} <ArrowRight size={17} aria-hidden="true" /></button>
             </>
           )}
 
           {stage === "schedule" && (
             <>
               <DoctorBookingSummary doctor={selectedDoctor} />
+              {mode === 'date' ? <p className="field-label">{formatDate(date)} · เวลาประเทศไทย</p> : <>
               <p className="field-label booking-date-label">วันที่เปิดรับนัด · เวลาประเทศไทย</p>
               <div className="date-options" role="group" aria-label="เลือกวันที่">
-                {selectedDoctor.availability.map(day => (
+                {doctorDays.map(day => (
                   <button key={day.date} type="button" aria-pressed={date === day.date} className={date === day.date ? "selected" : ""} onClick={() => onDate(day.date)}>
                     <small>{formatDate(day.date, { weekday: "short" })}</small>
                     <strong>{formatDate(day.date, { day: "numeric" })}</strong>
@@ -203,8 +252,10 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
                   </button>
                 ))}
               </div>
+              </>}
               <p className="field-label">เวลาที่ว่าง</p>
               {!date && <p className="booking-lead">กรุณาเลือกวันที่</p>}
+              {date && !times.length && <p role="status">ไม่มีเวลาว่างในวันที่เลือก กรุณาเลือกวันหรือแพทย์ใหม่</p>}
               <div className="time-options" role="group" aria-label="เลือกเวลา">
                 {times.map(value => <button key={value} type="button" aria-pressed={time === value} className={time === value ? "selected" : ""} onClick={() => onTime(value)}>{value}</button>)}
               </div>
@@ -220,9 +271,17 @@ function BookingContent({ doctors, onClose, onSubmitted, onPending }: { doctors:
                 <div><span>วันและเวลา</span><strong>{formatDate(date)} • {time} น.</strong></div>
                 <div className="payment-total"><span>ยอดชำระทั้งหมด</span><strong>฿{selectedDoctor.price.toLocaleString("th-TH")}</strong></div>
               </div>
+              {!beamStarted && <div className="booking-payment-choice" role="radiogroup" aria-label="ช่องทางชำระเงิน">
+                <label><input type="radio" name="consultation-payment" checked={paymentMode === 'beam'} onChange={() => setPaymentMode('beam')} />พร้อมเพย์ QR</label>
+                <label><input type="radio" name="consultation-payment" checked={paymentMode === 'transfer'} onChange={() => setPaymentMode('transfer')} />โอนและแนบสลิป</label>
+              </div>}
+              {paymentMode === 'beam' ? <BeamConsultationPayment
+                selection={{ doctorId: selectedDoctor.doctorId, courseItemId: selectedDoctor.courseItemId, date, time, expectedPrice: selectedDoctor.price }}
+                onStarted={() => setBeamStarted(true)} onPaid={onSubmitted} /> : <>
               <PaymentMethods onAvailable={setPaymentAvailable} />
               <p className="payment-demo-note">ทดสอบเท่านั้น กรุณาอย่าโอนเงินจริง ยังไม่มีการจองคิว</p>
               <button className="wide-button" type="button" disabled={!paymentAvailable} onClick={() => setStage("slip")}>ไปแนบสลิปทดสอบ <ArrowRight size={17} aria-hidden="true" /></button>
+              </>}
             </>
           )}
 
