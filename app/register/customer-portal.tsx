@@ -97,15 +97,8 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
     name: customer.name, phone: customer.phone, birthDate: '', height: '', startWeight: '',
     healthHistory: '', allergyHistory: '', address: '', email: '',
   } : {
-    name: "พิมพ์ชนก วัฒนากุล",
-    phone: "0812345678",
-    birthDate: "1991-05-18",
-    height: "165",
-    startWeight: "78.4",
-    healthHistory: "ไม่มีโรคประจำตัว • ไม่เคยแพ้ยา",
-    allergyHistory: "ไม่มีประวัติการแพ้ยา อาหาร หรือสารอื่น",
-    address: "99/9 ถนนสุขุมวิท เขตวัฒนา กรุงเทพมหานคร 10110",
-    email: "pimchanok@example.com",
+    name: "", phone: "", birthDate: "", height: "", startWeight: "",
+    healthHistory: "", allergyHistory: "", address: "", email: "",
   });
   const [toast, setToast] = useState("");
   const selectedDoctor = doctors.find((doctor) => doctor.id === selectedDoctorId) ?? doctors[0];
@@ -122,7 +115,6 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
     return (
       <RegistrationFlow
         allowTestData={allowTestData}
-        key="mock-data-v1"
         onComplete={(profile) => {
           setProfileData(profile);
           setRegistrationComplete(true);
@@ -233,6 +225,10 @@ function RegistrationWelcome({ onStart }: { onStart: () => void }) {
           <div><small>การดูแลเฉพาะบุคคล</small><strong>ประเมินโดยทีมแพทย์ The Ritz Clinic</strong></div>
           <i><Check size={15} strokeWidth={3} aria-hidden="true" /></i>
         </div>
+        <div className="onboarding-consultation-price">
+          <strong>ปรึกษา 500 บาท</strong>
+          <p>*สามารถนำมาเป็นส่วนลดในการซื้อคอร์สได้</p>
+        </div>
       </section>
 
       <section className="onboarding-prep" aria-labelledby="onboarding-prep-title">
@@ -300,6 +296,10 @@ function HomeView({ userName, onAppointment, bookingRefresh }: { userName: strin
           <button className="primary-button" type="button" onClick={onAppointment}><CalendarDays size={20} aria-hidden="true" />นัดหมายแพทย์ <ArrowRight size={17} strokeWidth={2.4} aria-hidden="true" /></button>
         </div>
       </section>
+
+      <a className="telemed-brochure" href="/resize-telemed-brochure.jpg" target="_blank" rel="noopener noreferrer" aria-label="เปิดโบรชัวร์ Resize by THE RITZ ขนาดเต็ม">
+        <img src="/resize-telemed-brochure.jpg" alt="โบรชัวร์ Resize by THE RITZ โปรแกรม Telemed และราคายา Wegovy และ Mounjaro" width={1145} height={1374} />
+      </a>
 
       <section className="section-block">
         <div className="section-heading"><div><p className="eyebrow">นัดหมายของคุณ</p><h2>นัดหมายที่กำลังมาถึง</h2></div></div>

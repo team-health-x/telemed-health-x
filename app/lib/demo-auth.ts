@@ -1,6 +1,6 @@
 import { createHmac, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { demoEnabled } from './telemed-dev-policy';
-export { demoEnabled } from './telemed-dev-policy';
+import { authEnabled, demoEnabled } from './telemed-dev-policy';
+export { authEnabled } from './telemed-dev-policy';
 
 export const DEMO_COOKIE = 'telemed_demo_session';
 export class DemoAuthError extends Error {
@@ -15,7 +15,7 @@ function secret() {
 }
 function sign(value: Omit<Ticket, 'nonce'>) {
   const body = Buffer.from(JSON.stringify({ ...value, nonce: randomBytes(16).toString('hex') })).toString('base64url');
-  const mac = createHmac('sha256', secret()).update(`telemed-dev-v1:${body}`).digest('base64url');
+  const mac = createHmac('sha256', secret()).update(`${process.env.TELEMED_DEPLOY_ENV === 'prod' ? 'telemed-prod-v1' : 'telemed-dev-v1'}:${body}`).digest('base64url');
   return `${body}.${mac}`;
 }
 function read(token: string, kind: string): Ticket | null {
@@ -23,7 +23,7 @@ function read(token: string, kind: string): Ticket | null {
     if (typeof token !== 'string' || token.length > 4096) return null;
     const parts = token.split('.');
     if (parts.length !== 2) return null;
-    const expected = createHmac('sha256', secret()).update(`telemed-dev-v1:${parts[0]}`).digest();
+    const expected = createHmac('sha256', secret()).update(`${process.env.TELEMED_DEPLOY_ENV === 'prod' ? 'telemed-prod-v1' : 'telemed-dev-v1'}:${parts[0]}`).digest();
     const received = Buffer.from(parts[1], 'base64url');
     if (received.length !== expected.length || !timingSafeEqual(expected, received)) return null;
     const value = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8')) as Ticket;
@@ -31,19 +31,22 @@ function read(token: string, kind: string): Ticket | null {
   } catch { return null; }
 }
 
-// Dev-only signed tickets work across serverless instances without local files.
+// Signed tickets work across instances; Prod uses separate keys and signing context.
 // Logout clears the browser cookie; copied tickets expire after eight hours.
 class DevAuth {
   send(phone: string) {
+    if (!demoEnabled()) throw new DemoAuthError('Test OTP is disabled', 403);
     if (!/^0[689]\d{8}$/.test(phone)) throw new DemoAuthError('เบอร์โทรศัพท์ไม่ถูกต้อง', 400);
     const expiresAt = Date.now() + 300000;
     return { challengeId: sign({ kind: 'challenge', phone, expiresAt }), expiresAt, resendAt: Date.now() + 60000 };
   }
   verifySignup(challenge: string, code: string, phone: string) {
+    if (!demoEnabled()) throw new DemoAuthError('Test OTP is disabled', 403);
     if (code !== '123456' || read(challenge, 'challenge')?.phone !== phone) throw new DemoAuthError('OTP ไม่ถูกต้องหรือหมดอายุ');
     return { proof: sign({ kind: 'signup', phone, expiresAt: Date.now() + 1800000 }) };
   }
   signupKey(proof: string, phone: string) {
+    if (!demoEnabled()) throw new DemoAuthError('Test signup is disabled', 403);
     if (read(proof, 'signup')?.phone !== phone) throw new DemoAuthError('กรุณายืนยัน OTP อีกครั้ง');
     return createHash('sha256').update(proof).digest('hex');
   }
@@ -63,6 +66,6 @@ class DevAuth {
   logout(_token: string) {}
 }
 export function withDemoStore<T>(fn: (store: DevAuth) => T): T {
-  if (!demoEnabled()) throw new Error('Demo authentication is disabled');
+  if (!authEnabled()) throw new Error('Authentication is disabled');
   return fn(new DevAuth());
 }

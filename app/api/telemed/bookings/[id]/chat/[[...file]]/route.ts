@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { telemedApiOrigin } from '../../../../../../lib/telemed-api-origin';
 import { DEMO_COOKIE, withDemoStore } from '../../../../../../lib/demo-auth';
-import { allowedRequestOrigin, validMutation, demoEnabled } from '../../../../../../lib/telemed-dev-policy';
+import { allowedRequestOrigin, validMutation, authEnabled } from '../../../../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ async function proxy(request: Request, context: Context) {
   const socket = file?.length === 1 && file[0] === 'socket' && request.method === 'POST';
   const download = file?.length === 2 && /^[a-zA-Z0-9-]{1,50}$/.test(file[0]) && file[1] === 'file' && request.method === 'GET';
   if (!/^[a-zA-Z0-9-]{1,50}$/.test(id) || (file && !read && !download && !socket)) return json({ error: 'Not found' }, 404);
-  if (!demoEnabled()) return json({ error: 'แชทยังไม่เปิดให้บริการ' }, 503);
+  if (!authEnabled()) return json({ error: 'แชทยังไม่เปิดให้บริการ' }, 503);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
   const session = withDemoStore(store => store.session(token));
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบอีกครั้ง' }, 401);

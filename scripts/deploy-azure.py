@@ -108,8 +108,6 @@ def main(runtime_env=None):
     suffix = os.environ['TELEMED_REVISION_SUFFIX']
     app = az('containerapp', 'show', '--name', APP, '--resource-group', group)
     if runtime_env is not None:
-        if target != 'dev':
-            raise ValueError('Local runtime env updates are Dev-only')
         app = with_runtime_env(app, runtime_env)
     container, fqdn = validate(app, image, suffix, target)
     previous = app['properties'].get('latestReadyRevisionName', '')

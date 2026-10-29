@@ -171,6 +171,9 @@
 .telemed-site .hero-orb-two { width: 18px; height: 18px; right: 104px; top: 18px; }
 .telemed-site .hero-content { position: relative; z-index: 1; padding: 25px; }
 .telemed-site .consultation-card { min-height: 0; }
+.telemed-site .telemed-brochure { display: block; width: 100%; margin-top: 24px; border-radius: 8px; overflow: hidden; }
+.telemed-site .telemed-brochure img { display: block; width: 100%; height: auto; }
+.telemed-site .telemed-brochure:focus-visible { outline: 3px solid #704da2; outline-offset: 4px; }
 .telemed-site .consultation-card::after { content: none; }
 .telemed-site .consultation-card .status-pill { align-items: center; gap: 8px; }
 .telemed-site .consultation-card h2 { max-width: 100%; letter-spacing: 0; }
@@ -333,6 +336,9 @@
 .telemed-site .onboarding-plan-card strong { margin-top: 2px; font-size: .67rem; line-height: 1.4; }
 .telemed-site .onboarding-plan-card i { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 9px; color: #fff; font-style: normal; background: rgba(255,255,255,.22); }
 .telemed-site .onboarding-prep { padding: 27px 2px 0; }
+.telemed-site .onboarding-consultation-price { position: relative; margin-top: 24px; color: #fff; }
+.telemed-site .onboarding-consultation-price strong { display: block; font-size: 24px; line-height: 1.5; }
+.telemed-site .onboarding-consultation-price p { margin: 6px 0 0; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
 .telemed-site .onboarding-prep h2 { margin: 0; font-size: 1.18rem; }
 .telemed-site .onboarding-checklist { display: grid; gap: 9px; margin-top: 14px; }
 .telemed-site .onboarding-checklist > div { display: grid; grid-template-columns: 38px 1fr; gap: 11px; align-items: center; padding: 11px 12px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.9); box-shadow: 0 5px 16px rgba(54,36,75,.035); }
@@ -1182,6 +1188,10 @@
 .telemed-site .legal-document p { margin: 0; }
 .telemed-site .legal-document ul { margin: 5px 0 0; padding-left: 20px; }
 .telemed-site .legal-document .legal-note { margin-top: 17px; padding: 10px; border-radius: 10px; color: #806036; background: #fff6e9; }
+.telemed-site .legal-document.legal-document-pdf { width: min(100%, 960px); }
+.telemed-site .legal-pdf-link { display: inline-block; margin: 0 0 12px; color: var(--purple); text-decoration: underline; }
+.telemed-site .legal-pdf-pages { display: grid; gap: 12px; }
+.telemed-site .legal-pdf-pages img { display: block; width: 100%; height: auto; border: 1px solid #ded8e6; }
 .telemed-site .legal-close { width: 100%; min-height: 45px; margin-top: 17px; border: 0; border-radius: 12px; color: #fff; font-size: .68rem; font-weight: 800; background: linear-gradient(110deg, var(--pink), var(--purple)); cursor: pointer; }
 
 @media (max-width: 370px) {

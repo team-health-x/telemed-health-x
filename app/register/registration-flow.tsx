@@ -119,8 +119,13 @@ type ConsentData = {
 type IdentityMedia = { idCard: string; selfieWithCard: string };
 
 const CONSENT_DOCUMENT_VERSION = "PR-REG-CONSENT v1.0";
+const REGISTRATION_CONSENTS = [
+  { key: "privacy", label: "รับทราบนโยบายความเป็นส่วนตัว", title: "นโยบายความเป็นส่วนตัว", link: "อ่านนโยบาย" },
+  { key: "personalData", label: "ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการลงทะเบียนและบริการ", title: "หนังสือยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล", link: "อ่านรายละเอียด" },
+  { key: "sensitiveData", label: "ยินยอมให้เก็บและใช้ข้อมูลสุขภาพและข้อมูลทางการแพทย์ ซึ่งเป็นข้อมูลส่วนบุคคลอ่อนไหว เพื่อประเมินและให้บริการทางการแพทย์", title: "ความยินยอมในการใช้ข้อมูลสุขภาพและข้อมูลอ่อนไหว", link: "อ่านรายละเอียด" },
+] as const;
 
-const initialForm: RegistrationData = {
+const testForm: RegistrationData = {
   documentType: "thai_id",
   documentNumber: "1234567890121",
   title: "นางสาว",
@@ -172,6 +177,25 @@ const initialForm: RegistrationData = {
   emergencyNote: "สะดวกให้ติดต่อช่วงเวลา 09:00–18:00 น.",
 };
 
+// Personal and medical data must be entered by the customer, never prefilled from fixtures.
+const initialForm: RegistrationData = {
+  documentType: "thai_id",
+  documentNumber: "", title: "", firstName: "", lastName: "", nickname: "",
+  firstNameEn: "", lastNameEn: "", birthDate: "", height: "", startWeight: "",
+  gender: "", nationality: "", race: "", maritalStatus: "",
+  primaryPhone: "", alternatePhone: "", email: "", lineId: "",
+  preferredLanguage: "", preferredChannel: "",
+  docHouseNo: "", docBuilding: "", docMoo: "", docSoi: "", docRoad: "",
+  docSubdistrict: "", docDistrict: "", docProvince: "", docPostalCode: "",
+  docCountry: "", docFullAddress: "",
+  currentHouseNo: "", currentBuilding: "", currentMoo: "", currentSoi: "", currentRoad: "",
+  currentSubdistrict: "", currentDistrict: "", currentProvince: "", currentPostalCode: "",
+  currentCountry: "", currentFullAddress: "",
+  emergencyName: "", emergencyRelationship: "", emergencyPhone: "", emergencyNote: "",
+  yearEra: "be",
+  sameAddress: true,
+};
+
 const emptyHealth: HealthEntry = {
   status: "",
   details: "",
@@ -200,13 +224,8 @@ const healthTopics: { key: HealthKey; label: string; hint: string }[] = [
   { key: "medicationReview", label: "กำลังใช้ยากลุ่มซัลโฟนิลยูเรีย อินซูลิน วาร์ฟาริน หรือดิจอกซินหรือไม่", hint: "โปรดระบุชื่อยาและขนาดยาที่ใช้ หากไม่แน่ใจเลือกไม่ทราบ เพื่อให้แพทย์หรือเภสัชกรตรวจสอบ" },
 ];
 
-const mockHealth: Partial<Record<HealthKey, Partial<HealthEntry>>> = {
-  chronicDisease: { status: "yes", details: "ไขมันในเลือดสูง อยู่ระหว่างติดตามอาการกับแพทย์" },
-  regularMedication: { status: "yes", details: "วิตามินดี วันละ 1 เม็ด หลังอาหารเช้า" },
-};
-
 const initialHealth = Object.fromEntries(
-  healthTopics.map(({ key }) => [key, { ...emptyHealth, ...mockHealth[key] }]),
+  healthTopics.map(({ key }) => [key, { ...emptyHealth }]),
 ) as HealthData;
 
 function formatAddress(form: RegistrationData, current: boolean) {
@@ -357,6 +376,8 @@ function validateStep(step: number, form: RegistrationData, health: HealthData):
 }
 
 export default function RegistrationFlow({ onComplete, allowTestData = false }: { onComplete: (profile: RegisteredProfile) => void; allowTestData?: boolean }) {
+  const [localOtp, setLocalOtp] = useState(false);
+  useEffect(() => { setLocalOtp(allowTestData && ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)); }, [allowTestData]);
   const [step, setStep] = useState(1);
   const [noticeAcceptedAt, setNoticeAcceptedAt] = useState("");
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
@@ -395,7 +416,7 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     ctx.fillText('TEST ONLY - NOT A REAL SIGNATURE', 22, 95);
     ctx.font = '24px monospace'; ctx.fillText(id, 22, 145);
     const signature = canvas.toDataURL('image/png');
-    setForm({ ...initialForm, documentType: 'passport', documentNumber: `T${id.slice(0, 11)}`,
+    setForm({ ...testForm, documentType: 'passport', documentNumber: `T${id.slice(0, 11)}`,
       firstName: `ทดสอบ${id.slice(0, 6)}`, lastName: `ระบบ${id.slice(6, 12)}`, nickname: 'ทดสอบ',
       firstNameEn: 'TEST', lastNameEn: id.slice(0, 12), primaryPhone: phone, alternatePhone: '',
       email: `test-${id.toLowerCase()}@example.com`, lineId: `test${id.slice(0, 12)}`,
@@ -413,7 +434,7 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     () => [1, 2, 3, 4].every((index) => Object.keys(validateStep(index, form, health)).length === 0),
     [form, health],
   );
-  const requiredConsents = consents.accurate && consents.personalData && consents.privacy && consents.treatmentContact;
+  const requiredConsents = consents.accurate && consents.personalData && consents.privacy && sensitiveConsent && consents.treatmentContact;
   const canSubmit = Boolean(noticeAcceptedAt) && sensitiveConsent && allStepsValid && requiredConsents && otpVerified && Boolean(signupProof) && signerIntent && Boolean(signatureData);
 
   function updateForm<K extends keyof RegistrationData>(key: K, value: RegistrationData[K]) {
@@ -517,16 +538,18 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
         <p>ข้อมูลระบุตัวตนและข้อมูลติดต่อ รวมถึงโรคประจำตัว ยาที่ใช้ ประวัติการรักษา และประวัติแพ้ยา เพื่อจัดทำประวัติ ประเมินสุขภาพ นัดหมาย และให้บริการทางการแพทย์</p>
         </div>
         <div className="consent-list">
-          <ConsentRow checked={consents.privacy} required label="รับทราบนโยบายความเป็นส่วนตัว" link="อ่านนโยบาย" onLink={() => setNoticeDocument("นโยบายความเป็นส่วนตัว")} onChange={value => setConsents(previous => ({ ...previous, privacy: value }))} />
-          <ConsentRow checked={consents.personalData} required label="ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการลงทะเบียนและบริการ" link="อ่านรายละเอียด" onLink={() => setNoticeDocument("หนังสือยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล")} onChange={value => setConsents(previous => ({ ...previous, personalData: value }))} />
-          <ConsentRow checked={sensitiveConsent} required label="ยินยอมให้เก็บและใช้ข้อมูลสุขภาพและข้อมูลทางการแพทย์ ซึ่งเป็นข้อมูลส่วนบุคคลอ่อนไหว เพื่อประเมินและให้บริการทางการแพทย์" link="อ่านรายละเอียด" onLink={() => setNoticeDocument("ความยินยอมในการใช้ข้อมูลสุขภาพและข้อมูลอ่อนไหว")} onChange={setSensitiveConsent} />
+          {REGISTRATION_CONSENTS.map(item => <ConsentRow key={item.key}
+            checked={item.key === "sensitiveData" ? sensitiveConsent : consents[item.key]}
+            required label={item.label} link={item.link} onLink={() => setNoticeDocument(item.title)}
+            onChange={value => item.key === "sensitiveData" ? setSensitiveConsent(value) : setConsents(previous => ({ ...previous, [item.key]: value }))} />)}
         </div>
         <div className="registration-notice-actions">
         <p>หากยังไม่ยินยอม คุณสามารถออกจากหน้านี้โดยไม่เริ่มกรอกข้อมูล หรือติดต่อคลินิกเพื่อสอบถาม การรับข่าวสารและโปรโมชั่นเป็นทางเลือกแยกต่างหากในขั้นตอนสุดท้าย</p>
         <button className="wide-button" type="button" disabled={!consents.privacy || !consents.personalData || !sensitiveConsent} onClick={() => { setNoticeAcceptedAt(new Date().toISOString()); window.scrollTo({ top: 0 }); }}>ยืนยันและเริ่มกรอกข้อมูล</button>
         </div>
       </section>
-      {noticeDocument && <ConsentDocument title={noticeDocument} onClose={() => setNoticeDocument("")} />}
+      {noticeDocument && <ConsentDocument title={noticeDocument}
+        onClose={() => setNoticeDocument("")} />}
     </main>;
   }
 
@@ -562,12 +585,20 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
         {step === 4 && <HealthStep form={form} health={health} errors={errors} updateForm={updateForm} updateHealth={updateHealth} />}
         {step === 5 && (
           <ReviewStep
+            localOtp={localOtp}
             key={form.primaryPhone + ':' + form.documentNumber}
             testSignature={signatureData === testSignature ? testSignature : undefined}
             form={form}
             health={health}
             identityMedia={identityMedia}
             consents={consents}
+            sensitiveConsent={sensitiveConsent}
+            onSensitiveConsent={(value) => {
+              setSensitiveConsent(value);
+              setSignatureData("");
+              setSignerIntent(false);
+              setSignaturePadVersion((current) => current + 1);
+            }}
             requiredConsents={requiredConsents}
             otpVerified={otpVerified}
             onSignupProof={setSignupProof}
@@ -638,24 +669,9 @@ function PersonalStep({ form, errors, identityMedia, onIdentityMedia, update }: 
   const [captureMode, setCaptureMode] = useState<keyof IdentityMedia | null>(null);
 
   function saveCapturedImage(field: keyof IdentityMedia, image: string) {
-    if (field === "idCard") setScanState("scanning");
     onIdentityMedia((current) => ({ ...current, [field]: image }));
     setCaptureMode(null);
-    if (field === "idCard") {
-      window.setTimeout(() => {
-        update("documentType", "thai_id");
-        update("documentNumber", "1234567890121");
-        update("title", "นางสาว");
-        update("firstName", "พิมพ์ชนก");
-        update("lastName", "วัฒนากุล");
-        update("firstNameEn", "Pimchanok");
-        update("lastNameEn", "Wattanakul");
-        update("birthDate", "1991-05-18");
-        update("gender", "หญิง");
-        update("nationality", "ไทย");
-        setScanState("done");
-      }, 650);
-    }
+    if (field === "idCard") setScanState("idle");
   }
 
   return (
@@ -913,12 +929,15 @@ function HealthStep({ form, health, errors, updateForm, updateHealth }: {
   );
 }
 
-function ReviewStep({ form, health, identityMedia, consents, requiredConsents, otpVerified, onOtpVerified, onSignupProof, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange, testSignature }: {
+function ReviewStep({ form, health, identityMedia, consents, sensitiveConsent, onSensitiveConsent, requiredConsents, otpVerified, onOtpVerified, onSignupProof, signerIntent, onSignerIntent, signaturePadVersion, onConsent, onEdit, onSignatureChange, testSignature, localOtp = false }: {
+  localOtp?: boolean;
   testSignature?: string;
   form: RegistrationData;
   health: HealthData;
   identityMedia: IdentityMedia;
   consents: ConsentData;
+  sensitiveConsent: boolean;
+  onSensitiveConsent: (value: boolean) => void;
   requiredConsents: boolean;
   otpVerified: boolean;
   onOtpVerified: (value: boolean) => void;
@@ -980,6 +999,20 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
     finally { inFlight.current = false; if (active.current) setBusyOtp(false); }
   }
 
+  async function skipLocalOtp() {
+    if (!localOtp || inFlight.current) return;
+    inFlight.current = true; setBusyOtp(true); setOtpError('');
+    onOtpVerified(false); onSignupProof('');
+    try {
+      const response = await fetch('/api/telemed/signup-otp/local', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.primaryPhone }) });
+      const result = await response.json();
+      if (!active.current) return;
+      if (!response.ok || typeof result.proof !== 'string') throw new Error(result.error || 'ข้าม OTP ไม่สำเร็จ');
+      onSignupProof(result.proof); onOtpVerified(true); setOtpCode('');
+    } catch (error) { if (active.current) setOtpError(error instanceof Error ? error.message : 'ข้าม OTP ไม่สำเร็จ'); }
+    finally { inFlight.current = false; if (active.current) setBusyOtp(false); }
+  }
+
   return (
     <div className="review-stack">
       <SectionTitle title="สรุปข้อมูล" detail="แตะเพื่อเปิดดูรายละเอียด หรือย้อนกลับไปแก้ไขแต่ละส่วน" />
@@ -1003,8 +1036,10 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
       <SectionTitle title="การยินยอม" detail="รายการโปรโมชั่นเป็นทางเลือกและไม่ได้เลือกไว้ล่วงหน้า" />
       <div className="consent-list">
         <ConsentRow checked={consents.accurate} required label="ยืนยันว่าข้อมูลถูกต้อง" onChange={(value) => onConsent("accurate", value)} />
-        <ConsentRow checked={consents.personalData} required label="ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล" link="ดูฉบับเต็ม" onLink={() => setDocumentTitle("หนังสือยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล")} onChange={(value) => onConsent("personalData", value)} />
-        <ConsentRow checked={consents.privacy} required label="รับทราบ Privacy Policy" link="ดูฉบับเต็ม" onLink={() => setDocumentTitle("นโยบายความเป็นส่วนตัว")} onChange={(value) => onConsent("privacy", value)} />
+        {REGISTRATION_CONSENTS.map(item => <ConsentRow key={item.key}
+          checked={item.key === "sensitiveData" ? sensitiveConsent : consents[item.key]}
+          required label={item.label} link={item.link} onLink={() => setDocumentTitle(item.title)}
+          onChange={value => item.key === "sensitiveData" ? onSensitiveConsent(value) : onConsent(item.key, value)} />)}
         <ConsentRow checked={consents.treatmentContact} required label="ยินยอมให้ติดต่อเรื่องนัดหมายและการรักษา" link="ดูฉบับเต็ม" onLink={() => setDocumentTitle("ความยินยอมด้านการติดต่อและการรักษา")} onChange={(value) => onConsent("treatmentContact", value)} />
         <ConsentRow checked={consents.marketing} label="ยินยอมรับข่าวสารและโปรโมชั่น" onChange={(value) => onConsent("marketing", value)} />
       </div>
@@ -1035,6 +1070,7 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
               <div className={`otp-verification ${otpVerified ? "verified" : ""}`}>
                 <div className="otp-heading"><div><small>ส่งรหัส OTP ไปที่</small><strong>{form.primaryPhone.replace(/(\d{3})\d{4}(\d{3})/, "$1••••$2")}</strong></div>{otpVerified && <span><Check size={14} strokeWidth={3} aria-hidden="true" />ยืนยันแล้ว</span>}</div>
                 {!otpVerified && <button className="otp-send" type="button" onClick={sendOtp} disabled={busyOtp || resendSeconds > 0}>{busyOtp ? 'กำลังดำเนินการ...' : resendSeconds > 0 ? `ส่งใหม่ได้ใน ${resendSeconds} วินาที` : otpSent ? "ส่งรหัสอีกครั้ง" : "ส่งรหัส OTP"}</button>}
+                {localOtp && !otpVerified && <button className="otp-send" type="button" onClick={skipLocalOtp} disabled={busyOtp}>ข้าม OTP (Local)</button>}
                 {otpSent && !otpVerified && (
                   <div className="otp-entry"><input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otpCode} disabled={busyOtp} onChange={(event) => { setOtpCode(event.target.value.replace(/\D/g, "")); setOtpError(""); }} placeholder="รหัส 6 หลัก" aria-label="รหัส OTP 6 หลัก" /><button type="button" onClick={verifyOtp} disabled={busyOtp || otpCode.length !== 6 || now >= expiresAt}>ยืนยัน</button></div>
                 )}
@@ -1070,16 +1106,31 @@ function ReviewStep({ form, health, identityMedia, consents, requiredConsents, o
 }
 
 function ConsentDocument({ title, onClose }: { title: string; onClose: () => void }) {
+  const pdfUrl = title === "นโยบายความเป็นส่วนตัว" || title === "ความยินยอมในการใช้ข้อมูลสุขภาพและข้อมูลอ่อนไหว"
+    ? "/documents/pdpa-rz-2025-026.pdf" : undefined;
   return (
     <div className="legal-document-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <article className="legal-document" role="dialog" aria-modal="true" aria-labelledby="legal-title">
+      <article className={`legal-document${pdfUrl ? " legal-document-pdf" : ""}`} role="dialog" aria-modal="true" aria-labelledby="legal-title">
         <div><h2 id="legal-title">{title}</h2><button type="button" aria-label="ปิดเอกสาร" onClick={onClose}><X size={18} aria-hidden="true" /></button></div>
+        {pdfUrl ? <>
+          <a className="legal-pdf-link" href={pdfUrl} target="_blank" rel="noopener noreferrer">เปิดเอกสาร PDF ในหน้าต่างใหม่</a>
+          <section className="legal-pdf-pages" aria-label={title}>
+            {[1, 2].map(page => <a key={page} href={pdfUrl} target="_blank" rel="noopener noreferrer">
+              <img src={`/documents/pdpa-rz-2025-026-page-${page}.png`} width={1191} height={840}
+                alt={`${title} หน้า ${page} จาก 2 เปิด PDF เพื่อขยายอ่าน`} />
+            </a>)}
+          </section>
+        </> : title === "หนังสือยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล" ? <>
+          <p>ข้าพเจ้ายินยอมให้บริษัท เดอะริทซ์เอสเธทิค จำกัด เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล รวมถึงข้อมูลสุขภาพของข้าพเจ้า เท่าที่จำเป็นสำหรับการลงทะเบียน ยืนยันตัวตน การนัดหมาย การให้คำปรึกษาและการรักษาผ่านระบบการแพทย์ทางไกล การจัดทำเวชระเบียน การจ่ายและจัดส่งยา รวมถึงการติดตามผลการรักษา</p>
+          <p style={{ marginTop: 16 }}>บริษัทจะเก็บรักษาข้อมูลอย่างเหมาะสมและใช้เฉพาะเพื่อวัตถุประสงค์ในการให้บริการและตามที่กฎหมายกำหนด โดยข้าพเจ้ารับทราบสิทธิของตนเกี่ยวกับข้อมูลส่วนบุคคลตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล</p>
+        </> : <>
         <p>Program Resize และ The Ritz Clinic จะใช้ข้อมูลตามวัตถุประสงค์ที่จำเป็นต่อการลงทะเบียน การจัดทำประวัติ การประเมินความปลอดภัย การนัดหมาย และการให้บริการทางการแพทย์เท่านั้น</p>
         <h3>ข้อมูลที่อาจมีการเก็บและใช้</h3>
         <ul><li>ข้อมูลระบุตัวตนและข้อมูลติดต่อ</li><li>ข้อมูลสุขภาพ ประวัติการรักษา และข้อมูลการแพ้ยา</li><li>ข้อมูลนัดหมาย เอกสารยินยอม และลายเซ็น</li></ul>
         <h3>สิทธิของเจ้าของข้อมูล</h3>
         <p>คุณสามารถขอเข้าถึง แก้ไข คัดค้าน หรือถอนความยินยอมตามขอบเขตที่กฎหมายกำหนด โดยติดต่อคลินิกผ่านช่องทางที่แจ้งไว้</p>
         <p className="legal-note">เอกสารนี้เป็นข้อความสำหรับหน้าต้นแบบ ควรให้ฝ่ายกฎหมายตรวจสอบและแทนที่ด้วยเอกสารฉบับอนุมัติก่อนใช้งานจริง</p>
+        </>}
         <button className="legal-close" type="button" onClick={onClose}>รับทราบและปิด</button>
       </article>
     </div>
@@ -1238,7 +1289,7 @@ function ModernSelect({ ariaLabelledby, invalid, value, placeholder, options, on
   function choose(option: SelectOption) {
     onChange(option.value);
     setOpen(false);
-    window.requestAnimationFrame(() => triggerRef.current?.focus());
+    triggerRef.current?.focus();
   }
 
   function moveFocus(index: number) {
@@ -1282,6 +1333,8 @@ function ModernSelect({ ariaLabelledby, invalid, value, placeholder, options, on
               type="button"
               role="option"
               aria-selected={option.value === value}
+              // Safari blurs the focused option before click unless pointer focus is retained.
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => choose(option)}
               onKeyDown={(event) => {
                 if (event.key === "ArrowDown") { event.preventDefault(); moveFocus(index + 1); }

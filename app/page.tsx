@@ -38,11 +38,11 @@ export default function Home() {
     <main className="landing-site">
       <header className="site-header">
         <div className="brand-lockup">
+          <Image className="ritz-brand" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={1506} height={551} priority />
+          <span className="brand-divider" aria-hidden="true" />
           <a className="brand" href="#top" aria-label="Program Resize หน้าแรก">
             <Image src="/program-resize-logo.png" alt="Program Resize by The Ritz" width={1580} height={720} priority />
           </a>
-          <span className="brand-divider" aria-hidden="true" />
-          <Image className="ritz-brand" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={1506} height={551} priority />
         </div>
         <nav className="desktop-nav" aria-label="เมนูหลัก">
           <a href="#program">โปรแกรม</a>
@@ -211,7 +211,7 @@ export default function Home() {
         </div>
         <div className="footer-links"><a href="#program">โปรแกรม</a><a href="#steps">ขั้นตอน</a><a href="#faq">คำถามที่พบบ่อย</a><a href="/register">ลงทะเบียน</a></div>
         <div className="footer-bottom">
-          <p>© 2026 Program Resize by The Ritz</p>
+          <p>The Ritz Clinic ©Copyright 2022. เลขอนุญาตโฆษณา ฆสพ.สบส 1827/2566</p>
           <p>ข้อมูลบนเว็บไซต์นี้ไม่ใช่คำวินิจฉัยหรือคำแนะนำทางการแพทย์เฉพาะบุคคล ผลลัพธ์และความเหมาะสมแตกต่างกันไปในแต่ละบุคคล</p>
           <p className="photo-credit">ภาพประกอบ: <a href="https://www.pexels.com/photo/woman-posing-with-bowl-of-lettuce-8845645/" target="_blank" rel="noreferrer">Yaroslav Shuraev</a> และ <a href="https://www.pexels.com/photo/a-woman-in-white-lab-coat-smiling-while-typing-on-laptop-8376280/" target="_blank" rel="noreferrer">Tima Miroshnichenko</a> / Pexels</p>
           <p className="medical-reference">ข้อมูลความปลอดภัยเพิ่มเติม: <a href="https://www.fda.moph.go.th/news/news802569" target="_blank" rel="noreferrer">สำนักงานคณะกรรมการอาหารและยา</a> · <a href="https://tmc.or.th/index.php/News/News-and-Activities/Telemedicine" target="_blank" rel="noreferrer">แนวทางการแพทย์ทางไกลของแพทยสภา</a></p>

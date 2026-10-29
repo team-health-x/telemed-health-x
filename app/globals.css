@@ -131,12 +131,14 @@ body { margin: 0; }
 .landing-site h1 {
   margin-bottom: 24px;
   font-size: clamp(44px, 5.2vw, 76px);
-  line-height: 1.13;
-  letter-spacing: -0.045em;
+  line-height: 1.4;
+  letter-spacing: 0;
   font-weight: 780;
 }
 .landing-site h1 span {
   display: block;
+  /* Include stacked Thai tone marks in the gradient's painting area. */
+  padding-block: 0.12em;
   background: linear-gradient(90deg, var(--purple), var(--blue));
   -webkit-background-clip: text;
   background-clip: text;

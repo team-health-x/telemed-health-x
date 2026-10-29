@@ -39,3 +39,41 @@ test('registration UI no longer uses a fixed OTP and resets proof on identity ch
   assert.ok(source.includes("'/api/telemed/signup-otp/verify'"));
   assert.match(source, /if \(key === "documentNumber" \|\| key === "primaryPhone"\) \{\s*setOtpVerified\(false\);\s*setSignupProof\(''\)/);
 });
+
+test('local signup bypass requires development, local deployment and loopback backend', async () => {
+  const saved = { ...process.env }, original = global.fetch;
+  process.env.NODE_ENV = 'development';
+  process.env.TELEMED_DEPLOY_ENV = 'local';
+  process.env.TELEMED_DEMO_AUTH_ENABLED = 'true';
+  process.env.TELEMED_WORKFLOW_ORIGIN = 'http://127.0.0.1:3001';
+  process.env.TELEMED_API_ORIGIN = 'http://127.0.0.1:3001';
+  process.env.TELEMED_DEMO_BRIDGE_SECRET = 's'.repeat(32);
+  const { POST } = require('../app/api/telemed/signup-otp/[action]/route.ts');
+  const request = () => new Request('http://localhost:3100/api/telemed/signup-otp/local', {
+    method: 'POST', headers: { host: 'localhost:3100', origin: 'http://localhost:3100', 'content-type': 'application/json' }, body: JSON.stringify({ phone: '0812345678' }),
+  });
+  let calls = 0;
+  global.fetch = async url => {
+    calls++;
+    assert.equal(String(url), 'http://127.0.0.1:3001/api/v1/telemed/workflow/local/signup-proof');
+    return Response.json({ status: '0000', data: { proof: 'test-proof' } });
+  };
+  try {
+    assert.equal((await POST(request(), { params: Promise.resolve({ action: 'local' }) })).status, 200);
+    for (const env of ['dev', 'prod']) {
+      process.env.TELEMED_DEPLOY_ENV = env;
+      assert.ok((await POST(request(), { params: Promise.resolve({ action: 'local' }) })).status >= 400);
+    }
+    process.env.TELEMED_DEPLOY_ENV = 'local';
+    process.env.NODE_ENV = 'production';
+    assert.ok((await POST(request(), { params: Promise.resolve({ action: 'local' }) })).status >= 400);
+    process.env.NODE_ENV = 'development';
+    process.env.TELEMED_API_ORIGIN = process.env.TELEMED_WORKFLOW_ORIGIN = 'https://backend.example.test';
+    assert.equal((await POST(request(), { params: Promise.resolve({ action: 'local' }) })).status, 404);
+    assert.equal(calls, 1);
+  } finally {
+    global.fetch = original;
+    for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
+    Object.assign(process.env, saved);
+  }
+});
