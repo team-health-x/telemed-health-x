@@ -1,0 +1,859 @@
+/* Generated from THE-RITZ handoff 2026-11-04 styles, scoped to .telehealth-site. */
+.telehealth-site {
+  --ink: #221c2b;
+  --muted: #675f70;
+  --purple: #6d4998;
+  --purple-dark: #533274;
+  --blue: #66a9da;
+  --pink: #c43f9f;
+  --lilac: #f2eefa;
+  --sky: #eaf6fd;
+  --cream: #fbfaf7;
+  --white: #ffffff;
+  --line: rgba(69, 50, 83, 0.14);
+}
+
+.telehealth-site * { box-sizing: border-box; }
+.telehealth-site { scroll-behavior: smooth; }
+.telehealth-site {
+  margin: 0;
+  color: var(--ink);
+  background: var(--cream);
+  font-family: "Noto Sans Thai", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.telehealth-site a { color: inherit; text-decoration: none; }
+.telehealth-site button, .telehealth-site input, .telehealth-site select, .telehealth-site textarea { font: inherit; }
+
+.telehealth-site .site-header {
+  width: min(1240px, calc(100% - 48px));
+  height: 92px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 332px 1fr auto;
+  align-items: center;
+  gap: 24px;
+}
+.telehealth-site .brand-lockup { min-width: 0; display: flex; align-items: center; gap: 14px; }
+.telehealth-site .brand { display: block; width: 154px; height: 58px; overflow: hidden; }
+.telehealth-site .brand img { width: 100%; height: 100%; object-fit: contain; }
+.telehealth-site .brand-divider { width: 1px; height: 34px; flex: 0 0 1px; background: var(--line); }
+.telehealth-site .ritz-brand { width: 136px; height: 48px; object-fit: contain; }
+.telehealth-site .desktop-nav { display: flex; justify-content: center; gap: 36px; font-size: 15px; font-weight: 600; }
+.telehealth-site .desktop-nav a { transition: color 180ms ease; }
+.telehealth-site .desktop-nav a:hover { color: var(--purple); }
+.telehealth-site .header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.telehealth-site .header-actions form { margin: 0; }
+.telehealth-site .register-button {
+  min-height: 44px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  border: 1px solid rgba(109,73,152,.28);
+  border-radius: 999px;
+  color: var(--purple-dark);
+  background: rgba(255,255,255,.72);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.telehealth-site .register-button:hover { transform: translateY(-2px); border-color: var(--purple); background: var(--lilac); }
+
+.telehealth-site .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 28px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(110deg, var(--purple), #7656a7 62%, var(--pink));
+  box-shadow: 0 12px 28px rgba(93, 61, 127, 0.22);
+  font-size: 16px;
+  font-weight: 700;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.telehealth-site .button:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(93, 61, 127, 0.28); }
+.telehealth-site .button-small { min-height: 44px; padding: 0 22px; font-size: 14px; }
+
+.telehealth-site .hero {
+  width: min(1320px, calc(100% - 48px));
+  min-height: 685px;
+  margin: 0 auto;
+  padding: 62px clamp(28px, 6vw, 88px) 68px;
+  display: grid;
+  grid-template-columns: 1.04fr 0.96fr;
+  align-items: center;
+  gap: clamp(52px, 7vw, 98px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 40px;
+  background: radial-gradient(circle at 28% 82%, rgba(103, 170, 218, 0.16), transparent 29%), linear-gradient(135deg, #f4effa 0%, #fbf8fb 54%, #edf7fc 100%);
+}
+.telehealth-site .hero-copy { position: relative; z-index: 2; }
+.telehealth-site .eyebrow { margin: 0 0 18px; color: var(--purple); font-size: 13px; font-weight: 800; letter-spacing: 0.15em; }
+.telehealth-site h1, .telehealth-site h2, .telehealth-site p { margin-top: 0; }
+.telehealth-site h1 {
+  margin-bottom: 24px;
+  font-size: clamp(44px, 5.2vw, 76px);
+  line-height: 1.13;
+  letter-spacing: -0.045em;
+  font-weight: 780;
+}
+.telehealth-site h1 span {
+  display: block;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.telehealth-site .hero-lead { max-width: 610px; margin-bottom: 30px; color: var(--muted); font-size: 19px; line-height: 1.75; }
+.telehealth-site .hero-actions { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.telehealth-site .text-link { color: var(--purple-dark); font-size: 15px; font-weight: 750; }
+.telehealth-site .text-link span { display: inline-block; margin-left: 6px; transition: transform 180ms ease; }
+.telehealth-site .text-link:hover span { transform: translateX(4px); }
+.telehealth-site .trust-list { margin: 34px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 22px; list-style: none; color: #564f5d; font-size: 14px; }
+.telehealth-site .trust-list span { color: var(--purple); font-weight: 900; }
+
+.telehealth-site .hero-visual { min-height: 520px; position: relative; }
+.telehealth-site .hero-image-frame {
+  width: min(100%, 470px);
+  height: 535px;
+  margin-left: auto;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 235px 235px 34px 34px;
+  box-shadow: 0 28px 60px rgba(54, 40, 65, 0.18);
+}
+.telehealth-site .hero-image-frame img { object-fit: cover; object-position: 51% 52%; }
+.telehealth-site .doctor-note {
+  width: min(270px, 74%);
+  padding: 16px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  position: absolute;
+  z-index: 3;
+  left: -34px;
+  bottom: 48px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 18px;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 16px 36px rgba(67, 50, 79, 0.16);
+  backdrop-filter: blur(12px);
+}
+.telehealth-site .doctor-note p { margin: 0; font-size: 13px; line-height: 1.5; }
+.telehealth-site .doctor-note strong { display: block; color: var(--purple-dark); }
+.telehealth-site .doctor-dot { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 50%; color: white; background: linear-gradient(135deg, var(--blue), var(--purple)); font-size: 24px; font-weight: 500; }
+.telehealth-site .soft-orb { position: absolute; border-radius: 50%; filter: blur(1px); }
+.telehealth-site .orb-one { width: 190px; height: 190px; top: -18px; right: -30px; background: rgba(196,63,159,.14); }
+.telehealth-site .orb-two { width: 122px; height: 122px; bottom: -12px; left: 8px; background: rgba(102,169,218,.22); }
+
+.telehealth-site .proof-strip {
+  width: min(1080px, calc(100% - 48px));
+  margin: -32px auto 0;
+  padding: 27px 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  position: relative;
+  z-index: 5;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 44px rgba(57, 43, 67, 0.1);
+}
+.telehealth-site .proof-strip div { padding: 2px 34px; border-right: 1px solid var(--line); text-align: center; }
+.telehealth-site .proof-strip div:last-child { border-right: 0; }
+.telehealth-site .proof-strip strong { display: block; color: var(--purple-dark); font-size: 18px; }
+.telehealth-site .proof-strip span { color: var(--muted); font-size: 13px; }
+
+.telehealth-site .section-pad { padding: 130px max(24px, calc((100% - 1200px) / 2)); }
+.telehealth-site .section-heading { max-width: 820px; margin: 0 auto 58px; text-align: center; }
+.telehealth-site .section-heading h2,
+.telehealth-site .clinical-copy h2,
+.telehealth-site .principles-copy h2,
+.telehealth-site .faq-intro h2,
+.telehealth-site .registration-copy h2 {
+  margin-bottom: 22px;
+  font-size: clamp(36px, 4vw, 58px);
+  line-height: 1.24;
+  letter-spacing: -0.035em;
+}
+.telehealth-site .section-heading > p:last-child { max-width: 760px; margin: 0 auto; color: var(--muted); font-size: 18px; line-height: 1.8; }
+.telehealth-site .section-heading.narrow { max-width: 690px; }
+
+.telehealth-site .program-section { scroll-margin-top: 20px; background: var(--cream); }
+.telehealth-site .program-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.telehealth-site .program-card {
+  min-height: 316px;
+  padding: 26px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: linear-gradient(155deg, #fff 0%, #fff 68%, #f7f3fb 100%);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.telehealth-site .program-card::after {
+  content: "";
+  width: 130px;
+  height: 130px;
+  position: absolute;
+  right: -66px;
+  bottom: -68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(102,169,218,.2), rgba(196,63,159,.14));
+}
+.telehealth-site .program-card:hover { transform: translateY(-6px); box-shadow: 0 20px 42px rgba(76, 55, 90, .1); }
+.telehealth-site .program-card-top { margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; }
+.telehealth-site .card-number { color: var(--blue); font-size: 14px; font-weight: 800; letter-spacing: .12em; }
+.telehealth-site .program-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  box-shadow: 0 10px 24px rgba(88, 58, 121, .18);
+}
+.telehealth-site .program-icon svg { width: 25px; height: 25px; stroke-width: 2.1; }
+.telehealth-site .program-card h3, .telehealth-site .step-card h3 { margin: 0 0 10px; font-size: 21px; }
+.telehealth-site .program-card p, .telehealth-site .step-card p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.75; }
+.telehealth-site .program-tag {
+  width: fit-content;
+  margin-top: auto;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  color: var(--purple-dark);
+  background: rgba(109,73,152,.08);
+  font-size: 12px;
+  font-weight: 700;
+}
+.telehealth-site .program-tag > span { color: var(--blue); font-weight: 900; }
+
+.telehealth-site .services-section { background: #fff; }
+.telehealth-site .services-heading { max-width: 940px; }
+.telehealth-site .service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: linear-gradient(145deg, #fff, #faf8fc);
+}
+.telehealth-site .service-card { min-height: 278px; padding: 34px; border-right: 1px solid var(--line); }
+.telehealth-site .service-card:last-child { border-right: 0; }
+.telehealth-site .service-card-top { margin-bottom: 36px; display: flex; align-items: center; justify-content: space-between; color: #9a91a0; font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+.telehealth-site .service-icon { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; color: #fff; background: linear-gradient(145deg, #7652a6, #64a9dc); box-shadow: 0 12px 28px rgba(88, 58, 121, .2); }
+.telehealth-site .service-icon svg { width: 29px; height: 29px; stroke-width: 2.15; }
+.telehealth-site .service-card h3 { margin: 0 0 12px; color: var(--purple-dark); font-size: 22px; }
+.telehealth-site .service-card p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+.telehealth-site .safety-callout {
+  margin-top: 28px;
+  padding: 30px 34px;
+  display: grid;
+  grid-template-columns: auto 1.3fr 1fr;
+  align-items: center;
+  gap: 26px;
+  border-radius: 26px;
+  color: #fff;
+  background: radial-gradient(circle at 96% 8%, rgba(102,169,218,.35), transparent 28%), linear-gradient(135deg, #4f316e, #6d4998);
+}
+.telehealth-site .safety-mark { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; color: var(--purple-dark); background: #fff; font-size: 27px; font-weight: 900; }
+.telehealth-site .safety-callout .eyebrow { margin-bottom: 8px; color: #b7dff5; }
+.telehealth-site .safety-callout h3 { margin: 0 0 7px; font-size: 23px; }
+.telehealth-site .safety-callout p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.74); font-size: 14px; line-height: 1.7; }
+.telehealth-site .safety-callout ul { margin: 0; padding: 0; display: grid; gap: 9px; list-style: none; color: rgba(255,255,255,.9); font-size: 13px; }
+.telehealth-site .safety-callout li::before { content: "✓"; margin-right: 9px; color: #a9d8f1; font-weight: 900; }
+
+.telehealth-site .clinical-section {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  align-items: center;
+  gap: clamp(60px, 9vw, 120px);
+  background: #fff;
+}
+.telehealth-site .clinical-image-wrap {
+  min-height: 660px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px 180px 32px 32px;
+  background: var(--sky);
+}
+.telehealth-site .clinical-image-wrap > img { object-fit: cover; object-position: 50% 48%; }
+.telehealth-site .image-caption {
+  padding: 18px 22px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 18px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 16px 34px rgba(52, 42, 62, .12);
+  backdrop-filter: blur(10px);
+}
+.telehealth-site .image-caption strong, .telehealth-site .image-caption span { display: block; }
+.telehealth-site .image-caption strong { color: var(--purple-dark); font-size: 16px; }
+.telehealth-site .image-caption span { color: var(--muted); font-size: 13px; }
+.telehealth-site .clinical-copy { max-width: 590px; }
+.telehealth-site .large-copy { margin-bottom: 30px; color: var(--muted); font-size: 18px; line-height: 1.85; }
+.telehealth-site .check-panel { margin: 0 0 32px; padding: 0; display: grid; gap: 12px; list-style: none; }
+.telehealth-site .check-panel li { padding: 17px 20px; display: flex; gap: 14px; border-radius: 18px; background: var(--lilac); }
+.telehealth-site .check-panel li > span { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--purple); font-weight: 800; }
+.telehealth-site .check-panel strong { font-size: 16px; }
+.telehealth-site .check-panel p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+.telehealth-site .steps-section { scroll-margin-top: 10px; background: linear-gradient(180deg, #f6f2fa 0%, #fbfaf7 100%); }
+.telehealth-site .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.telehealth-site .step-card { padding: 28px 24px 30px; position: relative; border-top: 1px solid rgba(109,73,152,.25); }
+.telehealth-site .step-index { width: 50px; height: 50px; margin-bottom: 30px; display: grid; place-items: center; border-radius: 16px; color: #fff; background: linear-gradient(135deg, var(--purple), var(--blue)); font-size: 18px; font-weight: 800; box-shadow: 0 10px 24px rgba(88, 58, 121, .2); }
+.telehealth-site .step-arrow { position: absolute; top: 42px; right: -15px; z-index: 2; color: var(--purple); font-size: 27px; }
+.telehealth-site .center-action { margin-top: 58px; text-align: center; }
+.telehealth-site .center-action p { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
+
+.telehealth-site .principles-section {
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto 0;
+  padding-left: clamp(36px, 7vw, 100px);
+  padding-right: clamp(36px, 7vw, 100px);
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  align-items: center;
+  gap: clamp(50px, 8vw, 110px);
+  overflow: hidden;
+  border-radius: 40px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(102,169,218,.35), transparent 32%),
+    radial-gradient(circle at 12% 90%, rgba(196,63,159,.25), transparent 28%),
+    #58367a;
+}
+.telehealth-site .eyebrow.light { color: #a9d8f1; }
+.telehealth-site .principles-copy > p:last-child { max-width: 520px; color: rgba(255,255,255,.76); font-size: 17px; line-height: 1.8; }
+.telehealth-site .principles-list { display: grid; gap: 14px; }
+.telehealth-site .principles-list article { padding: 22px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,.18); border-radius: 22px; background: rgba(255,255,255,.1); }
+.telehealth-site .principles-list article > span { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 18px; color: #533274; background: linear-gradient(135deg, #fff, #d9ecf8); font-size: 14px; font-weight: 900; }
+.telehealth-site .principles-list strong { display: block; margin-bottom: 2px; font-size: 18px; }
+.telehealth-site .principles-list p { margin: 0; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.6; }
+
+.telehealth-site .faq-section { display: grid; grid-template-columns: .72fr 1.28fr; align-items: start; gap: clamp(55px, 9vw, 120px); scroll-margin-top: 10px; }
+.telehealth-site .faq-intro { position: sticky; top: 40px; }
+.telehealth-site .faq-intro > p:not(.eyebrow) { max-width: 420px; color: var(--muted); font-size: 16px; line-height: 1.75; }
+.telehealth-site .faq-list { border-top: 1px solid var(--line); }
+.telehealth-site .faq-list details { border-bottom: 1px solid var(--line); }
+.telehealth-site .faq-list summary { padding: 25px 0; display: flex; justify-content: space-between; align-items: center; gap: 24px; cursor: pointer; list-style: none; font-size: 18px; font-weight: 700; }
+.telehealth-site .faq-list summary::-webkit-details-marker { display: none; }
+.telehealth-site .faq-list summary span { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 50%; color: var(--purple); background: var(--lilac); font-size: 22px; transition: transform 180ms ease; }
+.telehealth-site .faq-list details[open] summary span { transform: rotate(45deg); }
+.telehealth-site .faq-list details > p { margin: -6px 54px 25px 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+
+.telehealth-site .registration-section {
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto 72px;
+  padding: clamp(50px, 7vw, 92px);
+  display: grid;
+  grid-template-columns: 1fr .9fr;
+  align-items: center;
+  gap: clamp(56px, 8vw, 110px);
+  scroll-margin-top: 18px;
+  overflow: hidden;
+  border-radius: 40px;
+  color: #fff;
+  background: radial-gradient(circle at 0 0, rgba(102,169,218,.33), transparent 34%), linear-gradient(135deg, #4e316d, #6d4998 72%, #7c4d88);
+}
+.telehealth-site .registration-copy > p:not(.eyebrow) { max-width: 530px; color: rgba(255,255,255,.76); font-size: 18px; line-height: 1.8; }
+.telehealth-site .registration-points { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px 22px; color: rgba(255,255,255,.9); font-size: 14px; }
+.telehealth-site .registration-card { min-height: 420px; padding: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 28px; color: var(--ink); background: #fff; box-shadow: 0 28px 70px rgba(31, 20, 42, .28); text-align: center; }
+.telehealth-site .registration-card-icon { width: 72px; height: 72px; margin-bottom: 24px; display: grid; place-items: center; border-radius: 22px; color: #fff; background: linear-gradient(135deg, var(--blue), var(--purple)); box-shadow: 0 14px 30px rgba(88,58,121,.22); }
+.telehealth-site .registration-card-icon svg { width: 31px; height: 31px; stroke-width: 2.2; }
+.telehealth-site .registration-card-kicker { margin: 0 0 8px; color: var(--purple); font-size: 11px; font-weight: 850; letter-spacing: .14em; }
+.telehealth-site .registration-card h3 { margin: 0 0 10px; font-size: 28px; }
+.telehealth-site .registration-card > p:not(.registration-card-kicker) { max-width: 390px; margin-bottom: 28px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.telehealth-site .registration-card-button { width: 100%; max-width: 390px; border: 0; font: inherit; }
+
+.telehealth-site footer { padding: 64px max(24px, calc((100% - 1200px) / 2)) 30px; display: grid; grid-template-columns: 1fr auto; gap: 50px; border-top: 1px solid var(--line); background: #fff; }
+.telehealth-site .footer-brand img { width: 170px; height: 76px; object-fit: contain; }
+.telehealth-site .footer-brand p { max-width: 450px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.telehealth-site .footer-links { display: flex; gap: 28px; align-items: start; padding-top: 24px; font-size: 14px; font-weight: 650; }
+.telehealth-site .footer-links a:hover, .telehealth-site .photo-credit a:hover { color: var(--purple); }
+.telehealth-site .footer-bottom { grid-column: 1 / -1; padding-top: 26px; display: grid; grid-template-columns: .7fr 1.7fr; gap: 10px 40px; border-top: 1px solid var(--line); color: #8a8290; font-size: 10px; line-height: 1.6; }
+.telehealth-site .footer-bottom p { margin: 0; }
+.telehealth-site .photo-credit, .telehealth-site .medical-reference { grid-column: 1 / -1; }
+.telehealth-site .medical-reference a { color: var(--purple-dark); text-decoration: underline; text-underline-offset: 3px; }
+.telehealth-site .mobile-sticky-cta { display: none; }
+
+/* The Ritz TeleHealth hub */
+.telehealth-site .hub-page { background: #fbfaf7; }
+.telehealth-site .hub-header { grid-template-columns: 300px 1fr auto; }
+.telehealth-site .hub-brand { min-width: 0; display: flex; align-items: center; gap: 13px; }
+.telehealth-site .hub-brand img { width: 164px; height: 54px; object-fit: contain; }
+.telehealth-site .hub-brand span { padding-left: 13px; border-left: 1px solid var(--line); color: var(--purple-dark); font-size: 12px; font-weight: 850; letter-spacing: .17em; }
+.telehealth-site .hub-hero {
+  width: min(1320px, calc(100% - 48px));
+  min-height: 680px;
+  margin: 0 auto;
+  padding: 68px clamp(28px, 6vw, 88px);
+  display: grid;
+  grid-template-columns: 1.02fr .98fr;
+  align-items: center;
+  gap: clamp(54px, 7vw, 102px);
+  overflow: hidden;
+  border-radius: 40px;
+  background: radial-gradient(circle at 89% 12%, rgba(196,63,159,.13), transparent 26%), radial-gradient(circle at 72% 86%, rgba(102,169,218,.2), transparent 30%), linear-gradient(135deg, #f7f1f9, #fff 55%, #edf7fc);
+}
+.telehealth-site .hub-hero-copy { position: relative; z-index: 4; }
+.telehealth-site .hub-page .hub-brand-title { margin: 0 0 28px; font-size: clamp(32px, 4.6vw, 64px); font-weight: 850; line-height: 1.12; letter-spacing: -.025em; }
+.telehealth-site .hub-page .hub-brand-title span { display: block; margin-bottom: 5px; font-size: inherit; font-weight: inherit; letter-spacing: inherit; color: #573674; background: none; }
+.telehealth-site .hub-brand-title strong { display: block; font-size: inherit; font-weight: inherit; letter-spacing: inherit; }
+.telehealth-site .hub-tagline { margin: 0 0 12px; color: #65506f; font-size: clamp(20px, 1.9vw, 25px); font-weight: 500; line-height: 1.55; text-wrap: balance; }
+.telehealth-site .hub-hero-copy .hero-lead { max-width: 390px; margin-bottom: 0; font-size: 16px; line-height: 1.8; text-wrap: pretty; }
+.telehealth-site .hub-hero-copy .hero-actions { margin-top: 28px; margin-bottom: 0; }
+.telehealth-site .hub-page .hub-registration-button { min-width: 210px; gap: 30px; font-family: inherit; cursor: pointer; }
+.telehealth-site .hub-registration-button svg { width: 20px; height: 20px; }
+.telehealth-site .hub-page button.register-button, .telehealth-site .hub-page button.hub-mobile-cta { font-family: inherit; cursor: pointer; }
+.telehealth-site .hub-brand-title::after { content: ""; display: block; width: 76px; height: 4px; margin-top: 19px; border-radius: 4px; background: linear-gradient(90deg, #7851a4, #6bb6dc); }
+.telehealth-site .hub-brand-title.hub-logo-title::after { display: none; }
+@media (max-width: 900px) { .telehealth-site .hub-brand-title::after { margin-left: auto; margin-right: auto; } }
+.telehealth-site .hub-hero-visual { min-height: 520px; position: relative; }
+.telehealth-site .hub-photo-main { width: min(100%, 520px); height: 515px; margin-left: auto; position: relative; z-index: 2; overflow: hidden; border-radius: 38px 220px 38px 38px; box-shadow: 0 30px 65px rgba(55,42,66,.18); }
+.telehealth-site .hub-photo-main img { object-fit: cover; object-position: 57% 50%; }
+.telehealth-site .hub-program-chip { min-width: 178px; padding: 14px 17px; display: flex; align-items: center; gap: 11px; position: absolute; z-index: 4; border: 1px solid rgba(255,255,255,.86); border-radius: 18px; background: rgba(255,255,255,.9); box-shadow: 0 16px 36px rgba(64,45,75,.16); backdrop-filter: blur(14px); }
+.telehealth-site .hub-program-chip svg { width: 34px; height: 34px; padding: 8px; flex: 0 0 34px; border-radius: 11px; color: #fff; }
+.telehealth-site .hub-program-chip span { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.telehealth-site .hub-program-chip strong { display: block; color: var(--ink); font-size: 15px; }
+.telehealth-site .chip-resize { top: 66px; left: -34px; }
+.telehealth-site .chip-resize svg { background: linear-gradient(135deg, var(--blue), var(--purple)); }
+.telehealth-site .chip-acne { right: -30px; bottom: 74px; }
+.telehealth-site .chip-acne svg { background: linear-gradient(135deg, #d77aa9, #7551a5); }
+.telehealth-site .hub-orb { position: absolute; border-radius: 50%; }
+.telehealth-site .hub-orb-one { width: 168px; height: 168px; top: -35px; right: -45px; background: rgba(196,63,159,.11); }
+.telehealth-site .hub-orb-two { width: 120px; height: 120px; left: -12px; bottom: -10px; background: rgba(102,169,218,.2); }
+.telehealth-site .hub-proof { width: min(1080px, calc(100% - 48px)); margin: -32px auto 0; padding: 28px 36px; display: grid; grid-template-columns: repeat(3, 1fr); position: relative; z-index: 6; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 18px 45px rgba(55,42,66,.1); }
+.telehealth-site .hub-proof article { padding: 4px 26px; display: flex; align-items: center; gap: 14px; border-right: 1px solid var(--line); }
+.telehealth-site .hub-proof article:last-child { border-right: 0; }
+.telehealth-site .hub-proof svg { width: 22px; height: 22px; flex: 0 0 22px; color: var(--purple); }
+.telehealth-site .hub-proof strong, .telehealth-site .hub-proof span { display: block; }
+.telehealth-site .hub-proof strong { margin-bottom: 3px; color: var(--purple-dark); font-size: 15px; }
+.telehealth-site .hub-proof span { color: var(--muted); font-size: 11px; }
+.telehealth-site .hub-programs { background: #fff; }
+.telehealth-site .programs-page .section-heading h1 { margin: 0 0 18px; color: var(--ink); font-size: clamp(32px, 4vw, 54px); line-height: 1.4; letter-spacing: normal; }
+.telehealth-site .hub-page > .hub-proof + .hub-clinic { margin-top: 64px; }
+.telehealth-site .programs-page .hub-footer { padding-bottom: 40px; }
+.telehealth-site .hub-program-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.telehealth-site .hub-program-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 32px; background: #fff; box-shadow: 0 20px 55px rgba(57,43,67,.08); transition: transform 180ms ease, box-shadow 180ms ease; }
+.telehealth-site .hub-program-card:hover { transform: translateY(-6px); box-shadow: 0 26px 62px rgba(57,43,67,.13); }
+.telehealth-site .hub-program-image { height: auto; aspect-ratio: 1 / 1.1; position: relative; overflow: hidden; }
+.telehealth-site .hub-program-image img { object-fit: cover; transition: transform 400ms ease; }
+.telehealth-site .resize-card .hub-program-image img { object-position: 50% 27%; }
+.telehealth-site .acne-card .hub-program-image img { object-position: 64% 20%; }
+.telehealth-site .hub-program-content { min-height: 390px; padding: 36px; display: flex; flex-direction: column; }
+.telehealth-site .hub-program-content h3 { margin: -5px 0 15px; font-size: 42px; line-height: 1; }
+.telehealth-site .hub-program-content > p { color: var(--muted); font-size: 15px; line-height: 1.75; }
+.telehealth-site .hub-program-content ul { margin: 5px 0 30px; padding: 0; display: grid; gap: 9px; list-style: none; color: #514a58; font-size: 13px; }
+.telehealth-site .hub-program-content li::before { content: "✓"; margin-right: 9px; color: var(--purple); font-weight: 900; }
+.telehealth-site .hub-program-content > a { width: 100%; min-height: 52px; margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-radius: 15px; color: #fff; background: linear-gradient(110deg, var(--purple), #7656a7 62%, var(--pink)); font-size: 14px; font-weight: 800; }
+.telehealth-site .hub-program-content > a svg { width: 19px; height: 19px; }
+.telehealth-site .acne-card .hub-program-content > a { background: linear-gradient(110deg, #7551a5, #b657a4); }
+.telehealth-site .hub-process { background: linear-gradient(180deg, #f8f5fa, #fbfaf7); }
+.telehealth-site .hub-step-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.telehealth-site .hub-step-grid article { min-height: 300px; padding: 34px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 28px; background: #fff; }
+.telehealth-site .hub-step-grid article > span { position: absolute; top: 28px; right: 30px; color: #b0a8b6; font-size: 12px; font-weight: 850; letter-spacing: .16em; }
+.telehealth-site .hub-step-icon { width: 60px; height: 60px; margin-bottom: 40px; display: grid; place-items: center; border-radius: 18px; color: #fff; background: linear-gradient(145deg, #7652a6, #64a9dc); box-shadow: 0 12px 28px rgba(88,58,121,.2); }
+.telehealth-site .hub-step-icon svg { width: 28px; height: 28px; }
+.telehealth-site .hub-step-grid h3 { margin: 0 0 12px; font-size: 20px; }
+.telehealth-site .hub-step-grid p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+/* Pearl glass service journey: real text and vector icons at every size. */
+.telehealth-site .hub-process { background: radial-gradient(ellipse at 50% 35%, #fffdfa 0%, #f8f5fa 72%); }
+.telehealth-site .pearl-steps { margin: 0; padding: 0; list-style: none; }
+.telehealth-site .pearl-step { position: relative; isolation: isolate; overflow: hidden; padding: 24px 19px 30px; border: 1px solid rgba(255,255,255,.95); border-radius: 24px; text-align: center; background: radial-gradient(ellipse at 10% 12%, #fff 0%, transparent 42%), linear-gradient(135deg, #f3ecf0, #fffaf2 35%, #ede5f4 72%, #fffdf9); box-shadow: 0 16px 35px -24px #9d83a2, inset 0 0 22px #fff; }
+.telehealth-site .pearl-step::before, .telehealth-site .pearl-step::after { content: ""; pointer-events: none; position: absolute; z-index: -1; width: 260px; height: 460px; border: 10px solid rgba(255,255,255,.65); border-radius: 50%; box-shadow: 0 0 9px #fff, inset 0 0 12px #fff; transform: rotate(-37deg); }
+.telehealth-site .pearl-step::before { top: -315px; left: -60px; }
+.telehealth-site .pearl-step::after { right: -210px; top: -90px; transform: rotate(29deg); border-width: 6px; opacity: .8; }
+.telehealth-site .pearl-stage { height: 214px; position: relative; display: grid; place-items: center; perspective: 700px; }
+.telehealth-site .pearl-glass { position: relative; z-index: 2; width: 144px; height: 144px; display: grid; place-items: center; border: 2px solid rgba(255,255,255,.95); border-radius: 30px; transform: rotateY(-9deg) rotateX(5deg) rotate(-3deg); color: #8b62ba; background: linear-gradient(132deg, rgba(255,255,255,.9), rgba(255,255,255,.18) 43%, rgba(216,199,237,.22) 72%, rgba(255,255,255,.85)); box-shadow: inset 3px 3px 5px #fff, inset -4px -3px 5px #cfbdda99, 5px 7px 0 -2px #ffffffa8, 7px 8px 1px -2px #cdb9dc88, 0 24px 28px -18px #8d75a5; }
+.telehealth-site .pearl-glass::after { content: ""; position: absolute; inset: 7px; border: 1px solid #ffffffb8; border-radius: 23px; pointer-events: none; }
+.telehealth-site .pearl-glass > svg { width: 79px; height: 79px; overflow: visible; filter: drop-shadow(1px 1px 0 #fff) drop-shadow(2px 3px 1px #bfa7d3) drop-shadow(-1px -1px 0 #fff); }
+.telehealth-site .pearl-number { position: absolute; top: -15px; left: -15px; width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid #ffffffa6; border-radius: 15px; color: #fff; font-size: 27px; font-weight: 700; line-height: 1; background: linear-gradient(135deg, #9024cf 6%, #6658ce 48%, #47d9ef 100%); box-shadow: inset 0 1px 5px #ffffffa6, 0 7px 14px #8664ac33; text-shadow: 0 1px 8px #fff8; }
+.telehealth-site .pearl-pedestal { position: absolute; bottom: 3px; width: 115%; height: 49px; border: 1px solid #fff; border-radius: 50%; background: linear-gradient(110deg, #cdbecb, #fffaf4 20%, #e9dce5 41%, #fff 63%, #d5c5d9 83%, #fffaf4); box-shadow: 0 10px 0 -1px #e3d5dd, 0 12px 0 -1px #fff, 0 20px 0 -3px #d9cbd5, 0 27px 20px -11px #9e83a366; }
+.telehealth-site .pearl-pedestal::before { content: ""; position: absolute; inset: 3px 6px 6px; border-radius: 50%; border: 1px solid #fff; background: linear-gradient(160deg, #ffffffd9, #fbf5ee80); }
+.telehealth-site .pearl-orbit { position: absolute; width: 125%; height: 88px; bottom: 40px; border: 3px solid #fff9; border-radius: 50%; transform: rotate(-17deg); box-shadow: 0 0 8px #fff, inset 0 0 8px #fff; }
+.telehealth-site .pearl-copy { position: relative; padding-top: 27px; }
+.telehealth-site .pearl-copy h3 { margin: 0 0 8px; color: #30273e; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.45; font-weight: 750; }
+.telehealth-site .pearl-label { display: block; min-height: 28px; color: #71627d; font-size: 10px; font-weight: 650; letter-spacing: .11em; line-height: 1.4; }
+.telehealth-site .pearl-rule { width: 28px; height: 2px; margin: 10px auto 14px; background: linear-gradient(90deg, #ae7bcd, #91cde0); }
+.telehealth-site .pearl-copy p { color: #645b6e; font-size: 13px; line-height: 1.8; }
+@media (max-width: 1100px) and (min-width: 761px) { .telehealth-site .hub-step-grid.pearl-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .telehealth-site .hub-step-grid.pearl-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .telehealth-site .pearl-step { padding: 18px 12px 25px; } .telehealth-site .pearl-stage { height: 180px; } .telehealth-site .pearl-glass { width: 113px; height: 120px; border-radius: 25px; } .telehealth-site .pearl-glass > svg { width: 66px; height: 66px; } .telehealth-site .pearl-number { width: 39px; height: 39px; top: -9px; left: -9px; font-size: 23px; border-radius: 12px; } .telehealth-site .pearl-copy h3 { font-size: 17px; } .telehealth-site .pearl-label { font-size: 9px; } }
+@media (max-width: 420px) { .telehealth-site .hub-step-grid.pearl-steps { grid-template-columns: 1fr; } .telehealth-site .pearl-step { padding: 24px 28px 30px; } .telehealth-site .pearl-stage { height: 210px; } .telehealth-site .pearl-glass { width: 144px; height: 144px; } .telehealth-site .pearl-copy h3 { font-size: 22px; } .telehealth-site .pearl-copy p { font-size: 14px; } }
+.telehealth-site .hub-clinic { width: min(1320px, calc(100% - 48px)); margin: 0 auto 72px; padding: clamp(55px, 7vw, 90px); display: grid; grid-template-columns: 1fr .92fr; align-items: center; gap: clamp(48px, 8vw, 105px); border-radius: 40px; color: #fff; background: radial-gradient(circle at 0 0, rgba(102,169,218,.32), transparent 34%), linear-gradient(135deg, #4b2f69, #6d4998 70%, #7f4f84); }
+.telehealth-site .hub-clinic-intro h2 { margin: 0 0 22px; font-size: clamp(36px, 4vw, 58px); line-height: 1.22; }
+.telehealth-site .hub-clinic-intro h2 span { color: #c4e7f8; font-size: .7em; font-weight: 600; }
+.telehealth-site .hub-clinic-intro > p:not(.eyebrow) { color: rgba(255,255,255,.78); font-size: 16px; line-height: 1.85; }
+.telehealth-site .light-button { margin-top: 12px; color: var(--purple-dark); background: #fff; }
+.telehealth-site .hub-clinic-card { padding: 34px; border: 1px solid rgba(255,255,255,.7); border-radius: 26px; color: var(--ink); background: rgba(255,255,255,.95); box-shadow: 0 24px 60px rgba(31,20,42,.24); font-style: normal; }
+.telehealth-site .hub-clinic-card > img { width: 190px; height: 70px; object-fit: contain; }
+.telehealth-site .hub-clinic-card dl { margin: 22px 0 0; display: grid; gap: 18px; }
+.telehealth-site .hub-clinic-card dl div { padding-top: 16px; border-top: 1px solid var(--line); }
+.telehealth-site .hub-clinic-card dt { margin-bottom: 4px; color: #8b8291; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.telehealth-site .hub-clinic-card dd { margin: 0; color: #413849; font-size: 13px; line-height: 1.65; }
+.telehealth-site .hub-clinic-card a { color: var(--purple-dark); font-weight: 800; }
+.telehealth-site .hub-footer .footer-brand img { width: 190px; }
+.telehealth-site .hub-contact-dock { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 50; display: flex; flex-direction: row; align-items: stretch; gap: 10px; max-width: calc(100% - 40px); }
+.telehealth-site .contact-pill { --contact-accent: #8156ad; --contact-text: #624080; position: relative; display: flex; align-items: center; gap: 10px; width: 240px; min-height: 54px; padding: 3px 16px 3px 3px; border: 2px solid var(--contact-accent); border-radius: 999px; background: #fff; color: var(--contact-text); box-shadow: 0 5px 16px #30273e24; font: inherit; font-size: 15px; font-weight: 750; cursor: pointer; }
+.telehealth-site .contact-pill > span:last-child { flex: 1; text-align: center; white-space: nowrap; }
+.telehealth-site .contact-pill-icon { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border-radius: 50%; color: #fff; background: var(--contact-accent); box-shadow: inset 0 1px 3px #ffffff80; }
+.telehealth-site .contact-pill-icon svg { width: 24px; height: 24px; stroke-width: 2; }
+.telehealth-site .contact-pill:hover { filter: brightness(.96); }
+.telehealth-site .contact-pill:focus-visible { outline: 3px solid var(--contact-text); outline-offset: 4px; }
+.telehealth-site .hub-page .hub-footer { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+@media (max-width: 640px) {
+  .telehealth-site .hub-contact-dock { right: max(12px, env(safe-area-inset-right)); bottom: calc(12px + env(safe-area-inset-bottom)); max-width: calc(100% - 24px); }
+  .telehealth-site .contact-pill { width: 200px; min-height: 48px; padding-right: 12px; gap: 7px; font-size: 14px; }
+  .telehealth-site .contact-pill-icon { width: 36px; height: 36px; flex-basis: 36px; }
+  .telehealth-site .contact-pill-icon svg { width: 21px; height: 21px; }
+}
+
+/* Homepage pearl palette, shared with the glass service cards. */
+.telehealth-site .hub-page {
+  --ink: #30273e;
+  --muted: #6c6278;
+  --purple: #8660af;
+  --purple-dark: #54366e;
+  --line: #ded4e6;
+  --pearl-surface: radial-gradient(ellipse at 8% 10%, #fff 0%, transparent 45%), linear-gradient(135deg, #fffaf4, #f0e8f6 72%, #fffdfa);
+  --pearl-shadow: 0 20px 40px -22px #9d83a266, inset 0 0 22px #fff;
+  background: #f8f5fa;
+}
+.telehealth-site .hub-page .hub-header { width: min(1200px, calc(100% - 48px)); height: 96px; grid-template-columns: auto 1fr auto; gap: 36px; background: transparent; }
+.telehealth-site .hub-header .hub-brand { width: fit-content; flex-direction: column; align-items: center; gap: 2px; }
+.telehealth-site .hub-header .hub-brand img { width: 164px; height: 48px; }
+.telehealth-site .hub-header .hub-brand span { padding-left: 0; border: 0; color: #705780; font-size: 10px; font-weight: 700; letter-spacing: .22em; line-height: 1.4; }
+.telehealth-site .hub-header .desktop-nav { justify-content: flex-start; gap: 28px; font-size: 14px; }
+.telehealth-site .hub-header .desktop-nav a { padding: 10px 0; }
+.telehealth-site .hub-page .register-button { min-height: 44px; padding-inline: 25px; border: 1px solid #ffffff80; color: #fff; background: linear-gradient(115deg, #7750a5, #8867b4 68%, #668eb4); box-shadow: inset 0 1px 2px #ffffff66, 0 7px 18px -10px #79538f99; }
+.telehealth-site .hub-page .register-button:hover { background: linear-gradient(115deg, #68428f, #7858a2 68%, #567fa3); }
+@media (max-width: 900px) { .telehealth-site .hub-page .hub-header { grid-template-columns: 1fr auto; gap: 20px; } }
+@media (max-width: 640px) {
+  .telehealth-site .hub-page .hub-header { width: calc(100% - 40px); height: 82px; gap: 16px; }
+  .telehealth-site .hub-header .hub-brand img { width: 128px; height: 38px; }
+  .telehealth-site .hub-header .hub-brand span { font-size: 8px; }
+  .telehealth-site .hub-page .register-button { min-height: 42px; padding-inline: 20px; font-size: 12px; }
+}
+.telehealth-site .hub-page .hub-hero, .telehealth-site .hub-page .hub-clinic { position: relative; isolation: isolate; border: 1px solid #fff; background: var(--pearl-surface); box-shadow: var(--pearl-shadow); }
+.telehealth-site .hub-hero::before, .telehealth-site .hub-clinic::before { content: ""; pointer-events: none; position: absolute; z-index: -1; width: 80%; height: 85%; right: -25%; top: -30%; border: 12px double #ffffffa6; border-radius: 50%; transform: rotate(28deg); box-shadow: 0 0 15px #fff, inset 0 0 18px #fff; }
+.telehealth-site .hub-page .hub-clinic { overflow: hidden; color: var(--ink); }
+.telehealth-site .hub-page .hub-brand-title { color: #573674; }
+.telehealth-site .hub-page h1 span { background: linear-gradient(100deg, #68438e, #9576b0 70%, #658ca8); background-clip: text; -webkit-background-clip: text; }
+.telehealth-site .hub-page .hub-photo-main { height: auto; aspect-ratio: 1; border-radius: 38px; border: 6px solid #ffffffd9; box-shadow: 0 25px 44px -18px #9982a570, 0 0 0 1px #dfd3e6; }
+.telehealth-site .hub-page .hub-photo-main img { object-position: center; }
+.telehealth-site .hub-program-chips { position: relative; z-index: 4; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 16px; }
+.telehealth-site .hub-program-chips .hub-program-chip { position: static; min-width: 0; max-width: 100%; padding: 10px 12px; }
+.telehealth-site .hub-program-chips .hub-program-chip strong { font-size: 12px; line-height: 1.6; }
+.telehealth-site .hub-page .hub-orb { border: 2px solid #ffffffb3; background: linear-gradient(135deg, #fff8, #dacee966); box-shadow: inset 3px 3px 12px #fff, 0 12px 28px #a38cad26; }
+.telehealth-site .hub-page .hub-program-chip { background: linear-gradient(130deg, #ffffffed, #f2eaf8df); border-color: #fff; box-shadow: inset 0 1px 3px #fff, 0 14px 28px -10px #9b80a54d; }
+.telehealth-site .hub-page .hub-program-chip svg, .telehealth-site .hub-page .hub-proof svg { color: #8960b0; background: linear-gradient(135deg, #fff, #ece0f4); border: 1px solid #fff; box-shadow: inset 1px 1px 2px #fff, 2px 3px 0 #d9c9e5; }
+.telehealth-site .hub-page .hub-proof { border-color: #fff; background: linear-gradient(115deg, #fffaf8ed, #f2ebf8ed); box-shadow: var(--pearl-shadow); backdrop-filter: blur(14px); }
+.telehealth-site .hub-page .hub-proof svg { width: 44px; height: 44px; padding: 10px; flex-basis: 44px; border-radius: 13px; }
+.telehealth-site .hub-page .hub-programs, .telehealth-site .hub-page .hub-process { background: radial-gradient(ellipse at 50% 30%, #fffcf8, #f8f5fa 75%); }
+.telehealth-site .hub-page .hub-program-card { padding: 10px; border: 1px solid #fff; border-radius: 36px; background: var(--pearl-surface); box-shadow: var(--pearl-shadow); }
+.telehealth-site .hub-page .hub-program-card:hover { box-shadow: 0 24px 48px -20px #9d83a285, inset 0 0 22px #fff; }
+.telehealth-site .hub-page .hub-program-image { border: 1px solid #fff; border-radius: 27px; }
+.telehealth-site .hub-page .hub-program-content { position: relative; }
+.telehealth-site .hub-page .clickable-program-card { position: relative; cursor: pointer; }
+.telehealth-site .hub-page .clickable-program-card .hub-program-content { position: static; }
+.telehealth-site .program-card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.telehealth-site .clickable-program-card:has(.program-card-link:focus-visible) { outline: 3px solid var(--purple); outline-offset: 4px; }
+.telehealth-site .hub-page .hub-program-content h3 { color: #493455; font-size: clamp(25px, 2.5vw, 34px); line-height: 1.5; text-wrap: balance; }
+.telehealth-site .hub-page .hub-program-content > a { gap: 12px; padding-block: 12px; }
+.telehealth-site .hub-page .hub-program-content > a svg { flex-shrink: 0; }
+.telehealth-site .hub-page .button, .telehealth-site .hub-page .hub-program-content > a, .telehealth-site .hub-page .hub-mobile-cta { color: #fff; border: 1px solid #ffffff80; background: linear-gradient(115deg, #7750a5, #8867b4 68%, #668eb4); box-shadow: inset 0 1px 2px #ffffff66, 0 12px 24px -12px #79538f99; }
+.telehealth-site .hub-page .button:hover, .telehealth-site .hub-page .hub-program-content > a:hover { background: linear-gradient(115deg, #68428f, #7858a2 68%, #567fa3); }
+.telehealth-site .hub-page .hub-step-grid.pearl-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.telehealth-site .hub-page .pearl-step { padding: 30px 28px 36px; border-radius: 32px; box-shadow: var(--pearl-shadow); }
+.telehealth-site .hub-page .pearl-stage { height: 235px; }
+.telehealth-site .hub-page .pearl-copy p { max-width: 430px; margin-inline: auto; }
+.telehealth-site .hub-page .hub-clinic-intro h2 span { color: #8861a5; }
+.telehealth-site .hub-page .hub-clinic-intro > p:not(.eyebrow) { color: var(--muted); }
+.telehealth-site .hub-page .eyebrow.light { color: #8660af; }
+.telehealth-site .hub-page .hub-clinic-card { border: 1px solid #fff; background: linear-gradient(135deg, #ffffffde, #f7f0fade); box-shadow: var(--pearl-shadow); backdrop-filter: blur(14px); }
+.telehealth-site .hub-page .hub-clinic-card dt { color: #756580; }
+.telehealth-site .hub-page .hub-footer { border-color: #fff; background: linear-gradient(180deg, #f1eaf6, #fcf9fc); }
+.telehealth-site .hub-page .footer-bottom { color: #756a7d; }
+@media (max-width: 640px) {
+  .telehealth-site .hub-page .hub-program-card { padding: 7px; border-radius: 30px; }
+  .telehealth-site .hub-page .hub-program-image { border-radius: 23px; }
+  .telehealth-site .hub-page .hub-step-grid.pearl-steps { grid-template-columns: 1fr; gap: 20px; }
+  .telehealth-site .hub-page .pearl-step { padding: 24px 22px 30px; }
+  .telehealth-site .hub-page .pearl-stage { height: 210px; }
+}
+
+/* Acne program */
+.telehealth-site .acne-page { background: #fffafc; }
+.telehealth-site .acne-register { border-color: rgba(181,86,164,.28); color: #784c86; }
+.telehealth-site .acne-hero { width: min(1320px, calc(100% - 48px)); min-height: 680px; margin: 0 auto; padding: 65px clamp(28px, 6vw, 88px); display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(50px, 7vw, 96px); overflow: hidden; border-radius: 40px; background: radial-gradient(circle at 82% 10%, rgba(201,107,163,.15), transparent 30%), linear-gradient(135deg, #fbf2f6, #fff 57%, #f1effa); }
+.telehealth-site .acne-hero-copy { position: relative; z-index: 3; }
+.telehealth-site .acne-hero-copy h1 span { background: linear-gradient(90deg, #7850a2, #c65d9f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.telehealth-site .acne-button { background: linear-gradient(110deg, #7652a6, #a653a4 58%, #d46f9b); }
+.telehealth-site .acne-hero-visual { min-height: 530px; position: relative; }
+.telehealth-site .acne-image-frame { width: min(100%, 540px); height: 530px; margin-left: auto; position: relative; overflow: hidden; border-radius: 42px 240px 42px 42px; box-shadow: 0 30px 65px rgba(73,43,70,.18); }
+.telehealth-site .acne-image-frame img { object-fit: cover; object-position: 68% 50%; }
+.telehealth-site .acne-note { width: min(265px, 72%); padding: 16px 18px; display: flex; align-items: center; gap: 12px; position: absolute; left: -24px; bottom: 50px; border: 1px solid rgba(255,255,255,.86); border-radius: 18px; background: rgba(255,255,255,.91); box-shadow: 0 16px 36px rgba(75,44,71,.16); backdrop-filter: blur(12px); }
+.telehealth-site .acne-note svg { width: 39px; height: 39px; padding: 10px; flex: 0 0 39px; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #8057aa, #cb639e); }
+.telehealth-site .acne-note p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.telehealth-site .acne-note strong { display: block; color: #69427d; font-size: 13px; }
+.telehealth-site .acne-proof { width: min(1080px, calc(100% - 48px)); margin: -32px auto 0; padding: 27px 40px; display: grid; grid-template-columns: repeat(3, 1fr); position: relative; z-index: 5; border: 1px solid rgba(112,72,128,.14); border-radius: 22px; background: #fff; box-shadow: 0 18px 44px rgba(73,43,70,.09); }
+.telehealth-site .acne-proof div { padding: 2px 34px; border-right: 1px solid var(--line); text-align: center; }
+.telehealth-site .acne-proof div:last-child { border-right: 0; }
+.telehealth-site .acne-proof strong, .telehealth-site .acne-proof span { display: block; }
+.telehealth-site .acne-proof strong { color: #6b437d; font-size: 17px; }
+.telehealth-site .acne-proof span { color: var(--muted); font-size: 12px; }
+.telehealth-site .acne-assessment { background: #fff; }
+.telehealth-site .acne-assessment-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.telehealth-site .acne-assessment-grid article { min-height: 270px; padding: 30px; border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(145deg, #fff, #fcf8fb); }
+.telehealth-site .acne-card-top { margin-bottom: 34px; display: flex; align-items: center; justify-content: space-between; color: #9e92a2; font-size: 12px; font-weight: 850; letter-spacing: .14em; }
+.telehealth-site .acne-card-top svg { width: 48px; height: 48px; padding: 13px; border-radius: 15px; color: #fff; background: linear-gradient(145deg, #8057aa, #cf6b9c); }
+.telehealth-site .acne-assessment-grid h3 { margin: 0 0 11px; color: #643f76; font-size: 19px; }
+.telehealth-site .acne-assessment-grid p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.telehealth-site .acne-care-plan { width: min(1200px, calc(100% - 48px)); margin: 0 auto 30px; padding: 36px; display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: clamp(50px, 8vw, 100px); border-radius: 34px; background: linear-gradient(135deg, #f4eef8, #fff7fa); }
+.telehealth-site .acne-care-image { min-height: 560px; position: relative; overflow: hidden; border-radius: 28px 150px 28px 28px; }
+.telehealth-site .acne-care-image img { object-fit: cover; object-position: 54% 50%; }
+.telehealth-site .acne-care-copy { padding-right: clamp(10px, 4vw, 60px); }
+.telehealth-site .acne-care-copy h2 { margin: 0 0 22px; font-size: clamp(36px, 4vw, 55px); line-height: 1.25; }
+.telehealth-site .acne-care-copy > p:not(.eyebrow) { color: var(--muted); font-size: 16px; line-height: 1.85; }
+.telehealth-site .acne-mini-list { margin-top: 28px; display: grid; gap: 12px; }
+.telehealth-site .acne-mini-list span { display: flex; align-items: center; gap: 12px; color: #55495b; font-size: 13px; font-weight: 700; }
+.telehealth-site .acne-mini-list svg { width: 34px; height: 34px; padding: 8px; flex: 0 0 34px; border-radius: 10px; color: #7b5095; background: rgba(123,80,149,.1); }
+.telehealth-site .acne-steps { background: #fff; }
+.telehealth-site .acne-step-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.telehealth-site .acne-step-grid article { min-height: 280px; padding: 30px 25px; position: relative; border: 1px solid var(--line); border-radius: 24px; text-align: center; background: #fff; }
+.telehealth-site .acne-step-grid article > span { position: absolute; top: 20px; left: 22px; color: #aa9dae; font-size: 11px; font-weight: 850; letter-spacing: .13em; }
+.telehealth-site .acne-step-grid svg { width: 60px; height: 60px; margin: 24px auto 25px; padding: 16px; border-radius: 18px; color: #fff; background: linear-gradient(145deg, #8057aa, #cf6b9c); box-shadow: 0 12px 28px rgba(112,67,114,.18); }
+.telehealth-site .acne-step-grid h3 { margin: 0 0 10px; font-size: 18px; }
+.telehealth-site .acne-step-grid p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+.telehealth-site .acne-safety { margin-top: 24px; padding: 30px 34px; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 24px; border-radius: 25px; color: #fff; background: radial-gradient(circle at 95% 5%, rgba(211,108,157,.35), transparent 29%), linear-gradient(135deg, #53336b, #79509a); }
+.telehealth-site .acne-safety > svg { width: 56px; height: 56px; padding: 14px; border-radius: 17px; color: #6f4381; background: #fff; }
+.telehealth-site .acne-safety h3 { margin: 0 0 6px; font-size: 22px; }
+.telehealth-site .acne-safety p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.7; }
+.telehealth-site .acne-faq { background: #fffafc; }
+.telehealth-site .acne-consultation { width: min(1200px, calc(100% - 48px)); margin: 0 auto 70px; padding: clamp(50px, 7vw, 85px); display: grid; grid-template-columns: 1fr .85fr; align-items: center; gap: clamp(45px, 7vw, 90px); border-radius: 38px; color: #fff; background: radial-gradient(circle at 0 0, rgba(213,111,157,.27), transparent 34%), linear-gradient(135deg, #4d3066, #75509a); }
+.telehealth-site .acne-consultation h2 { margin: 0 0 18px; font-size: clamp(36px, 4vw, 55px); line-height: 1.24; }
+.telehealth-site .acne-consultation > div > p:not(.eyebrow) { color: rgba(255,255,255,.78); line-height: 1.8; }
+.telehealth-site .acne-contact-card { padding: 35px; border-radius: 25px; color: var(--ink); background: #fff; text-align: center; }
+.telehealth-site .acne-contact-card > svg { width: 58px; height: 58px; margin-bottom: 18px; padding: 15px; border-radius: 18px; color: #fff; background: linear-gradient(145deg, #8057aa, #cf6b9c); }
+.telehealth-site .acne-contact-card h3 { margin: 0 0 7px; font-size: 22px; }
+.telehealth-site .acne-contact-card p { margin-bottom: 22px; color: var(--muted); font-size: 13px; }
+.telehealth-site .acne-contact-card .button { width: 100%; }
+.telehealth-site .acne-contact-card small { margin-top: 15px; display: block; color: #8c818f; font-size: 10px; line-height: 1.55; }
+.telehealth-site .acne-footer .footer-brand img { width: 190px; }
+
+@media (max-width: 900px) {
+  .telehealth-site .desktop-nav { display: none; }
+  .telehealth-site .site-header { grid-template-columns: 1fr auto; width: min(100% - 32px, 1240px); }
+  .telehealth-site .hero { width: calc(100% - 28px); padding: 52px 30px 42px; grid-template-columns: 1fr; gap: 42px; }
+  .telehealth-site .hero-copy { text-align: center; }
+  .telehealth-site .hero-lead { margin-left: auto; margin-right: auto; }
+  .telehealth-site .hero-actions, .telehealth-site .trust-list { justify-content: center; }
+  .telehealth-site .hero-visual { min-height: 500px; }
+  .telehealth-site .hero-image-frame { margin: 0 auto; height: 500px; }
+  .telehealth-site .doctor-note { left: max(0px, calc(50% - 250px)); }
+  .telehealth-site .section-pad { padding: 100px 32px; }
+  .telehealth-site .program-grid, .telehealth-site .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .telehealth-site .service-grid { grid-template-columns: 1fr; }
+  .telehealth-site .service-card { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .telehealth-site .service-card:last-child { border-bottom: 0; }
+  .telehealth-site .safety-callout { grid-template-columns: auto 1fr; }
+  .telehealth-site .safety-callout ul { grid-column: 2; }
+  .telehealth-site .clinical-section { grid-template-columns: 1fr; gap: 62px; }
+  .telehealth-site .clinical-image-wrap { width: min(100%, 620px); min-height: 620px; margin: 0 auto; }
+  .telehealth-site .clinical-copy { max-width: 700px; margin: 0 auto; }
+  .telehealth-site .step-arrow { display: none; }
+  .telehealth-site .principles-section { width: calc(100% - 28px); grid-template-columns: 1fr; text-align: center; }
+  .telehealth-site .principles-copy > p:last-child { margin-left: auto; margin-right: auto; }
+  .telehealth-site .principles-list { width: min(100%, 650px); margin: 0 auto; text-align: left; }
+  .telehealth-site .faq-section { grid-template-columns: 1fr; gap: 44px; }
+  .telehealth-site .faq-intro { position: static; text-align: center; }
+  .telehealth-site .faq-intro > p:not(.eyebrow) { margin-left: auto; margin-right: auto; }
+  .telehealth-site .registration-section { width: calc(100% - 28px); grid-template-columns: 1fr; }
+  .telehealth-site .registration-copy { text-align: center; }
+  .telehealth-site .registration-copy > p:not(.eyebrow) { margin-left: auto; margin-right: auto; }
+  .telehealth-site .registration-points { justify-content: center; }
+  .telehealth-site .registration-card { width: min(100%, 580px); margin: 0 auto; }
+  .telehealth-site footer { grid-template-columns: 1fr; text-align: center; }
+  .telehealth-site .footer-brand p { margin-left: auto; margin-right: auto; }
+  .telehealth-site .footer-links { justify-content: center; padding-top: 0; }
+  .telehealth-site .footer-bottom { grid-template-columns: 1fr; }
+  .telehealth-site .photo-credit { grid-column: auto; }
+}
+
+@media (max-width: 640px) {
+  .telehealth-site .site-header { height: 76px; gap: 10px; }
+  .telehealth-site .brand-lockup { gap: 8px; }
+  .telehealth-site .brand { width: 98px; height: 44px; }
+  .telehealth-site .brand-divider { height: 26px; }
+  .telehealth-site .ritz-brand { width: 82px; height: 36px; }
+  .telehealth-site .register-button { min-height: 40px; padding: 0 12px; font-size: 11px; }
+  .telehealth-site .button-small { min-height: 40px; padding: 0 15px; font-size: 12px; }
+  .telehealth-site .hero { border-radius: 26px; padding: 42px 20px 30px; }
+  .telehealth-site h1 { font-size: 43px; }
+  .telehealth-site .hero-lead { font-size: 16px; }
+  .telehealth-site .hero-actions { gap: 17px; }
+  .telehealth-site .button { width: 100%; }
+  .telehealth-site .trust-list { display: grid; gap: 6px; }
+  .telehealth-site .hero-visual { min-height: 420px; }
+  .telehealth-site .hero-image-frame { height: 420px; border-radius: 210px 210px 24px 24px; }
+  .telehealth-site .doctor-note { left: 8px; bottom: 24px; }
+  .telehealth-site .proof-strip { width: calc(100% - 48px); margin-top: -16px; padding: 10px 24px; grid-template-columns: 1fr; }
+  .telehealth-site .proof-strip div { padding: 16px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .telehealth-site .proof-strip div:last-child { border-bottom: 0; }
+  .telehealth-site .section-pad { padding: 86px 20px; }
+  .telehealth-site .section-heading { margin-bottom: 42px; }
+  .telehealth-site .section-heading h2, .telehealth-site .clinical-copy h2, .telehealth-site .principles-copy h2, .telehealth-site .faq-intro h2, .telehealth-site .registration-copy h2 { font-size: 36px; }
+  .telehealth-site .section-heading > p:last-child, .telehealth-site .large-copy { font-size: 16px; }
+  .telehealth-site .program-grid, .telehealth-site .steps-grid { grid-template-columns: 1fr; }
+  .telehealth-site .program-card { min-height: auto; }
+  .telehealth-site .program-card-top { margin-bottom: 24px; }
+  .telehealth-site .program-tag { margin-top: 24px; }
+  .telehealth-site .service-card { padding: 27px 24px; }
+  .telehealth-site .service-card-top { margin-bottom: 25px; }
+  .telehealth-site .safety-callout { padding: 27px 22px; grid-template-columns: 1fr; text-align: center; }
+  .telehealth-site .safety-mark { margin: 0 auto; }
+  .telehealth-site .safety-callout ul { grid-column: auto; text-align: left; }
+  .telehealth-site .clinical-image-wrap { min-height: 500px; border-radius: 26px 120px 26px 26px; }
+  .telehealth-site .step-card { padding-left: 10px; padding-right: 10px; }
+  .telehealth-site .principles-section { padding: 82px 22px; border-radius: 28px; }
+  .telehealth-site .principles-list article { padding: 18px; gap: 14px; }
+  .telehealth-site .principles-list article > span { width: 48px; height: 48px; flex-basis: 48px; border-radius: 15px; font-size: 11px; }
+  .telehealth-site .faq-list summary { padding: 21px 0; font-size: 16px; }
+  .telehealth-site .faq-list details > p { margin-right: 0; }
+  .telehealth-site .registration-section { margin-bottom: 36px; padding: 78px 18px 18px; border-radius: 28px; }
+  .telehealth-site .registration-card { min-height: 0; padding: 36px 20px; border-radius: 22px; }
+  .telehealth-site .registration-points { display: grid; }
+  .telehealth-site footer { padding: 54px 24px 88px; }
+  .telehealth-site .footer-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .telehealth-site .mobile-sticky-cta {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 20;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    border: 1px solid rgba(255,255,255,.34);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(110deg, var(--purple), #7656a7 62%, var(--pink));
+    box-shadow: 0 14px 36px rgba(64, 40, 84, .34);
+    font-size: 15px;
+    font-weight: 800;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .telehealth-site { scroll-behavior: auto; }
+  .telehealth-site *, .telehealth-site *::before, .telehealth-site *::after { transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 900px) {
+  .telehealth-site .hub-header { grid-template-columns: 1fr auto; }
+  .telehealth-site .hub-hero, .telehealth-site .acne-hero { width: calc(100% - 28px); grid-template-columns: 1fr; gap: 45px; }
+  .telehealth-site .hub-hero-copy, .telehealth-site .acne-hero-copy { text-align: center; }
+  .telehealth-site .hub-hero-copy .hero-lead, .telehealth-site .acne-hero-copy .hero-lead { margin-left: auto; margin-right: auto; }
+  .telehealth-site .hub-hero-copy .hero-actions, .telehealth-site .hub-hero-copy .trust-list, .telehealth-site .acne-hero-copy .hero-actions, .telehealth-site .acne-hero-copy .trust-list { justify-content: center; }
+  .telehealth-site .hub-hero-visual, .telehealth-site .acne-hero-visual { width: min(100%, 620px); min-height: 520px; margin: 0 auto; }
+  .telehealth-site .hub-photo-main, .telehealth-site .acne-image-frame { height: 520px; margin: 0 auto; }
+  .telehealth-site .chip-resize { left: -10px; }
+  .telehealth-site .chip-acne { right: -8px; }
+  .telehealth-site .hub-proof, .telehealth-site .acne-proof { grid-template-columns: 1fr; padding: 18px 30px; }
+  .telehealth-site .hub-proof article, .telehealth-site .acne-proof div { padding: 18px 4px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .telehealth-site .hub-proof article:last-child, .telehealth-site .acne-proof div:last-child { border-bottom: 0; }
+  .telehealth-site .hub-program-grid, .telehealth-site .hub-step-grid { grid-template-columns: 1fr; }
+  .telehealth-site .hub-program-card { display: grid; grid-template-columns: .9fr 1.1fr; }
+  .telehealth-site .hub-program-image { height: 100%; min-height: 500px; aspect-ratio: auto; }
+  .telehealth-site .hub-clinic { width: calc(100% - 28px); grid-template-columns: 1fr; text-align: center; }
+  .telehealth-site .hub-clinic-card { width: min(100%, 600px); margin: 0 auto; text-align: left; }
+  .telehealth-site .acne-assessment-grid { grid-template-columns: repeat(2, 1fr); }
+  .telehealth-site .acne-care-plan { width: calc(100% - 28px); grid-template-columns: 1fr; padding: 28px; }
+  .telehealth-site .acne-care-image { min-height: 520px; }
+  .telehealth-site .acne-care-copy { max-width: 720px; margin: 0 auto; padding: 20px 25px 35px; text-align: center; }
+  .telehealth-site .acne-mini-list { width: min(100%, 540px); margin-left: auto; margin-right: auto; text-align: left; }
+  .telehealth-site .acne-step-grid { grid-template-columns: repeat(2, 1fr); }
+  .telehealth-site .acne-consultation { width: calc(100% - 28px); grid-template-columns: 1fr; text-align: center; }
+  .telehealth-site .acne-contact-card { width: min(100%, 560px); margin: 0 auto; }
+}
+
+@media (max-width: 640px) {
+  .telehealth-site .hub-brand { gap: 7px; }
+  .telehealth-site .hub-brand img { width: 105px; height: 38px; }
+  .telehealth-site .hub-brand span { padding-left: 7px; font-size: 8px; letter-spacing: .12em; }
+  .telehealth-site .hub-hero, .telehealth-site .acne-hero { padding: 44px 20px 28px; border-radius: 26px; }
+  .telehealth-site .hub-hero-visual, .telehealth-site .acne-hero-visual { min-height: 420px; }
+  .telehealth-site .hub-photo-main, .telehealth-site .acne-image-frame { height: 420px; border-radius: 28px 160px 28px 28px; }
+  .telehealth-site .hub-program-chip { min-width: 148px; padding: 11px 13px; }
+  .telehealth-site .hub-program-chip svg { width: 30px; height: 30px; flex-basis: 30px; }
+  .telehealth-site .hub-program-chip strong { font-size: 13px; }
+  .telehealth-site .chip-resize { top: 35px; left: -8px; }
+  .telehealth-site .chip-acne { right: -6px; bottom: 34px; }
+  .telehealth-site .hub-proof, .telehealth-site .acne-proof { width: calc(100% - 48px); margin-top: -16px; }
+  .telehealth-site .hub-program-card { display: block; }
+  .telehealth-site .hub-program-image { height: auto; min-height: 0; aspect-ratio: 1 / 1.1; }
+  .telehealth-site .hub-program-content { min-height: 0; padding: 28px 23px; }
+  .telehealth-site .hub-program-content h3 { font-size: 36px; }
+  .telehealth-site .hub-program-content > a { margin-top: 6px; }
+  .telehealth-site .hub-step-grid article { min-height: 275px; padding: 28px; }
+  .telehealth-site .hub-clinic { margin-bottom: 36px; padding: 70px 20px 20px; border-radius: 28px; }
+  .telehealth-site .hub-clinic-card { padding: 25px 21px; border-radius: 21px; }
+  .telehealth-site .hub-clinic-card > img { width: 150px; }
+  .telehealth-site .acne-note { left: 7px; bottom: 24px; }
+  .telehealth-site .acne-assessment-grid, .telehealth-site .acne-step-grid { grid-template-columns: 1fr; }
+  .telehealth-site .acne-assessment-grid article { min-height: 240px; padding: 26px 23px; }
+  .telehealth-site .acne-care-plan { padding: 18px; border-radius: 27px; }
+  .telehealth-site .acne-care-image { min-height: 440px; border-radius: 22px 100px 22px 22px; }
+  .telehealth-site .acne-care-copy { padding: 20px 5px 28px; }
+  .telehealth-site .acne-care-copy h2 { font-size: 36px; }
+  .telehealth-site .acne-safety { grid-template-columns: 1fr; padding: 27px 22px; text-align: center; }
+  .telehealth-site .acne-safety > svg { margin: 0 auto; }
+  .telehealth-site .acne-consultation { margin-bottom: 36px; padding: 70px 18px 18px; border-radius: 28px; }
+  .telehealth-site .acne-contact-card { padding: 31px 20px; }
+}
+
+/* Supplied THE RITZ telehealth lockup: keep its original colours and proportions. */
+.telehealth-site .telehealth-logo { display: block; max-width: 100%; height: auto; object-fit: contain; }
+.telehealth-site .resize-online-visual .hero-image-frame { height: auto; aspect-ratio: 1; border-radius: 36px; }
+.telehealth-site .resize-online-visual .hero-image-frame img { object-position: center; }
+.telehealth-site .resize-online-visual { min-height: 0; }
+.telehealth-site .resize-online-visual .doctor-note { bottom: 18px; }
+.telehealth-site .site-header .hub-brand { flex-direction: row; gap: 16px; }
+.telehealth-site .site-header .hub-brand .clinic-brand-logo { width: 164px; height: 54px; flex-shrink: 0; }
+.telehealth-site .site-header .hub-brand .telehealth-logo { width: 154px; height: auto; padding-left: 16px; border-left: 1px solid var(--line); }
+.telehealth-site .footer-logo-pair { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+.telehealth-site .footer-brand .footer-logo-pair .telehealth-logo { width: 170px; height: auto; }
+.telehealth-site .hub-logo-title .telehealth-logo { width: 100%; height: auto; }
+.telehealth-site .hub-clinic-intro .clinic-telehealth-logo { width: min(100%, 360px); margin-bottom: 20px; }
+.telehealth-site .footer-brand .telehealth-logo { width: 230px; height: auto; }
+.telehealth-site .acne-contact-card .contact-telehealth-logo { width: min(100%, 270px); margin: 0 auto 24px; }
+@media (max-width: 900px) {
+  .telehealth-site .hub-logo-title .telehealth-logo { max-width: 520px; margin-inline: auto; }
+}
+@media (max-width: 600px) {
+  .telehealth-site .site-header .hub-brand { gap: 10px; }
+  .telehealth-site .site-header .hub-brand .clinic-brand-logo { width: 105px; height: 38px; }
+  .telehealth-site .site-header .hub-brand .telehealth-logo { width: 110px; padding-left: 10px; }
+  .telehealth-site .footer-logo-pair { justify-content: center; }
+  .telehealth-site .footer-brand .telehealth-logo { margin-inline: auto; }
+}

@@ -104,7 +104,7 @@ export default function PaymentPage({ id }: { id: string }) {
   const payable = detail && ['UNPAID', 'PENDING_REVIEW'].includes(detail.status);
   const open = payable && method === 'bank' && !beam.bankLocked;
   return <main className="sales-payment">
-    <header><Image src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={150} height={55} priority /><Link href="/register?tab=appointments"><ArrowLeft size={18} />นัดหมายของฉัน</Link></header>
+    <header><Image src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" width={150} height={55} priority /><Link href="/register?tab=appointments"><ArrowLeft size={18} />นัดหมายของฉัน</Link></header>
     <div className="payment-heading"><div><p>TELEMED</p><h1>รายการชำระเงิน</h1>{detail && <p>ใบขาย {detail.saleOrderId}</p>}</div>{detail && <span className={`payment-state ${detail.status === 'PAID' ? 'paid' : ''}`}>{detail.status === 'PAID' ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}{labels[detail.status]}</span>}</div>
     <p className="payment-warning">{beam.state?.sandbox === false ? 'ข้อมูลใบขายอยู่ในระบบ Dev · ช่องทาง Beam Production รับชำระเงินจริง' : 'ระบบทดสอบ Dev กรุณาอย่าโอนเงินจริง'}</p>
     {error && <div role="alert" className="payment-error">{error}<button type="button" title="โหลดข้อมูลใหม่" aria-label="โหลดข้อมูลใหม่" onClick={() => refresh()}><RefreshCw size={18} /></button></div>}

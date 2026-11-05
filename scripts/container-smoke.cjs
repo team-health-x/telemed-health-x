@@ -22,6 +22,10 @@ async function run() {
   const asset = html.match(/(?:src|href)="([^" ]*\/_next\/static\/[^" ]+)"/);
   assert.ok(asset, 'rendered page references static assets');
   assert.equal((await fetch(new URL(asset[1], base))).status, 200, 'static asset');
+  for (const page of ['/programs', '/resize', '/acne']) {
+    assert.equal((await fetch(base + page, { signal: AbortSignal.timeout(5000) })).status, 200, page);
+    console.log('PASS', page, 200);
+  }
   for (const [path, method, expected] of [
     ['/api/telemed/catalog', 'GET', 503],
     ['/api/telemed/payment-methods', 'GET', 503],

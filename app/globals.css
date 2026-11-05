@@ -131,14 +131,19 @@ body { margin: 0; }
 .landing-site h1 {
   margin-bottom: 24px;
   font-size: clamp(44px, 5.2vw, 76px);
-  line-height: 1.4;
-  letter-spacing: 0;
+  /* Same headline spacing as the THE RITZ prototype (2026-11-04 handoff). */
+  line-height: 1.13;
+  letter-spacing: -0.045em;
   font-weight: 780;
 }
+/* Thai has no spaces: keep each headline phrase together, but still wrap inside it on very narrow screens. */
+.landing-site h1 .h1-phrase { display: inline-block; font-style: normal; }
 .landing-site h1 span {
   display: block;
-  /* Include stacked Thai tone marks in the gradient's painting area. */
+  /* Include stacked Thai tone marks in the gradient's painting area,
+     without adding visible space between the headline lines. */
   padding-block: 0.12em;
+  margin-block: -0.12em;
   background: linear-gradient(90deg, var(--purple), var(--blue));
   -webkit-background-clip: text;
   background-clip: text;

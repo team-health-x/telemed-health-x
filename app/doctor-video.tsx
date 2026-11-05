@@ -31,8 +31,8 @@ export default function DoctorVideo() {
           controls={started}
           preload="none"
           playsInline
-          poster="/program-resize-logo.png"
-          aria-label="แพทย์แนะนำโปรแกรม Resize by THE RITZ"
+          poster="/the-ritz-telehealth-logo.png"
+          aria-label="แพทย์แนะนำโปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ"
           onPlay={() => { setStarted(true); setFailed(false); }}
           onError={() => setFailed(true)}
         >

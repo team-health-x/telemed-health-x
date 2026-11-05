@@ -207,22 +207,22 @@ function RegistrationWelcome({ onStart }: { onStart: () => void }) {
   return (
     <main className="app-shell onboarding-shell">
       <header className="onboarding-brand">
-        <div className="brand-lockup" aria-label="Program Resize by The Ritz Clinic">
-          <img className="brand-logo program-resize-logo" src="/program-resize-logo.png" alt="Program Resize" />
+        <div className="brand-lockup" aria-label="โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ Clinic">
+          <img className="brand-logo program-resize-logo" src="/the-ritz-telehealth-logo.png" alt="THE RITZ telehealth" />
           <span className="brand-divider" aria-hidden="true" />
-          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" />
+          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" />
         </div>
       </header>
 
       <section className="onboarding-hero" aria-labelledby="onboarding-title">
         <span className="onboarding-orb onboarding-orb-one" aria-hidden="true" />
         <span className="onboarding-orb onboarding-orb-two" aria-hidden="true" />
-        <p className="onboarding-kicker">ยินดีต้อนรับสู่ PROGRAM RESIZE</p>
+        <p className="onboarding-kicker">ยินดีต้อนรับสู่โปรแกรมดูแลรูปร่าง ลดน้ำหนัก</p>
         <h1 id="onboarding-title">เริ่มต้นดูแลน้ำหนัก<br />อย่างมั่นใจกับทีมแพทย์</h1>
         <p>ลงทะเบียนครั้งเดียว เพื่อให้แพทย์รู้จักสุขภาพของคุณและวางแผนการดูแลได้เหมาะสมยิ่งขึ้น</p>
         <div className="onboarding-plan-card">
           <span><Stethoscope size={22} strokeWidth={2.2} aria-hidden="true" /></span>
-          <div><small>การดูแลเฉพาะบุคคล</small><strong>ประเมินโดยทีมแพทย์ The Ritz Clinic</strong></div>
+          <div><small>การดูแลเฉพาะบุคคล</small><strong>ประเมินโดยทีมแพทย์ THE RITZ Clinic</strong></div>
           <i><Check size={15} strokeWidth={3} aria-hidden="true" /></i>
         </div>
         <div className="onboarding-consultation-price">
@@ -269,10 +269,10 @@ function AppHeader({ title, profileName, onProfile }: { title?: string; profileN
       {title ? (
         <h1 className="page-title">{title}</h1>
       ) : (
-        <div className="brand-lockup" aria-label="Program Resize by The Ritz Clinic">
-          <img className="brand-logo program-resize-logo" src="/program-resize-logo.png" alt="Program Resize" />
+        <div className="brand-lockup" aria-label="โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ Clinic">
+          <img className="brand-logo program-resize-logo" src="/the-ritz-telehealth-logo.png" alt="THE RITZ telehealth" />
           <span className="brand-divider" aria-hidden="true" />
-          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" />
+          <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" />
         </div>
       )}
       <button className="profile-button" type="button" aria-label={`เปิดโปรไฟล์ของ ${profileName}`} onClick={onProfile}>{profileInitial(profileName)}</button>
@@ -297,8 +297,8 @@ function HomeView({ userName, onAppointment, bookingRefresh }: { userName: strin
         </div>
       </section>
 
-      <a className="telemed-brochure" href="/resize-telemed-brochure.jpg" target="_blank" rel="noopener noreferrer" aria-label="เปิดโบรชัวร์ Resize by THE RITZ ขนาดเต็ม">
-        <img src="/resize-telemed-brochure.jpg" alt="โบรชัวร์ Resize by THE RITZ โปรแกรม Telemed และราคายา Wegovy และ Mounjaro" width={1145} height={1374} />
+      <a className="telemed-brochure" href="/resize-telemed-brochure.jpg" target="_blank" rel="noopener noreferrer" aria-label="เปิดโบรชัวร์โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ ขนาดเต็ม">
+        <img src="/resize-telemed-brochure.jpg" alt="โบรชัวร์โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ โปรแกรม Telemed และราคายา Wegovy และ Mounjaro" width={1145} height={1374} />
       </a>
 
       <section className="section-block">
@@ -488,7 +488,7 @@ function ProfileView({ data, onOpen }: { data: ProfileData; onOpen: (panel: Prof
       <div className="profile-hero">
         <div className="profile-large">{profileInitial(data.name)}</div>
         <h2>{data.name}</h2>
-        <p>สมาชิก Program Resize • สัปดาห์ที่ 3 จาก 12</p>
+        <p>สมาชิกโปรแกรมดูแลรูปร่าง ลดน้ำหนัก • สัปดาห์ที่ 3 จาก 12</p>
         <button type="button" onClick={() => onOpen("personal")}>แก้ไขข้อมูล</button>
       </div>
       <div className="profile-card">

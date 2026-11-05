@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- native <a> on purpose, same as the handoff pages (client-side navigation broke on the original host). */
 import Image from "../loading-image";
 import {
   RefreshCw,
@@ -10,15 +11,15 @@ import CustomerReviews from "../customer-reviews";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Program Resize | โปรแกรมดูแลน้ำหนักที่ออกแบบเพื่อคุณ",
+  title: "โปรแกรมดูแลรูปร่าง ลดน้ำหนัก | THE RITZ TeleHealth",
   description:
     "โปรแกรมดูแลน้ำหนักเฉพาะบุคคล ประเมินและติดตามผลโดยทีมแพทย์ พร้อมคำแนะนำด้านโภชนาการและพฤติกรรม",
   alternates: { canonical: "/resize" },
   openGraph: {
     url: "/resize",
-    title: "Program Resize | โปรแกรมดูแลน้ำหนักที่ออกแบบเพื่อคุณ",
+    title: "โปรแกรมดูแลรูปร่าง ลดน้ำหนัก | THE RITZ TeleHealth",
     description: "ดูแลน้ำหนักอย่างเข้าใจร่างกาย ด้วยแผนเฉพาะบุคคลและการติดตามผลโดยทีมแพทย์",
-    images: [{ url: "/og.png", width: 1731, height: 909, alt: "Program Resize" }],
+    images: [{ url: "/og.png", width: 1731, height: 909, alt: "โปรแกรมดูแลรูปร่าง ลดน้ำหนัก" }],
   },
 };
 
@@ -52,13 +53,14 @@ export default function Home() {
     <main className="landing-site">
       <header className="site-header">
         <div className="brand-lockup">
-          <Image className="ritz-brand" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={1506} height={551} priority />
+          <Image className="ritz-brand" src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" width={1506} height={551} priority />
           <span className="brand-divider" aria-hidden="true" />
-          <a className="brand" href="#top" aria-label="Program Resize หน้าแรก">
-            <Image src="/program-resize-logo.png" alt="Program Resize by The Ritz" width={1580} height={720} priority />
+          <a className="brand" href="/" aria-label="กลับหน้าหลัก THE RITZ telehealth">
+            <Image src="/the-ritz-telehealth-logo.png" alt="THE RITZ telehealth" width={1518} height={488} priority />
           </a>
         </div>
         <nav className="desktop-nav" aria-label="เมนูหลัก">
+          <a href="/">กลับหน้าหลัก</a>
           <a href="#program">โปรแกรม</a>
           <a href="#steps">ขั้นตอน</a>
           <a href="#faq">คำถามที่พบบ่อย</a>
@@ -69,8 +71,8 @@ export default function Home() {
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow">MEDICAL WEIGHT MANAGEMENT</p>
-          <h1>Resize ใกล้คุณ<span>ดูแลสะดวกขึ้น</span></h1>
-          <p className="hero-lead">Resize by THE RITZ โปรแกรมดูแลน้ำหนักภายใต้การประเมินของแพทย์ พร้อมทางเลือกการใช้ยาควบคุมน้ำหนักตามความเหมาะสมของแต่ละบุคคล</p>
+          <h1><em className="h1-phrase">โปรแกรมดูแล</em><em className="h1-phrase">รูปร่าง</em> <em className="h1-phrase">ลดน้ำหนัก</em><em className="h1-phrase">ใกล้คุณ</em><span>ดูแลสะดวกขึ้น</span></h1>
+          <p className="hero-lead">โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ ภายใต้การประเมินของแพทย์ พร้อมทางเลือกการใช้ยาควบคุมน้ำหนักตามความเหมาะสมของแต่ละบุคคล</p>
           <div className="hero-actions">
             <a className="button" href="/register">ลงทะเบียนรับคำปรึกษา</a>
             <a className="text-link" href="#program">ดูรายละเอียดโปรแกรม <span aria-hidden="true">→</span></a>
@@ -103,9 +105,9 @@ export default function Home() {
 
       <section className="program-section section-pad" id="program">
         <div className="section-heading">
-          <p className="eyebrow">PROGRAM RESIZE</p>
-          <h2>Resize by THE RITZ<br /><span>ดูแลน้ำหนักในแบบที่เหมาะกับคุณ</span></h2>
-          <p>สำหรับผู้ที่ไม่สะดวกเดินทางมาคลินิก สามารถเลือกปรึกษาแพทย์ออนไลน์ พร้อมทางเลือก Resize at Home</p>
+          <p className="eyebrow">โปรแกรมดูแลรูปร่าง ลดน้ำหนัก</p>
+          <h2>โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ<br /><span>ดูแลน้ำหนักในแบบที่เหมาะกับคุณ</span></h2>
+          <p>สำหรับผู้ที่ไม่สะดวกเดินทางมาคลินิก สามารถเลือกปรึกษาแพทย์ออนไลน์ พร้อมทางเลือกโปรแกรมดูแลรูปร่าง ลดน้ำหนัก แบบ at Home</p>
         </div>
         <div className="program-grid">
           {programItems.map((item) => (
@@ -143,7 +145,7 @@ export default function Home() {
           <span className="safety-mark" aria-hidden="true">✓</span>
           <div>
             <p className="eyebrow">MEDICAL SAFETY FIRST</p>
-            <h3>ทุกแผนของ Resize เริ่มจากการประเมินความเหมาะสมโดยแพทย์</h3>
+            <h3>ทุกแผนของโปรแกรมดูแลรูปร่าง ลดน้ำหนัก เริ่มจากการประเมินความเหมาะสมโดยแพทย์</h3>
           </div>
         </aside>
       </section>
@@ -169,7 +171,7 @@ export default function Home() {
       <section className="steps-section section-pad" id="steps">
         <div className="section-heading narrow">
           <p className="eyebrow">HOW IT WORKS</p>
-          <h2>Resize by THE RITZ Home<br /><span>สะดวกตั้งแต่เริ่มต้น จนถึงการติดตามผล</span></h2>
+          <h2>โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ at Home<br /><span>สะดวกตั้งแต่เริ่มต้น จนถึงการติดตามผล</span></h2>
         </div>
         <div className="steps-grid">
           {steps.map(([title, text], index) => (
@@ -212,7 +214,7 @@ export default function Home() {
       <section className="registration-section" id="registration">
         <div className="registration-copy">
           <p className="eyebrow light">GET STARTED</p>
-          <h2>เริ่ม Resize by THE RITZ at Home ด้วยการปรึกษาแพทย์ออนไลน์</h2>
+          <h2>เริ่มโปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ at Home ด้วยการปรึกษาแพทย์ออนไลน์</h2>
           <p>ลงทะเบียนเพื่อจองคิวปรึกษาแพทย์ผู้ชำนาญการ</p>
         </div>
         <RegistrationCta />
@@ -220,12 +222,12 @@ export default function Home() {
 
       <footer>
         <div className="footer-brand">
-          <Image src="/program-resize-logo.png" alt="Program Resize by The Ritz" width={1580} height={720} />
+          <Image src="/the-ritz-telehealth-logo.png" alt="THE RITZ telehealth" width={1518} height={488} />
           <p>โปรแกรมดูแลน้ำหนักเฉพาะบุคคล ภายใต้การประเมินและติดตามผลโดยทีมแพทย์</p>
         </div>
-        <div className="footer-links"><a href="#program">โปรแกรม</a><a href="#steps">ขั้นตอน</a><a href="#faq">คำถามที่พบบ่อย</a><a href="/register">ลงทะเบียน</a></div>
+        <div className="footer-links"><a href="/">กลับหน้าหลัก</a><a href="#program">โปรแกรม</a><a href="#steps">ขั้นตอน</a><a href="#faq">คำถามที่พบบ่อย</a><a href="/register">ลงทะเบียน</a></div>
         <div className="footer-bottom">
-          <p>The Ritz Clinic ©Copyright 2022. เลขอนุญาตโฆษณา ฆสพ.สบส 1827/2566</p>
+          <p>THE RITZ Clinic ©Copyright 2022. เลขอนุญาตโฆษณา ฆสพ.สบส 1827/2566</p>
           <p>ข้อมูลบนเว็บไซต์นี้ไม่ใช่คำวินิจฉัยหรือคำแนะนำทางการแพทย์เฉพาะบุคคล ผลลัพธ์และความเหมาะสมแตกต่างกันไปในแต่ละบุคคล</p>
           <p className="photo-credit">ภาพประกอบ: <a href="https://www.pexels.com/photo/woman-posing-with-bowl-of-lettuce-8845645/" target="_blank" rel="noreferrer">Yaroslav Shuraev</a> และ <a href="https://www.pexels.com/photo/a-woman-in-white-lab-coat-smiling-while-typing-on-laptop-8376280/" target="_blank" rel="noreferrer">Tima Miroshnichenko</a> / Pexels</p>
           <p className="medical-reference">ข้อมูลความปลอดภัยเพิ่มเติม: <a href="https://www.fda.moph.go.th/news/news802569" target="_blank" rel="noreferrer">สำนักงานคณะกรรมการอาหารและยา</a> · <a href="https://tmc.or.th/index.php/News/News-and-Activities/Telemedicine" target="_blank" rel="noreferrer">แนวทางการแพทย์ทางไกลของแพทยสภา</a></p>

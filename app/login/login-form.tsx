@@ -49,7 +49,7 @@ export default function LoginForm({ returnTo = '/register', localLogin = false }
   return <main className="telemed-auth login-page">
     <Link href="/" className="auth-back"><ArrowLeft size={18} />กลับหน้าแรก</Link>
     <div className="login-content">
-      <Image src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={180} height={66} priority />
+      <Image src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" width={180} height={66} priority />
       <header className="login-heading">
         <h1>{challenge ? 'ยืนยันเบอร์โทรศัพท์' : 'เข้าสู่ระบบ Telemed'}</h1>
         <p>{localLogin ? 'เข้าสู่ระบบทดสอบ Local ด้วยเบอร์ที่ลงทะเบียน' : challenge ? `ส่งรหัส OTP ไปที่ ${phone.slice(0, 3)} •••• ${phone.slice(-3)}` : 'ใช้เบอร์โทรศัพท์ที่ลงทะเบียน เพื่อรับรหัสยืนยันทาง SMS'}</p>

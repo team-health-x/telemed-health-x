@@ -7,27 +7,27 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")),
-  title: "Program Resize | โปรแกรมดูแลน้ำหนักที่ออกแบบเพื่อคุณ",
+  title: "THE RITZ TeleHealth | ดูแลสุขภาพออนไลน์โดย THE RITZ Clinic",
   description:
-    "โปรแกรมดูแลน้ำหนักเฉพาะบุคคล ประเมินและติดตามผลโดยทีมแพทย์ พร้อมคำแนะนำด้านโภชนาการและพฤติกรรม",
+    "บริการดูแลสุขภาพออนไลน์จาก THE RITZ Clinic เลือกดูโปรแกรมดูแลรูปร่าง ลดน้ำหนัก และโปรแกรมรักษาสิว พร้อมประเมินและติดตามผลโดยทีมแพทย์",
   openGraph: {
     type: "website",
     locale: "th_TH",
     url: "/",
-    title: "Program Resize | โปรแกรมดูแลน้ำหนักที่ออกแบบเพื่อคุณ",
-    description: "ดูแลน้ำหนักอย่างเข้าใจร่างกาย ด้วยแผนเฉพาะบุคคลและการติดตามผลโดยทีมแพทย์",
-    images: [{ url: "/og.png", width: 1731, height: 909, alt: "Program Resize" }],
+    title: "THE RITZ TeleHealth | ดูแลสุขภาพออนไลน์โดย THE RITZ Clinic",
+    description: "เลือกดูโปรแกรมดูแลรูปร่าง ลดน้ำหนัก และโปรแกรมรักษาสิว พร้อมประเมินและติดตามผลโดยทีมแพทย์",
+    images: [{ url: "/online-consultation-hero-v1.png", alt: "THE RITZ TeleHealth — ปรึกษาแพทย์ออนไลน์" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Program Resize | โปรแกรมดูแลน้ำหนักที่ออกแบบเพื่อคุณ",
-    description: "ดูแลน้ำหนักอย่างเข้าใจร่างกาย ด้วยแผนเฉพาะบุคคลและการติดตามผลโดยทีมแพทย์",
-    images: ["/og.png"],
+    title: "THE RITZ TeleHealth | ดูแลสุขภาพออนไลน์โดย THE RITZ Clinic",
+    description: "เลือกดูโปรแกรมดูแลรูปร่าง ลดน้ำหนัก และโปรแกรมรักษาสิว พร้อมประเมินและติดตามผลโดยทีมแพทย์",
+    images: ["/online-consultation-hero-v1.png"],
   },
   alternates: { canonical: "/" },
   icons: {
-    icon: "/program-resize-logo.png",
-    shortcut: "/program-resize-logo.png",
+    icon: "/the-ritz-clinic-logo.png",
+    shortcut: "/the-ritz-clinic-logo.png",
   },
 };
 
