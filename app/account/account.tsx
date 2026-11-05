@@ -47,7 +47,7 @@ export default function Account({ initialSession }: { initialSession: Session })
     } catch (e) { setError(e instanceof Error ? e.message : 'ออกจากระบบไม่สำเร็จ'); setBusy(false); }
   }
   return <main className="telemed-auth">
-    <Image src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" width={180} height={66} priority />
+    <Image src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" width={180} height={66} priority />
     <h1>{session.customer.name}</h1><p className="auth-demo">บัญชีทดสอบ Dev · สาขา Telemed</p>
     <dl className="account-details"><dt>รหัสลูกค้าทดสอบ</dt><dd>{session.customer.customerId}</dd><dt>เบอร์ทดสอบ</dt><dd>{session.customer.phone}</dd><dt>เข้าสู่ระบบถึง</dt><dd>{new Date(session.expiresAt).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}</dd></dl>
     <div className="auth-actions"><Link href="/register/appointments" className="auth-primary"><CalendarDays size={18} />นัดหมายแพทย์</Link><button type="button" disabled={busy} onClick={logout}><LogOut size={18} />{busy ? 'กำลังออกจากระบบ...' : 'ออกจากระบบ'}</button></div>

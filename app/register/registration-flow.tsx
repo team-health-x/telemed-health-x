@@ -561,10 +561,10 @@ export default function RegistrationFlow({ onComplete, allowTestData = false }: 
     <main className="app-shell registration-shell">
       <header className="registration-header">
         <div className="registration-topline">
-          <div className="brand-lockup" aria-label="Program Resize by The Ritz Clinic">
-            <img className="brand-logo program-resize-logo" src="/program-resize-logo.png" alt="Program Resize" />
+          <div className="brand-lockup" aria-label="โปรแกรมดูแลรูปร่าง ลดน้ำหนัก โดย THE RITZ Clinic">
+            <img className="brand-logo program-resize-logo" src="/the-ritz-telehealth-logo.png" alt="THE RITZ telehealth" />
             <span className="brand-divider" aria-hidden="true" />
-            <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="The Ritz Clinic" />
+            <img className="brand-logo ritz-logo" src="/the-ritz-clinic-logo.png" alt="THE RITZ Clinic" />
           </div>
           <button className="language-toggle" type="button" onClick={() => setLanguage((value) => value === "th" ? "en" : "th")}>
             <Languages size={16} aria-hidden="true" /> {language === "th" ? "EN" : "ไทย"}
@@ -1031,7 +1031,7 @@ function ReviewStep({ form, health, identityMedia, consents, sensitiveConsent, o
         })}
         <SummaryLine label="ตอบครบ" value={`${healthTopics.filter(({ key }) => health[key].status).length}/${healthTopics.length} หัวข้อ`} />
       </SummarySection>
-      <SummarySection title="ข้อมูลนัดหมาย"><SummaryLine label="นัดติดตามผล" value="29 สิงหาคม 2569 เวลา 14:30 น." /><SummaryLine label="สาขา" value="The Ritz Clinic" /></SummarySection>
+      <SummarySection title="ข้อมูลนัดหมาย"><SummaryLine label="นัดติดตามผล" value="29 สิงหาคม 2569 เวลา 14:30 น." /><SummaryLine label="สาขา" value="THE RITZ Clinic" /></SummarySection>
 
       <SectionTitle title="การยินยอม" detail="รายการโปรโมชั่นเป็นทางเลือกและไม่ได้เลือกไว้ล่วงหน้า" />
       <div className="consent-list">
@@ -1124,7 +1124,7 @@ function ConsentDocument({ title, onClose }: { title: string; onClose: () => voi
           <p>ข้าพเจ้ายินยอมให้บริษัท เดอะริทซ์เอสเธทิค จำกัด เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล รวมถึงข้อมูลสุขภาพของข้าพเจ้า เท่าที่จำเป็นสำหรับการลงทะเบียน ยืนยันตัวตน การนัดหมาย การให้คำปรึกษาและการรักษาผ่านระบบการแพทย์ทางไกล การจัดทำเวชระเบียน การจ่ายและจัดส่งยา รวมถึงการติดตามผลการรักษา</p>
           <p style={{ marginTop: 16 }}>บริษัทจะเก็บรักษาข้อมูลอย่างเหมาะสมและใช้เฉพาะเพื่อวัตถุประสงค์ในการให้บริการและตามที่กฎหมายกำหนด โดยข้าพเจ้ารับทราบสิทธิของตนเกี่ยวกับข้อมูลส่วนบุคคลตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล</p>
         </> : <>
-        <p>Program Resize และ The Ritz Clinic จะใช้ข้อมูลตามวัตถุประสงค์ที่จำเป็นต่อการลงทะเบียน การจัดทำประวัติ การประเมินความปลอดภัย การนัดหมาย และการให้บริการทางการแพทย์เท่านั้น</p>
+        <p>โปรแกรมดูแลรูปร่าง ลดน้ำหนัก และ THE RITZ Clinic จะใช้ข้อมูลตามวัตถุประสงค์ที่จำเป็นต่อการลงทะเบียน การจัดทำประวัติ การประเมินความปลอดภัย การนัดหมาย และการให้บริการทางการแพทย์เท่านั้น</p>
         <h3>ข้อมูลที่อาจมีการเก็บและใช้</h3>
         <ul><li>ข้อมูลระบุตัวตนและข้อมูลติดต่อ</li><li>ข้อมูลสุขภาพ ประวัติการรักษา และข้อมูลการแพ้ยา</li><li>ข้อมูลนัดหมาย เอกสารยินยอม และลายเซ็น</li></ul>
         <h3>สิทธิของเจ้าของข้อมูล</h3>
@@ -1226,7 +1226,7 @@ function SuccessScreen({ submittedAt, evidenceId, evidenceHash, onComplete }: { 
         <SummaryLine label="เวอร์ชันเอกสาร" value={CONSENT_DOCUMENT_VERSION} />
         <SummaryLine label="SHA-256" value={evidenceHash} />
         <SummaryLine label="นัดหมาย" value="29 สิงหาคม 2569 เวลา 14:30 น." />
-        <SummaryLine label="สาขา" value="The Ritz Clinic" />
+        <SummaryLine label="สาขา" value="THE RITZ Clinic" />
         <SummaryLine label="วันที่และเวลาที่ส่ง" value={submittedAt} />
       </div>
       {saved && <p className="success-saved"><Check size={14} aria-hidden="true" />คัดลอกหมายเลข HN แล้ว</p>}

@@ -4,9 +4,9 @@ import Image from "./loading-image";
 import { useRef } from "react";
 
 const results = [
-  { id: 2, alt: "รีวิวผู้รับบริการ Resize ภาพก่อนและหลัง พร้อมข้อความผลลัพธ์ 20 กิโลกรัม" },
-  { id: 3, alt: "รีวิวผู้รับบริการ Resize ภาพก่อนและหลัง พร้อมข้อความผลลัพธ์ 7 กิโลกรัม" },
-  { id: 1, alt: "รีวิวผู้รับบริการ Resize November Mission" },
+  { id: 2, alt: "รีวิวผู้รับบริการโปรแกรมดูแลรูปร่าง ลดน้ำหนัก ภาพก่อนและหลัง พร้อมข้อความผลลัพธ์ 20 กิโลกรัม" },
+  { id: 3, alt: "รีวิวผู้รับบริการโปรแกรมดูแลรูปร่าง ลดน้ำหนัก ภาพก่อนและหลัง พร้อมข้อความผลลัพธ์ 7 กิโลกรัม" },
+  { id: 1, alt: "รีวิวผู้รับบริการโปรแกรมดูแลรูปร่าง ลดน้ำหนัก November Mission" },
 ];
 
 export default function CustomerReviews() {
@@ -15,7 +15,7 @@ export default function CustomerReviews() {
   return (
     <section ref={sectionRef} className="reviews-section section-pad" id="reviews" aria-labelledby="reviews-title">
       <div className="section-heading">
-        <p className="eyebrow">RESIZE STORIES</p>
+        <p className="eyebrow">CUSTOMER STORIES</p>
         <h2 id="reviews-title">ประสบการณ์จากผู้รับบริการ</h2>
         <p>ผลลัพธ์ขึ้นอยู่กับแต่ละบุคคล</p>
       </div>

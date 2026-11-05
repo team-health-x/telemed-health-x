@@ -4,7 +4,7 @@ import "./telemed.css";
 import "./responsive.css";
 
 export const metadata: Metadata = {
-  title: "ลงทะเบียนและนัดหมาย | Program Resize",
+  title: "ลงทะเบียนและนัดหมาย | โปรแกรมดูแลรูปร่าง ลดน้ำหนัก",
   alternates: { canonical: "/register" },
 };
 
@@ -12,7 +12,7 @@ export default function RegistrationLayout({ children }: { children: React.React
   return (
     <div className="telemed-site">
       <nav className="portal-navigation" aria-label="กลับหน้าเว็บไซต์">
-        <Link href="/">← กลับหน้า Program Resize</Link>
+        <Link href="/resize">← กลับหน้าโปรแกรมดูแลรูปร่าง ลดน้ำหนัก</Link>
         <Link href="/login" style={{ marginLeft: 'auto' }}>เข้าสู่ระบบ</Link>
       </nav>
       {children}
