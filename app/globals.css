@@ -131,8 +131,9 @@ body { margin: 0; }
 .landing-site h1 {
   margin-bottom: 24px;
   font-size: clamp(44px, 5.2vw, 76px);
-  /* Same headline spacing as the THE RITZ prototype (2026-11-04 handoff). */
-  line-height: 1.13;
+  /* Tighter like the THE RITZ prototype (which uses 1.13), but stacked Thai
+     marks from two lines (e.g. ดู above น้ำ) touch below 1.3. */
+  line-height: 1.3;
   letter-spacing: -0.045em;
   font-weight: 780;
 }
