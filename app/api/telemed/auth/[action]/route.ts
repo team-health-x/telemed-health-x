@@ -6,6 +6,7 @@ import { DEMO_COOKIE } from '../../../../lib/demo-auth';
 import {backendSession,backendLogout,acceptBackendLogin,BACKEND_SESSION_COOKIE_MAX_AGE} from '../../../../lib/telemed-v2-session';
 import { DemoAuthError } from '../../../../lib/demo-auth';
 import { allowedRequestOrigin, validMutation } from '../../../../lib/telemed-dev-policy';
+import { attestOtpCaller, OTP_DEVICE_COOKIE, OTP_DEVICE_OPTIONS } from '../../../../lib/telemed-otp-caller';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,10 +63,16 @@ export async function POST(request: Request, context: Context) {
     const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
     if (!origin || !secret) return json({ error: 'ยังไม่ได้ตั้งค่าเชื่อมระบบเข้าสู่ระบบ Dev' }, 503);
     const path = action === 'local-login' ? '/api/v1/telemed/workflow/local/login' : action === 'send-otp' ? '/api/v1/telemed/workflow/login/send-otp' : '/api/v1/telemed/workflow/demo/login';
-    const upstream = await fetch(new URL(path, origin), { method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret }, body: JSON.stringify({ phone: body.phone, code: body.code, challengeId: body.challengeId }) });
+    const caller = action === 'send-otp' ? attestOtpCaller(request, allowedRequestOrigin(request)!, body.phone, 'login',
+      (await cookies()).get(OTP_DEVICE_COOKIE)?.value) : null;
+    const upstream = await fetch(new URL(path, origin), { method: 'POST', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, ...caller?.headers }, body: JSON.stringify({ phone: body.phone, code: body.code, challengeId: body.challengeId }) });
     const payload = await upstream.json();
     if (!upstream.ok || payload.status !== '0000') return json({ error: payload.message || 'เข้าสู่ระบบไม่สำเร็จ' }, upstream.ok ? 401 : upstream.status);
-    if (action === 'send-otp') return json(payload.data);
+    if (action === 'send-otp') {
+      const response = json(payload.data);
+      response.cookies.set(OTP_DEVICE_COOKIE, caller!.deviceCookie, OTP_DEVICE_OPTIONS);
+      return response;
+    }
     if (payload.data?.phone !== body.phone) return json({ error: 'ข้อมูลบัญชีไม่ตรงกัน' }, 502);
     const result = acceptBackendLogin(payload.data);
     const response = json({ customer: result.customer, expiresAt: result.expiresAt });

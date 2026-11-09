@@ -2,19 +2,37 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const ts = require('typescript');
+const Module = require('node:module');
+const { createHmac } = require('node:crypto');
 require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, filename);
 
 test('signup OTP proxy validates origin and forwards send/verify only to the backend', async () => {
   process.env.NODE_ENV = 'development';
-  process.env.TELEMED_DEPLOY_ENV = 'local';
+  process.env.TELEMED_DEPLOY_ENV = 'dev';
+  process.env.TELEMED_DEV_ORIGINS = 'https://telemed.example.test';
   process.env.TELEMED_DEMO_AUTH_ENABLED = 'true';
   process.env.TELEMED_WORKFLOW_ORIGIN = 'https://backend.example.test';
   process.env.TELEMED_DEMO_BRIDGE_SECRET = 's'.repeat(32);
+  process.env.TELEMED_OTP_CALLER_HMAC_KEY = 'c'.repeat(40);
+  process.env.TELEMED_OTP_INGRESS_HMAC_KEY = 'i'.repeat(40);
+  process.env.TELEMED_CLINIC_ID = 'SYNTHETIC'; process.env.TELEMED_BRANCH_ID = '15';
+  const originalLoad = Module._load;
+  Module._load = function(id, ...args) {
+    if (id === 'next/headers') return { cookies: async () => ({ get: () => undefined }) };
+    return originalLoad.call(this, id, ...args);
+  };
   const { POST } = require('../app/api/telemed/signup-otp/[action]/route.ts');
+  Module._load = originalLoad;
   const original = global.fetch, calls = [];
-  const request = (body, origin = 'http://localhost:3100') => new Request('http://localhost:3100/api/telemed/signup-otp/send', {
-    method: 'POST', headers: { host: 'localhost:3100', origin, 'content-type': 'application/json' }, body: JSON.stringify(body),
-  });
+  const request = (body, origin = 'https://telemed.example.test', valid = true) => {
+    const at = String(Date.now()), caller = '192.0.2.1';
+    return new Request('https://telemed.example.test/api/telemed/signup-otp/send', {
+      method: 'POST', headers: { host: 'telemed.example.test', origin, 'content-type': 'application/json',
+        'x-telemed-ingress-caller': caller, 'x-telemed-ingress-at': at,
+        'x-telemed-ingress-signature': valid ? createHmac('sha256', process.env.TELEMED_OTP_INGRESS_HMAC_KEY).update(JSON.stringify(['https://telemed.example.test', caller, at])).digest('hex') : '' },
+      body: JSON.stringify(body),
+    });
+  };
   const context = action => ({ params: Promise.resolve({ action }) });
   global.fetch = async (url, options) => {
     calls.push({ url: String(url), body: JSON.parse(options.body) });
@@ -27,6 +45,7 @@ test('signup OTP proxy validates origin and forwards send/verify only to the bac
     assert.equal(calls[1].body.code, '654321');
     assert.equal((await POST(request({ phone: '0812345678' }, 'https://evil.test'), context('send'))).status, 403);
     assert.equal((await POST(request({ phone: 'bad' }), context('send'))).status, 400);
+    assert.equal((await POST(request({ phone: '0812345678' }, undefined, false), context('send'))).status, 403);
     assert.equal(calls.length, 2);
   } finally { global.fetch = original; }
 });

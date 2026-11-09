@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { DemoAuthError } from '../../../../lib/demo-auth';
+import { attestOtpCaller, OTP_DEVICE_COOKIE, OTP_DEVICE_OPTIONS } from '../../../../lib/telemed-otp-caller';
 import { telemedApiOrigin } from '../../../../lib/telemed-api-origin';
 import { allowedRequestOrigin, validMutation } from '../../../../lib/telemed-dev-policy';
 
@@ -23,15 +26,20 @@ export async function POST(request: Request, context: { params: Promise<{ action
     if (raw.length > 2048) return json({ error: 'Request too large' }, 413);
     const body = JSON.parse(raw);
     if (!body || typeof body.phone !== 'string' || !/^0[689]\d{8}$/.test(body.phone)) return json({ error: 'เบอร์โทรศัพท์ไม่ถูกต้อง' }, 400);
+    const caller = action === 'send' ? attestOtpCaller(request, publicOrigin, body.phone, 'registration',
+      (await cookies()).get(OTP_DEVICE_COOKIE)?.value) : null;
     const upstream = await fetch(new URL(action === 'local' ? '/api/v1/telemed/workflow/local/signup-proof' : `/api/v1/telemed/registration-otp/${action}`, origin), {
-      method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(20_000),
-      headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret },
+      method: 'POST', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(20_000),
+      headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, ...caller?.headers },
       body: JSON.stringify({ phone: body.phone, challengeId: body.challengeId, code: body.code }),
     });
     const result = await upstream.json();
     if (!upstream.ok || result.status !== '0000') return json({ error: result.message || 'ยืนยันเบอร์ไม่สำเร็จ' }, upstream.ok ? 400 : upstream.status);
-    return json(result.data);
+    const response = json(result.data);
+    if (caller) response.cookies.set(OTP_DEVICE_COOKIE, caller.deviceCookie, OTP_DEVICE_OPTIONS);
+    return response;
   } catch (error) {
+    if (error instanceof DemoAuthError) return json({ error: error.message }, error.status);
     return json({ error: error instanceof SyntaxError ? 'Invalid JSON' : 'ติดต่อบริการ SMS ไม่สำเร็จ กรุณาลองใหม่' }, error instanceof SyntaxError ? 400 : 503);
   }
 }

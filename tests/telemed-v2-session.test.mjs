@@ -19,6 +19,7 @@ const policyModule = compile('app/lib/telemed-dev-policy.ts');
 const authModule = dataUrl("export const DEMO_COOKIE='telemed_demo_session'; export class DemoAuthError extends Error { constructor(message,status){super(message);this.status=status;} }");
 const sessionModule = compile('app/lib/telemed-v2-session.ts', { './telemed-api-origin': originModule, './demo-auth': authModule });
 const session = await import(sessionModule);
+const callerModule = compile('app/lib/telemed-otp-caller.ts', { './demo-auth': authModule });
 const route = await import(compile('app/api/telemed/auth/[action]/route.ts', {
   'next/headers': dataUrl('export async function cookies(){ return {get:()=>({value:globalThis.__telemedTestCookie})}; }'),
   'next/server': pathToFileURL(require.resolve('next/server.js')).href,
@@ -27,6 +28,7 @@ const route = await import(compile('app/api/telemed/auth/[action]/route.ts', {
   '../../../../lib/telemed-v2-session': sessionModule,
   '../../../../lib/telemed-api-origin': originModule,
   '../../../../lib/telemed-dev-policy': policyModule,
+  '../../../../lib/telemed-otp-caller': callerModule,
 }));
 const capabilities = await import(compile('app/api/telemed/capabilities/route.ts', { '../../../lib/telemed-api-origin': originModule }));
 const policy = await import(policyModule);
