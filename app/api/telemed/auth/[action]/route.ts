@@ -2,7 +2,8 @@ import { cookies } from 'next/headers';
 import { localLoginEnabled } from '../../../../lib/local-login';
 import { telemedApiOrigin } from '../../../../lib/telemed-api-origin';
 import { NextResponse } from 'next/server';
-import { DEMO_COOKIE, withDemoStore } from '../../../../lib/demo-auth';
+import { DEMO_COOKIE } from '../../../../lib/demo-auth';
+import {backendSession,backendLogout,acceptBackendLogin,BACKEND_SESSION_COOKIE_MAX_AGE} from '../../../../lib/telemed-v2-session';
 import { DemoAuthError } from '../../../../lib/demo-auth';
 import { allowedRequestOrigin, validMutation } from '../../../../lib/telemed-dev-policy';
 
@@ -25,7 +26,7 @@ export async function GET(request: Request, context: Context) {
   if (blocked) return blocked;
   if ((await context.params).action !== 'session') return json({ error: 'Not found' }, 404);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
-  const session = withDemoStore(store => store.session(token));
+  const session = await backendSession(token);
   return session ? json(session) : json({ error: 'กรุณาเข้าสู่ระบบ' }, 401);
 }
 export async function POST(request: Request, context: Context) {
@@ -36,17 +37,16 @@ export async function POST(request: Request, context: Context) {
   const cookieOptions = { httpOnly: true, sameSite: 'strict' as const, secure: allowedRequestOrigin(request)!.startsWith('https:'), path: '/' };
   try {
     if (action === 'logout') {
-      withDemoStore(store => store.logout(token));
+      await backendLogout(token);
       const response = json({ ok: true });
       response.cookies.set(DEMO_COOKIE, '', { ...cookieOptions, maxAge: 0 });
       return response;
     }
     if (action === 'session') {
-      const session = withDemoStore(store => store.session(token, true));
+      const session = await backendSession(token);
       if (!session) return json({ error: 'กรุณาเข้าสู่ระบบ' }, 401);
       const response = json(session);
-      // Reconcile the cookie to the stored deadline without extending it twice.
-      response.cookies.set(DEMO_COOKIE, token, { ...cookieOptions, expires: new Date(session.expiresAt) });
+      // Backend activity slides the idle deadline; preserve the original absolute cookie lifetime.
       return response;
     }
     if (action === 'local-login' && !localLoginEnabled()) return json({ error: 'Not found' }, 404);
@@ -67,9 +67,9 @@ export async function POST(request: Request, context: Context) {
     if (!upstream.ok || payload.status !== '0000') return json({ error: payload.message || 'เข้าสู่ระบบไม่สำเร็จ' }, upstream.ok ? 401 : upstream.status);
     if (action === 'send-otp') return json(payload.data);
     if (payload.data?.phone !== body.phone) return json({ error: 'ข้อมูลบัญชีไม่ตรงกัน' }, 502);
-    const result = withDemoStore(store => store.issue(payload.data));
+    const result = acceptBackendLogin(payload.data);
     const response = json({ customer: result.customer, expiresAt: result.expiresAt });
-    response.cookies.set(DEMO_COOKIE, result.token, { ...cookieOptions, expires: new Date(result.expiresAt) });
+    response.cookies.set(DEMO_COOKIE, result.token, { ...cookieOptions, maxAge: BACKEND_SESSION_COOKIE_MAX_AGE });
     return response;
   } catch (error) {
     if (error instanceof DemoAuthError) return json({ error: error.message }, error.status);

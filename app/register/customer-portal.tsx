@@ -79,7 +79,9 @@ export default function CustomerPortal({ customer, initialTab = 'home', allowTes
     if (!customer) return;
     const channel = new BroadcastChannel('telemed-demo-auth');
     channel.onmessage = event => { if (event.data === 'logout') window.location.replace('/login'); };
-    return () => channel.close();
+    const expired = () => window.location.replace('/login');
+    window.addEventListener('telemed-session-expired', expired);
+    return () => { channel.close(); window.removeEventListener('telemed-session-expired', expired); };
   }, [customer]);
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [bookingRefresh, setBookingRefresh] = useState(0);

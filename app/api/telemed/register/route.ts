@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
 import { NextResponse } from 'next/server';
-import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
+import { DEMO_COOKIE } from '../../../lib/demo-auth';
+import {acceptBackendLogin,BACKEND_SESSION_COOKIE_MAX_AGE} from '../../../lib/telemed-v2-session';
 import { DemoAuthError } from '../../../lib/demo-auth';
 import { allowedRequestOrigin, validMutation } from '../../../lib/telemed-dev-policy';
 
@@ -29,9 +30,9 @@ export async function POST(request: Request) {
     if (!response.ok || result.status !== '0000') return json({ error: result.message || 'สมัครไม่สำเร็จ' }, response.ok ? 409 : response.status);
     const customer = result.data;
     if (customer?.phone !== signup.phoneNumber || typeof customer.customerId !== 'string' || !customer.customerId.startsWith('TL-')) return json({ error: 'ข้อมูลตอบกลับไม่ถูกต้อง' }, 502);
-    const session = withDemoStore(store => store.issue(customer));
-    const reply = json({ customer });
-    reply.cookies.set(DEMO_COOKIE, session.token, { httpOnly: true, sameSite: 'strict', secure: publicOrigin.startsWith('https:'), path: '/', expires: new Date(session.expiresAt) });
+    const session = acceptBackendLogin(customer);
+    const reply = json({ customer:session.customer });
+    reply.cookies.set(DEMO_COOKIE, session.token, { httpOnly: true, sameSite: 'strict', secure: publicOrigin.startsWith('https:'), path: '/', maxAge: BACKEND_SESSION_COOKIE_MAX_AGE });
     return reply;
   } catch (error) {
     if (error instanceof DemoAuthError) return json({ error: error.message }, error.status);

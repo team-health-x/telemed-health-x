@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
-import { DEMO_COOKIE, withDemoStore } from '../../../../lib/demo-auth';
+import { DEMO_COOKIE } from '../../../../lib/demo-auth';
+import {backendSession} from '../../../../lib/telemed-v2-session';
 import { telemedApiOrigin } from '../../../../lib/telemed-api-origin';
 import { allowedRequestOrigin, validMutation } from '../../../../lib/telemed-dev-policy';
 
@@ -17,7 +18,7 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
     (path.length === 1 && path[0] === 'capabilities') || (path.length === 2 && path[0] === 'bookings' && /^[a-zA-Z0-9-]{1,50}$/.test(path[1])));
   if (!allowed) return json({ error: 'Not found' }, 404);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
-  const session = withDemoStore(store => store.session(token));
+  const session = await backendSession(token);
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบ' }, 401);
   const backend = telemedApiOrigin();
   const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
@@ -32,7 +33,7 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
     }
     const response = await fetch(new URL(`/api/v1/telemed/workflow/demo/beam/${path.map(encodeURIComponent).join('/')}`, backend), {
       method: request.method, cache: 'no-store', body, signal: AbortSignal.timeout(45000), headers: {
-        'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-customer': session.customer.customerId,
+        'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-session':token, 'x-telemed-customer': session.customer.customerId,
       },
     });
     const result = await response.json();

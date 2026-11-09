@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import DemoSession from "./demo-session";
+import TelemedMaintenance from './telemed-maintenance';
 import { authEnabled } from './lib/telemed-dev-policy';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="th">
-      <body>{authEnabled() && <DemoSession />}{children}</body>
+      <body><TelemedMaintenance />{authEnabled() && <DemoSession />}{children}</body>
     </html>
   );
 }
