@@ -12,6 +12,7 @@ Local checks:
 
 - node node_modules/typescript/bin/tsc --noEmit -p tsconfig.next.json
 - node --experimental-strip-types --test tests/telemed-api-origin.test.ts tests/telemed-dev-policy.test.ts tests/telemed-production-policy.test.ts tests/telemed-v2-session.test.mjs
+- node --test tests/mock-registration-submit.test.cjs tests/telemed-chat-proxy.test.cjs tests/telemed-payment-proxy.test.cjs tests/telemed-production-session.test.cjs
 - node node_modules/next/dist/bin/next build --webpack
 
 This source patch and local build do not certify a deployed customer image, hosted OTP/Beam journeys, ingress/cookie acceptance or production activation.

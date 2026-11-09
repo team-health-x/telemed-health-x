@@ -10,19 +10,21 @@ require.extensions['.ts'] = (module, filename) => {
   }).outputText, filename);
 };
 const { withDemoStore } = require('../app/lib/demo-auth.ts');
+const { backendSession } = require('../app/lib/telemed-v2-session.ts');
 require.extensions['.ts'] = previousLoader;
 
-test('Production sessions validate signatures and never accept mock OTP', () => {
+test('Legacy signatures remain checked but cannot authorize V2 backend custody', async () => {
   const previous = { ...process.env };
   try {
     Object.assign(process.env, {
       TELEMED_DEPLOY_ENV: 'prod', TELEMED_PRODUCTION_ENABLED: 'true', TELEMED_DEMO_AUTH_ENABLED: 'false',
       TELEMED_PUBLIC_ORIGIN: 'https://telemed.theritzclinic.com',
-      TELEMED_API_ORIGIN: 'https://healthx-api.nicemoss-83033b3e.southeastasia.azurecontainerapps.io',
-      TELEMED_WORKFLOW_ORIGIN: 'https://healthx-api.nicemoss-83033b3e.southeastasia.azurecontainerapps.io',
+      TELEMED_V2_API_ORIGIN: 'https://v2.example.invalid',
+      TELEMED_API_ORIGIN: 'https://v2.example.invalid',
+      TELEMED_WORKFLOW_ORIGIN: 'https://v2.example.invalid',
       TELEMED_SESSION_SECRET: 's'.repeat(32), TELEMED_DEMO_BRIDGE_SECRET: 'b'.repeat(32),
     });
-    withDemoStore(store => {
+    const legacyToken = withDemoStore(store => {
       const customer = { customerId: 'TL-test', name: 'Test', phone: '0812345678' };
       const issued = store.issue(customer);
       assert.deepEqual(store.session(issued.token).customer, customer);
