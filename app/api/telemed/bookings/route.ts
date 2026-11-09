@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { telemedApiOrigin } from '../../../lib/telemed-api-origin';
-import { DEMO_COOKIE, withDemoStore } from '../../../lib/demo-auth';
+import { DEMO_COOKIE } from '../../../lib/demo-auth';
+import {backendSession} from '../../../lib/telemed-v2-session';
 import { allowedRequestOrigin, validMutation } from '../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
@@ -11,7 +12,7 @@ async function proxy(request: Request) {
   if (!publicOrigin) return json({ error: 'Not found' }, 404);
   if (request.method === 'POST' && !validMutation(request, publicOrigin)) return json({ error: 'Invalid origin' }, 403);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
-  const session = withDemoStore(store => store.session(token));
+  const session = await backendSession(token);
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบก่อนส่งนัดหมาย' }, 401);
   const origin = telemedApiOrigin();
   const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
@@ -24,7 +25,7 @@ async function proxy(request: Request) {
       body = await request.text();
       if (body.length > 14_100_000) return json({ error: 'ไฟล์ใหญ่เกินไป' }, 413);
     }
-    const response = await fetch(new URL('/api/v1/telemed/workflow/demo/bookings', origin), { method: request.method, body, cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-customer': session.customer.customerId } });
+    const response = await fetch(new URL('/api/v1/telemed/workflow/demo/bookings', origin), { method: request.method, body, cache: 'no-store', signal: AbortSignal.timeout(30000), headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-session':token, 'x-telemed-customer': session.customer.customerId } });
     const result = await response.json();
     if (!response.ok || result.status !== '0000') return json({ error: result.message || 'บันทึกไม่สำเร็จ กรุณาตรวจสอบข้อมูลแล้วลองใหม่' }, response.ok ? 409 : response.status);
     return json(result.data);

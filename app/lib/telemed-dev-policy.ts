@@ -5,9 +5,10 @@ export function hostedDev() {
 export function productionEnabled() {
   const secret = process.env.TELEMED_SESSION_SECRET || '';
   const bridge = process.env.TELEMED_DEMO_BRIDGE_SECRET || '';
-  const backend = 'https://healthx-api.nicemoss-83033b3e.southeastasia.azurecontainerapps.io';
+  const backend = process.env.TELEMED_V2_API_ORIGIN || '';
+  let validBackend=false;try{const url=new URL(backend);validBackend=url.protocol==='https:' && url.origin===backend && !url.username && !url.password;}catch{/* Closed until configured. */}
   return process.env.TELEMED_DEPLOY_ENV === 'prod' &&
-    process.env.TELEMED_PRODUCTION_ENABLED === 'true' &&
+    process.env.TELEMED_PRODUCTION_ENABLED === 'true' && validBackend &&
     process.env.TELEMED_DEMO_AUTH_ENABLED === 'false' &&
     process.env.TELEMED_PUBLIC_ORIGIN === 'https://telemed.theritzclinic.com' &&
     process.env.TELEMED_API_ORIGIN === backend && process.env.TELEMED_WORKFLOW_ORIGIN === backend &&

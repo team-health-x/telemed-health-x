@@ -23,16 +23,16 @@ test('chat proxy authenticates server-side, blocks cross-origin and never trusts
   Object.assign(process.env, { NODE_ENV: 'development', TELEMED_DEPLOY_ENV: 'local', TELEMED_DEMO_AUTH_ENABLED: 'true',
     TELEMED_SESSION_SECRET: 'test-session-'.repeat(4), TELEMED_DEMO_BRIDGE_SECRET: 'test-bridge-'.repeat(4), TELEMED_WORKFLOW_ORIGIN: 'http://127.0.0.1:3001' });
   const originalFetch = global.fetch; const calls = [];
-  global.fetch = async (url, options) => { calls.push({ url, options }); return Response.json({ status: '0000', data: { items: [] } }); };
+  global.fetch = async (url, options) => { calls.push({ url, options }); if (String(url).endsWith('/workflow/session')) return Response.json({ status: '0000', data: { customer: { customerId: 'TL-TEST', name: 'Test', phone: '0812345678' }, expiresAt: Date.now() + 60 * 60000 } }); return Response.json({ status: '0000', data: { items: [] } }); };
   try {
     assert.equal((await route.GET(request(), context())).status, 401);
     assert.equal(calls.length, 0);
-    cookie = withDemoStore(store => store.issue({ customerId: 'TL-TEST', name: 'Test', phone: '0812345678' })).token;
+    cookie = 't'.repeat(43);
     assert.equal((await route.POST(request('POST', { text: 'x' }, 'https://evil.example'), context())).status, 403);
     assert.equal(calls.length, 0);
     assert.equal((await route.POST(request('POST', { text: 'x', customerId: 'TL-OTHER' }), context())).status, 200);
-    assert.equal(calls[0].options.headers['x-telemed-customer'], 'TL-TEST');
-    assert.equal(calls[0].options.cache, 'no-store');
+    assert.equal(calls.at(-1).options.headers['x-telemed-customer'], 'TL-TEST');
+    assert.equal(calls.at(-1).options.cache, 'no-store');
     assert.equal((await route.GET(request(), context(['message-1', 'file']))).status, 200);
     assert.equal((await route.GET(request(), context(['..', 'secret']))).status, 404);
     assert.equal((await route.POST(request('POST', { text: 'x' }), context(['message-1', 'file']))).status, 404);

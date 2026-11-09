@@ -27,7 +27,7 @@ test('register forwards verified proof and reuses its key without resending SMS'
   const calls = [];
   global.fetch = async (url, options) => {
     calls.push({ url: String(url), options });
-    return Response.json({ status: '0000', data: { customerId: 'TL-TEST', name: 'Test', phone: '0812345678' } });
+    return Response.json({ status: '0000', data: { customerId: 'TL-TEST', name: 'Test', phone: '0812345678', sessionToken: 't'.repeat(43), expiresAt: Date.now() + 60 * 60000 } });
   };
   const body = { signupProof: '1b5de1aa-14b6-45f0-9f12-65777b790cd4.' + 'a'.repeat(64), signup: { phoneNumber: '0812345678' } };
   const request = data => new Request('http://localhost:3100/api/telemed/register', { method: 'POST', headers: { host: 'localhost:3100', origin: 'http://localhost:3100', 'content-type': 'application/json' }, body: JSON.stringify(data) });
@@ -36,6 +36,8 @@ test('register forwards verified proof and reuses its key without resending SMS'
       const result = await POST(request(body));
       assert.equal(result.status, 200);
       assert.match(result.headers.get('set-cookie'), /HttpOnly/i);
+      assert.match(result.headers.get('set-cookie'), /Max-Age=28800/i);
+      assert.equal(JSON.stringify(await result.json()).includes('t'.repeat(43)), false);
     }
     assert.equal(calls.length, 2);
     assert.ok(calls.every(call => call.url === 'https://backend.example.test/api/v1/telemed/register'));

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { telemedApiOrigin } from '../../../../../../lib/telemed-api-origin';
-import { DEMO_COOKIE, withDemoStore } from '../../../../../../lib/demo-auth';
+import { DEMO_COOKIE } from '../../../../../../lib/demo-auth';
+import {backendSession} from '../../../../../../lib/telemed-v2-session';
 import { allowedRequestOrigin, validMutation, authEnabled } from '../../../../../../lib/telemed-dev-policy';
 
 export const runtime = 'nodejs';
@@ -18,7 +19,7 @@ async function proxy(request: Request, context: Context) {
   if (!/^[a-zA-Z0-9-]{1,50}$/.test(id) || (file && !read && !download && !socket)) return json({ error: 'Not found' }, 404);
   if (!authEnabled()) return json({ error: 'แชทยังไม่เปิดให้บริการ' }, 503);
   const token = (await cookies()).get(DEMO_COOKIE)?.value ?? '';
-  const session = withDemoStore(store => store.session(token));
+  const session = await backendSession(token);
   if (!session) return json({ error: 'กรุณาเข้าสู่ระบบอีกครั้ง' }, 401);
   const origin = telemedApiOrigin();
   const secret = process.env.TELEMED_DEMO_BRIDGE_SECRET;
@@ -45,7 +46,7 @@ async function proxy(request: Request, context: Context) {
     const before = new URL(request.url).searchParams.get('before');
     if (before !== null) url.searchParams.set('before', before);
     const response = await fetch(url, { method: request.method, body, cache: 'no-store', signal: AbortSignal.timeout(30000),
-      headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-customer': session.customer.customerId } });
+      headers: { 'Content-Type': 'application/json', 'x-telemed-bridge': secret, 'x-telemed-session':token, 'x-telemed-customer': session.customer.customerId } });
     const result = await response.json();
     if (!response.ok || result.status !== '0000') return json({ error: result.message || 'ดำเนินการไม่สำเร็จ' }, response.ok ? 409 : response.status);
     if (socket) {
